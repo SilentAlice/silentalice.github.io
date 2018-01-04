@@ -5,7 +5,6 @@ date: 2015-11-13 23:09:18 +0800
 comments: true
 tags: tutorial
 keywords: Octopress, Github, Gitcafe, Page, Cloudflare, CDN
-description: "Manage octopress blog on gitcafe and github at same time and use CDN Cloudflare to accelerate access"
 ---
 #Introduction
 在上一篇中我们已经能够成功应用自己的域名，但是会发现github对于国内的用户访问好像比较慢，而gitcafe对于国外的用户又没有github好，因此本篇将说明如何同时部署博客到github和gitcafe，以及调整域名管理让国内的用户访问gitcafe，国外的用户访问github。最后介绍一个CDN(Content Delivery Network)服务来加速博客的访问。

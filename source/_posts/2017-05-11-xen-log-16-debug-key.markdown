@@ -5,7 +5,6 @@ date: 2017-05-11 10:40:42 +0800
 comments: true
 tags: virtualization
 keywords: Xen, debug key
-description: "Use debug key"
 ---
 
 之前介绍过Xentrace可以用来记录Hypervisor中发生的事情，不过有时我们希望手动触发print log的行为(比如观看此时Xen的页表结构、内存状态或者打印当前的cpu栈等等). 亦或是按下某个按键之后的Hypercall就会输出Log，再按一次后就停止输出Log等等。此时Xentrace或者手动添加Hypercall就不能满足我们的需求，而Xen提供了一套方便的接口可以解决这个问题: Debug Key

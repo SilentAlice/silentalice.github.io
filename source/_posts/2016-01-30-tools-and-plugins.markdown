@@ -5,7 +5,6 @@ date: 2016-01-30 20:31:29 +0800
 comments: true
 tags: record
 keywords: vim, tmux, zsh, oh-my-zsh, linux, plugin
-description: "Record my tools and plugins on Linux and Windows"
 ---
 我个人在工作之前总是喜欢先详细了解一下涉及到的工具，以致于都被实验室的小伙伴吐槽我每日的工作内容就是研究各种工具、插件..说来也惭愧，确实没有干什么活，倒是花了不少时间在配工具上..本文记录一下自己在接触Linux后遇到的非常赞的一些工具以及使用了这么多年Windows后用起来比较顺手的一些小软件。
 

@@ -36,7 +36,7 @@ external_link: true # Open external links in new tab
 filename_case: 1
 render_drafts: false
 post_asset_folder: false
-relative_link: true
+relative_link: false
 future: true
 highlight:
   enable: true
@@ -93,3 +93,14 @@ marked:
   smartypants: true
   modifyAnchors: ''
   autolink: true
+
+## Plugins: http://hexo.io/plugins/
+#RSS订阅
+plugin:
+- hexo-generator-feed
+#Feed Atom
+feed:
+type: atom
+path: atom.xml
+limit: 20
+

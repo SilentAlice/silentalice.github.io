@@ -5,7 +5,6 @@ date: 2016-11-30 19:19:03 +0800
 comments: true
 tags: virtualization
 keywords: Xen, Linear Page Table
-description: "PML4 258 entry: Guest linear page table"
 ---
 When you see memory layout of Xen, you may found that there is a range named :**Guest Linear Page Table**. You can find this in `$XEN_DIR/xen/include/include/asm-x86/config.h`.
 So what is the purpose of this range?

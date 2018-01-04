@@ -7,7 +7,6 @@ tags:
 - note
 - programming
 keywords: ICS, Introduction to Computer Systems, 深入理解计算机系统, C, C++, 函数指针, Calling Convention, C#, event, delegate, 委托, 事件, .net, 数组, 指针
-description: "Summary when I learning Introduction to Computer Systems"
 ---
 这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：[https://www.cs.cmu.edu/~213/](https://www.cs.cmu.edu/~213/), 本校的主页：[http://ipads.se.sjtu.edu.cn/courses/ics/](http://ipads.se.sjtu.edu.cn/courses/ics/)。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的把这些内容都串了起来，我也有幸能再次学习和温习一下专业的基础知识。这一系列博文主要总结这次学习中的新的收获和以混淆的点，用来温习和回顾。
 

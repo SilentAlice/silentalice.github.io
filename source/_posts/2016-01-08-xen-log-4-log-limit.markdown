@@ -7,7 +7,6 @@ tags:
 - CVE
 - virtualization
 keywords: Xen, CVE, XSA, Log Rate
-description: "A series of CVE about log without rate limiting while I dont know how to realize"
 ---
 #Xen Log without limiting(2016-01-04)
 

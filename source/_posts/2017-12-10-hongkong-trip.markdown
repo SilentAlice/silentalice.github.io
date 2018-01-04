@@ -5,7 +5,6 @@ date: 2017-12-10 21:00:28 +0800
 comments: true
 tags: essay
 keywords: hongkong, trip
-description: "My trip to Hongkong @2017-11"
 ---
 
 半个月前从香港回来的，参加了姐姐的婚礼后去深圳和好友G聚了次餐，之后就到香港在好友S老司机的带领下玩的非常充实~ 香港的价钱都是按港币算。

@@ -5,7 +5,6 @@ date: 2017-03-21 10:56:10 +0800
 comments: true
 tags: virtualization
 keywords: xen, xenbus, linux, driver
-description: "Introduction to XenBus"
 ---
 
 XenBus是通过XenStore协商的一套协议，前端和后端通过XenBus进行协商最终建立起通信，

@@ -5,7 +5,6 @@ date: 2017-03-20 15:40:23 +0800
 comments: true
 tags: virtualization
 keywords: xenbus, xen, linux, pv, driver
-description: "A simpiest split driver"
 ---
 
 Xen的PV Driver使用的是Split Model, 到这里现在也比较清楚前后端的交互方式了，通过Grant Table来共享I/O ring, 在ring中放入所需数据的grant reference,

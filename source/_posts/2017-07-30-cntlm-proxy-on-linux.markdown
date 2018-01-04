@@ -8,7 +8,6 @@ tags:
 - linux
 - record
 keywords: cntlm, proxy
-description: "Using cntlm proxy service on Linux"
 ---
 
 在公司或学校的代理往往只给固定IP(host)上网的权限，或者验证服务器只能用NTLM(v2)方式而拒绝明文密码方式，而我们的其他设备如果想通过host来上网的话就需要将host作为一个小的踏板, 

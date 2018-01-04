@@ -7,7 +7,6 @@ tags:
 - tutorial
 - record
 keywords: benchmark, parsec, spec
-description: "My setup of parsec and spec benchmark"
 ---
 
 测Evaluation的时候一般会测一下SPEC 和 PARSEC benchmark, 本篇简单介绍一下两者的部署和运行。

@@ -5,7 +5,6 @@ date: 2017-02-28 20:14:08 +0800
 comments: true
 tags: virtualization
 keywords: xen, pvhvm, pvh, hvm, pv
-description: "Introduce some mode supported by Xen"
 ---
 
 PV, HVM, PV-on-HVM, PVHVM, PVH... Xen在刚提出的时候针对的是二进制模拟下的虚拟化低效问题, 

@@ -5,7 +5,6 @@ date: 2017-08-13 17:14:35 +0800
 comments: true
 tags: essay
 keywords: tencent, Aurora Studios, interview
-description: "北极光工作室腾讯游戏面试经历"
 ---
 
 找人内推了腾讯游戏上海的北极光工作室，腾讯五大工作室分别为：琳琅天上工作室（Jade Studios）、量子工作室（Quantum Studios）、卧龙工作室（Wolong Studios）、北极光工作室（Aurora Studios）、波士顿工作室（Boston Studio). 北极光工作室的《天涯明月刀OL》、《轩辕传奇》属于比较有名的游戏，我面的后端研发。

@@ -5,7 +5,6 @@ date: 2015-11-14 09:50:18 +0800
 comments: true
 tags: tutorial
 keywords: Octopress, Markdown, 基础操作
-description: "Basic operation on octopress with markdown"
 ---
 博客已经能够正常访问了，本篇主要介绍一下Octopress的基本操作，关于基本操作官网有更详细的，这里只简单进行必要的总结~
 

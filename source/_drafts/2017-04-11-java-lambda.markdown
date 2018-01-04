@@ -1,13 +1,12 @@
 ---
 layout: post
-title: "[Not Finish]Lambda Expression in Java"
+title: "Lambda Expression in Java"
 date: 2017-04-11 20:54:41 +0800
 comments: true
 tags: 
 - programming
 - record
 keywords: java, lambda
-description: "Notes of lambda in java"
 ---
 
 本篇简单介绍一下Java中Lambda表达式，Lambda是在Java 1.8中正式引入的，正巧自己之前学了程序语言理论，对Lambda也有了一定的了解，所以进行一下记录。

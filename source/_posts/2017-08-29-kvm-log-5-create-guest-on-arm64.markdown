@@ -7,7 +7,6 @@ tags:
 - virtualization
 - tutorial
 keywords: kvm, guest, qemu, hikey960, arm64
-description: "Run qemu-kvm guest on arm64 (hikey960)"
 ---
 
 This post is about booting guest using qemu-kvm.

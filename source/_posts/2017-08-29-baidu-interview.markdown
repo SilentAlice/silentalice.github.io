@@ -5,7 +5,6 @@ date: 2017-08-29 15:20:41 +0800
 comments: true
 tags: essay
 keywords: baidu, interview
-description: "百度面试经历"
 ---
 
 找学长内推了上海百度的团队，团队主要负责人工智能的全栈支持，依旧是比较底层的研发部分。从AI芯片、

@@ -5,7 +5,6 @@ date: 2015-11-13 21:38:16 +0800
 comments: true
 tags: tutorial
 keywords: Github, Page, Blog, Octopress, Domain
-description: "Use individual domain to access github pages"
 ---
 #Introduction
 [上一篇文章](http://silentming.net/blog/2015/11/13/build-blog-on-github-with-octopress/)主要介绍了如何在Windows上搭建Octopress博客，我们的博客使用的是Github Page或GitCafe Page，默认情况下访问的域名是username.github.io。如果自己拥有自己的顶级域名的话，就会想要将自己的域名绑到自己的域名上。

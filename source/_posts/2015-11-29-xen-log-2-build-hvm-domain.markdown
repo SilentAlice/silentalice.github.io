@@ -7,7 +7,6 @@ tags:
 - tutorial
 - virtualization
 keywords: Xen, Hvm, DomainU, Virtualazation, Ubuntu
-description: "Build DomainU Guest VM(HVM)"
 ---
 经过[上一篇](http://silentming.net/blog/2015/11/28/xen-log-1-running-xen/)的步骤之后，Xen已经运行并且将原来的OS作为Domain0启动了起来。在文章末尾提到过HVM与PV，本篇会使用建立一个硬盘镜像并安装Ubuntu14.04，最后以HVM启动。
 

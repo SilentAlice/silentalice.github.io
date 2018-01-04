@@ -5,7 +5,6 @@ date: 2015-11-13 19:53:20 +0800
 comments: true
 tags: tutorial
 keywords: octopress, github, gitcafe, page, blog, windows, windows 10
-description: "build blog on github with octopress"
 ---
 #Introduction
 [Octopress](http://octopress.org/)是一款基于Jekyll的静态网页生成框架，使用[Ruby](https://www.ruby-lang.org/en/)实现。

@@ -5,7 +5,6 @@ date: 2017-12-19 17:49:14 +0800
 comments: true
 tags: essay
 keywords: visa application, business visa, austria, student, how to
-description: "My procedure of application for Austria business visa"
 ---
 
 由于HPCA'18在维也纳开，需要申请奥地利的商务签，这里记一下申请的经过以供参考。

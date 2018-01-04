@@ -7,7 +7,6 @@ tags:
 - linux
 - note
 keywords: Page Table, linux
-description: "Funny page table terminology"
 ---
 
 What’s the next word in this sequence: PT, PD, PDP, …? If you have seen linux code, these page table terms may make you confused. So today I will simply introduce the history and difference between these terms in a hope that this can help you understant them.

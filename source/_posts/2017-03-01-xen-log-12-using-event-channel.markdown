@@ -5,7 +5,6 @@ date: 2017-03-01 18:41:40 +0800
 comments: true
 tags: virtualization
 keywords: xen, event channel, linux, irq, interrupt
-description: "Using xen event channel in linux"
 ---
 
 [前一篇][1]我们已经了解了Event Channel是如何被注册和被Hypervisor实现的，本篇将利用kernel module，使用Event Channel进行Guest间的通信。

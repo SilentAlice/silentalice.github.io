@@ -7,7 +7,6 @@ tags:
 - virtualization
 - linux
 keywords: debug, qemu, kvm, kgdb, gdb, virtualization, linux, hikey960, arm64
-description: "debug kvm via kgdb on hikey960"
 ---
 
 kvm因为是和qemu一起跑的，想必网上搜出来的都是用QEMU-gdb去调试kernel, 本文记录的则是利用kgdb调试kvm module, 利用gdb调试qemu-kvm, 这样就能够在串口调试的基础上更方便的追踪程序的执行流了。

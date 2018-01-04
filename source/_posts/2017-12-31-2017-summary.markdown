@@ -4,7 +4,6 @@ title: "2017 Summary"
 date: 2017-12-31 10:59:51 +0800
 comments: true
 tags: essay
-keywords: 回顾，总结，2017
 ---
 
 2017 年的年末突然朋友圈大家都在刷18岁..说好的永远的17岁呢？？?
@@ -34,7 +33,6 @@ keywords: 回顾，总结，2017
 还刷了点LeetCode的题。
 
 {% img https://farm5.staticflickr.com/4733/27623163809_745250ff05_z_d.jpg %}
-<br>
 {% img https://farm5.staticflickr.com/4634/38522376205_4ded26c113_z_d.jpg %}
 
 在家也是看番233，以及每年聚餐都有人记录安排，辛苦晓艳同学了！今年继续聚起来！
@@ -49,7 +47,15 @@ keywords: 回顾，总结，2017
 
 在家学会了煎饼和椒盐蘑菇，第一次的椒盐蘑菇还获得了不少赞哈哈。
 
-{% img /images/20171231summary02.png %} {% img https://farm5.staticflickr.com/4681/24535052787_ed0c4b8c1a_z_d.jpg 300 %}
+<table>
+<tr>
+<td> {% img /images/20171231summary02.png %}</td>
+<td> {% img https://farm5.staticflickr.com/4681/24535052787_ed0c4b8c1a_z_d.jpg %} </td>
+</tr>
+</table>
+
+<!-- 
+-->
 
 椒盐蘑菇 and 家乡的白天鹅。
 

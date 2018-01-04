@@ -8,7 +8,6 @@ tags:
 - linux
 - record
 keywords: hikey960, linux, arm64, uefi
-description: "Tutorial record about running linux on hikey960"
 ---
 
 Hikey960目前来说是个比较新的板子，网上大部分教程都是针对Hikey，而Hikey960和Hikey的

@@ -5,7 +5,6 @@ date: 2016-02-03 11:35:08 +0800
 comments: true
 tags: note
 keywords: Precompile, C/C++, define, 预编译
-description: "Notes about precompilation"
 ---
 C语言预处理有三种：**宏定义**，**文件包含**，**条件编译**
 <br>文件包含很常见，条件编译则可以通过是#ifdef, #if 使得编译时的源码包含(不包含)某些内容。宏定义则主要是进行替换，本文主要记录宏定义的相关内容。

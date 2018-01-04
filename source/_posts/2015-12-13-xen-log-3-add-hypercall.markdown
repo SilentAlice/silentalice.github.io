@@ -7,7 +7,6 @@ tags:
 - tutorial
 - virtualization
 keywords: Xen, Hypercall
-description: "Add a new hypercall to xen"
 ---
 首先第一步便是给Xen中添加新的Hypercall, Hypercall、Hypervisor与GuestVM的关系与Systemcall、OS与Process的关系类似，如果GuestVM想要执行一些特权行为(如请求硬件)那么就要使用hypercall，控制权会转交给hypervisor，当hypervisor完成相关操作时会将控制权再交回GuestVM。
 <!--more-->

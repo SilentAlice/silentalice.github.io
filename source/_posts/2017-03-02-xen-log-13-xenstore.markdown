@@ -5,7 +5,6 @@ date: 2017-03-02 10:34:38 +0800
 comments: true
 tags: virtualization
 keywords: xen, xenstore
-description: "Introduction to xenstore"
 ---
 
 XenStore是由Dom0维护的分层的存储系统(像一个小文件系统目录一样), 用于在Guest之间共享信息，通过Shared Memory来进行

@@ -8,7 +8,6 @@ tags:
 - linux
 - record
 keywords: english, pinyin, shuangpin, debian, ubuntu, input method, chinese
-description: "Add chinese input method in English Debian"
 ---
 Although for most time english is enough, we have to input some chinese when browse some chinese sites.This post will show how to add chinese input method in Debian(english version). 
 <!-- more -->

@@ -7,7 +7,6 @@ tags:
 - tutorial
 - linux
 keywords: kernel module, linux
-description: "kernel module demo"
 ---
 
 本来觉得这个挺简单，不过发现每次写都会忘，这次就把常用的关于Kernel Module的操作和命令放一起做个小的总结吧~

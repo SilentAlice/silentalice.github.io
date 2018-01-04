@@ -4,7 +4,6 @@ title: "Markdown Testing"
 date: 2015-11-05 20:45:36 -0500
 comments: true
 tags: others
-description: "Note"
 keywords: Test
 ---
 This page is used for individual blog. Thus, I don't need any design services. Thanks.
@@ -62,6 +61,12 @@ Reference
 <bold>bodle</bold>
 <span style="font-weight:bold;">hello</span>
 </pre>
+
+{% codeblock title lang:sh http://www.baidu.com links %}
+This is a code block
+{% endcodeblock %}
+
+
 
 [link1][Header Test 1]
 [link1.1](#Header Test 1)

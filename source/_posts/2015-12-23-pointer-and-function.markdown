@@ -7,7 +7,6 @@ tags:
 - programming
 - note
 keywords: Pointer, Array, Function, Linker, 函数, 数组, 指针, 链接, C
-description: "Inconsistency of Function in C/C++"
 ---
 在[上一篇Summary](http://silentming.net/blog/2015/11/17/ics-summary-1/)里面已经提到过Array、Function与Pointer了。里面都是标准的语法，理解上也没有什么有问题的地方。本篇则讨论不知是编译器or链接器出于人性考虑进行优化还是什么的引起的一些语义和语法上的不一致。
 <!--more-->

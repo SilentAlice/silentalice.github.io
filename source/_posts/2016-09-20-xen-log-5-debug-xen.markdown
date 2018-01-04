@@ -5,7 +5,6 @@ date: 2016-09-18 16:22:31 +0800
 comments: true
 tags: virtualization
 keywords: Xen, debug, serial, virtualization
-description: "Debug Xen on Physical Machie"
 ---
 
 一开始的时候我们是在虚拟机里面调试Xen的，但是因为Qemu是不能模拟EPT的，所以在虚拟机里面起一个Xen，这个Xen的功能非常受限(不能使用EPT)。而且当时项目在虚拟机里面能跑，一到真机上就跑不了，所以不得不用真机来调，这里记录一下调试Xen的环境搭建。

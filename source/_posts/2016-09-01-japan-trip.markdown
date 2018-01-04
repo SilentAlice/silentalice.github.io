@@ -5,7 +5,6 @@ date: 2016-09-01 01:07:38 +0800
 comments: true
 tags: essay
 keywords: japan, trip 
-description: "My trip to Japan @2016-08"
 note: "Reproduce with Reference"
 ---
 满血复活！从日本玩回来后各种精疲力尽，感觉身体被掏空，睡了两天后终于复活啦！！这次玩的还是非常开心而且充足的的，之前发的也只是非常简略的记录，这里记录一下行程有需要的小伙伴可以参考~ 不注明的话价钱全都是日元~

@@ -7,7 +7,6 @@ tags:
 - tutorial
 - virtualization
 keywords: Xen, Virtualization, 虚拟化
-description: "How to run xen"
 ---
 之后的一段时间里面将会围绕Xen开展工作，所以这一系列博客就记录一下学习的过程和问题。本篇介绍如何从源码编译并运行Xen。主要部分都是从大哥那里现学现卖的:)
 [原文地址](http://ytliu.info/blog/2015/02/02/running-xen-on-xen%3Axende-qian-tao-xu-ni-hua-ji-zhu/)

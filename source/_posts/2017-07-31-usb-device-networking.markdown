@@ -8,7 +8,6 @@ tags:
 - linux
 - record
 keywords: usb, virtualize, g_ether, hikey, network
-description: "Using USB to network"
 ---
 
 开发板一般最稳定的接口就是USB串口，而Linux中`g_ether` module允许我们将usb虚拟化为网卡，

@@ -5,7 +5,6 @@ date: 2017-01-02 00:00:23 +0800
 comments: true
 tags: essay
 keywords: 回顾, 总结, 2016
-description: "A summary of my 2016"
 ---
 2016 是历史魔幻元年，历史的涡轮发动机推着人文社会这辆高铁飞驰--- 2016一年就见证了太多的大事...
 

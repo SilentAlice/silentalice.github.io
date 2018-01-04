@@ -5,7 +5,6 @@ date: 2017-08-14 16:20:36 +0800
 comments: true
 tags: virtualization
 keywords: QEMU, kvm, module
-description: "QEMU-kvm startup"
 ---
 
 [上一篇](http://silentming.net/blog/2017/08/14/kvm-log-1-qemu-module-intro/)简单说明了QEMU Object Module的注册实现，本篇简单介绍Qemu的启动整个流程。QEMU版本是2.10-rc2 (2017-08-14的版本master分支), 函数的深入细节不涉及~

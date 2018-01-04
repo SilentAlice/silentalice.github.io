@@ -5,7 +5,6 @@ date: 2016-01-08 19:08:57 +0800
 comments: true
 tags: ACG
 keywords: ACG, 动漫, 2015
-description: "A summary of animations of 2015"
 ---
 16年的一月新番已然开始更新，于是就想回顾一下2015年自己看过的动漫, 要不然总感觉看过后什么都没有留下有点白看的感觉.. 顺便作为推荐给朋友的参考~(长文)
 

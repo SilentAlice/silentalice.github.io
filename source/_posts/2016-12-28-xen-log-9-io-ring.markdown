@@ -5,7 +5,6 @@ date: 2016-12-28 20:24:14 +0800
 comments: true
 tags: virtualization
 keywords: xen, ring, io
-description: "I/O ring in Xen"
 ---
 
 在上一篇中我们通过Grant Table让DomU和Dom0能够通过内存共享进行通信，众所周知在Xen里domU的I/O都是交由dom0来完成的。而I/O driver也有两种实现方式: paravirtualized和qemu-emulated。本篇主要讨论Xen上PV Driver所使用的数据结构: I/O Device Ring。

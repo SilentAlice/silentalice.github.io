@@ -5,7 +5,6 @@ date: 2017-02-20 13:55:43 +0800
 comments: true
 tags: virtualization
 keywords: xen, event channel, io
-description: "Event channel of Xen"
 ---
 
 [I/O Ring][9]能够让我们通过共享内存传输数据，但是在准备好数据后又该如何告知远端的Dom呢？因此类似中断，这里就要用到Event\_Channel来进行异步通知。Event Channel是Xen提供的一套

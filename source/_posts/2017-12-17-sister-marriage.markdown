@@ -5,7 +5,6 @@ date: 2017-12-17 16:08:58 +0800
 comments: true
 tags: essay
 keywords: 姐姐，婚礼，广州
-description: "My godness sister's marriage"
 ---
 
 亲爱的童童姐:

@@ -5,7 +5,6 @@ date: 2016-12-26 15:17:57 +0800
 comments: true
 tags: virtualization
 keywords: Xen, Grant Table
-description: "Description of Grant Table"
 ---
 本篇是为了解Grant Table这一共享内存机制。之前的项目中心在Memory上，不过关于内存的部分带我的大哥在[Xen的启动之内存相关实现][1]和[Xen的内存布局][2]中已经比较详细的说明了。在之后的工作中由于要用到I/O的相关部分，所以先探究一下Grant Table，为之后的I/O的章节做个基础准备。
 

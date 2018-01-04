@@ -5,7 +5,6 @@ date: 2017-11-23 20:27:04 +0800
 comments: true
 tags: essay
 keywords: orthodontics, pain
-description: "My record of orthodontics treatment procedure"
 ---
 决定毕业后就在上海找工作的我重新考虑了一下整牙的事，牙齿比较拥挤而且还是深覆合，高中的时候一个私立牙医说要拔4颗牙还要4年...当时考虑会影响高考而且一时还难以接受4颗..就一拖再拖. 本科没怎么想过这事，最近多方咨询后决定开启牙齿正畸长篇单刷副本！ 两年半的漫长奋斗现在要开始了~ 希望最后能有一个不错的结果。
 

@@ -5,7 +5,6 @@ date: 2017-11-21 17:35:42 +0800
 comments: true
 tags: essay
 keywords: SOSP, 2017, Volunteer
-description: "My volunteer record of SOSP'17"
 ---
 
 {% img https://farm5.staticflickr.com/4585/38527953262_81ce35b172_b_d.jpg %}

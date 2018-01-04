@@ -5,7 +5,6 @@ date: 2015-11-14 15:22:10 +0800
 comments: true
 tags: tutorial 
 keywords: Git, SSH, Proxy
-description: "Use ssh with proxy to access git"
 ---
 假设现在有3台计算机：
 A (IP_A), B1(IP_B1), B2(IP_B2)， B1与B2是在同一内网下，B1是该内网的网关，对外拥有独立IP。

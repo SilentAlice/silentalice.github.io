@@ -5,7 +5,6 @@ date: 2017-08-10 18:32:14 +0800
 comments: true
 tags: essay
 keywords: transwarp
-description: "星环科技面试经历"
 ---
 
 终于到了找工作的时间了，也投了星环，面了3个多小时，最后顺利拿到了offer，本篇分享一下经历。

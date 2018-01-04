@@ -5,7 +5,6 @@ date: 2016-09-21 13:16:03 +0800
 comments: true
 tags: virtualization
 keywords: Xen, xentrace
-description: "Use Xentrace"
 ---
 Xentrace 能够帮助你知道在Hypervisor中发生了什么，作为一个统计工具，可以记录所有的VMEnter/Exit、Schedule、Dom0ops等信息，并能够指定统计哪个cpu、记录哪些事件的信息。在进行一些验证、测试或Resource counting的时候有比较大的作用。
 <!--more-->

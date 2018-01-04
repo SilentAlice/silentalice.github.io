@@ -3,11 +3,10 @@ layout: post
 title: "[Forward]Relocation Truncated to Fit"
 date: 2016-11-29 12:05:44 +0800
 comments: true
-tags: Programming
+tags: programming
 keywords: Linker, bug, error
-description: "Relocation truncated bug"
 ---
-#Interesting linker error
+# Interesting linker error
 
 When you are programing a x64 program, it's high likely that you encounter such a error: "**relocation truncated to fit: R_X86_64_32S against symbol**". What happened? especially when you can run this program successfully on an old machine with same / old version. It may appears when you write inline assembly or after you changed your linker script.
 

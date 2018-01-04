@@ -5,7 +5,6 @@ date: 2017-08-15 15:58:12 +0800
 comments: true
 tags: virtualization
 keywords: QEMU, kvm, workflow, arm64 
-description: "kvm workflow"
 ---
 
 本篇介绍kvm自身的执行流程，以及与qemu的交互。kvm的代码本身分为两部分，kernel态代码作为kernel module虚拟出一个字符设备，qemu通过对`/dev/kvm`发送`ioctl`来实现与kvm的交互。

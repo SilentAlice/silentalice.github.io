@@ -7,7 +7,6 @@ tags:
 - record
 - tutorial
 keywords: qemu, compile, x64, 编译, 64位, linux
-description: "Compile qemu in x86 linux"
 ---
 做JOS实验的时候，因为想在真机上跑Qemu来做，而自己的机子是Ubuntu x64的，目标应用是x86的，当时编译的时候还遇到了一些问题，这里做个记录:)
 <!-- more -->

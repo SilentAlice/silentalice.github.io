@@ -5,7 +5,6 @@ date: 2017-05-02 21:27:42 +0800
 comments: true
 tags: essay
 keywords: netease, interview, intern
-description: "网易游戏面试经历"
 ---
 
 到了找实习的时期，听说网易游戏福利不错所以就投了个简历，最后一路下来也是顺利拿到了实习Offer, 这里分享一下经历。

@@ -5,7 +5,6 @@ date: 2016-01-08 22:41:04 +0800
 comments: true
 tags: essay
 keywords: XJTU, 西安交通大学，毕业
-description: "A review of my undergraduate life"
 ---
 毕业时写的总结文，今天终于想起来把它给搬过来了..本文是图片版，多图哦
 <!-- more -->

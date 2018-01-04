@@ -4,7 +4,6 @@ title: "新博客开篇"
 date: 2015-11-11 23:48:31 +0800
 comments: true
 tags: essay
-descriptson: "First post to explain reasions"
 keywords: SilentAlice, SilentMing, 吴宇明, yumingwu, wuyuming
 ---
 刚开始接触博客是从初三开始的，那个时候还在用百度空间，也通过百度空间认识了好多小伙伴，也是中二满满的我刚入动漫坑的时候，写的文章也都是一些中二少年强行说愁或者强行文艺的黑历史。

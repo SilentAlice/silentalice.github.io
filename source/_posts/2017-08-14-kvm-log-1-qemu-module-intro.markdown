@@ -5,7 +5,6 @@ date: 2017-08-14 15:39:41 +0800
 comments: true
 tags: virtualization
 keywords: QOM, Qemu, kvm, module
-description: "Qemu Module Introduction"
 ---
 
 KVM分为两部分，User态部分在Qemu中，Kernel态部分集成到了Linux的代码里作为Kernel Module的形式对上提供服务。由于整个大的流程还是在QEMU里面的，所以本篇先介绍一下设备注册的相关信息。
