@@ -47,12 +47,8 @@ tags: essay
 
 在家学会了煎饼和椒盐蘑菇，第一次的椒盐蘑菇还获得了不少赞哈哈。
 
-<table>
-<tr>
-<td> {% img /images/20171231summary02.png %}</td>
-<td> {% img https://farm5.staticflickr.com/4681/24535052787_ed0c4b8c1a_z_d.jpg %} </td>
-</tr>
-</table>
+  <p><img src="/images/20171231summary02.png" style="display: inline-block" width="220" />
+  <img src="https://farm5.staticflickr.com/4681/24535052787_ed0c4b8c1a_z_d.jpg" style="display: inline-block" width="465"/> </p>
 
 <!-- 
 -->
@@ -118,8 +114,8 @@ Fidelius的项目实现的已经差不多了，
 也没提前给我说，估计原本两人约会一天的，结果陪我玩了一天...尴尬
 顺带去了惠山古镇、东林书苑。
 
-{% img https://c1.staticflickr.com/5/4684/38693708884_96973be0f2.jpg %}
-{% img https://farm5.staticflickr.com/4638/24535974857_5b8cfc8a5b_z_d.jpg %}
+  <p><img src="https://c1.staticflickr.com/5/4684/38693708884_96973be0f2.jpg " style="display: inline-block" width="245" />
+  <img src="https://farm5.staticflickr.com/4638/24535974857_5b8cfc8a5b_z_d.jpg" style="display: inline-block" width="430"/></p>
 
 惠山古镇，以及璇姐带我去的什么什么半岛...在江南大学旁边，记性太差没记住。
 
@@ -138,8 +134,10 @@ Ryzen 1700 + 洪博的GTX 970，
 空闲时间拿了Ori and the Blind Forest全收集要素，
 上画画课..学到透视╮(╯▽╰)╭
 
-{% img https://farm5.staticflickr.com/4588/38693816804_7187c99198_z_d.jpg %}
-{% img https://farm5.staticflickr.com/4727/24536050397_b9ac525ed8_z_d.jpg 370 %}
+
+  <p><img src="https://farm5.staticflickr.com/4588/38693816804_7187c99198_z_d.jpg " style="display: inline-block" width="430" />
+  <img src="https://farm5.staticflickr.com/4727/24536050397_b9ac525ed8_z_d.jpg" style="display: inline-block" width="245"/></p>
+
 
 西湖鸟瞰 and 租的酒店式单间公寓。
 
@@ -156,8 +154,9 @@ Ryzen 1700 + 洪博的GTX 970，
 
 实习的工作地点，也是毕业后的工作地点。
 
-{% img https://farm5.staticflickr.com/4691/38694041804_6aa1372134_z_d.jpg %}
-{% img https://farm5.staticflickr.com/4727/38694042034_a795774918_z_d.jpg 280 %}
+
+  <p><img src="https://farm5.staticflickr.com/4691/38694041804_6aa1372134_z_d.jpg" style="display: inline-block" width="468" />
+  <img src="https://farm5.staticflickr.com/4727/38694042034_a795774918_z_d.jpg" style="display: inline-block" width="200"/> </p>
 
 实习期间白天调板子，晚上画板子...
 
@@ -199,8 +198,8 @@ Fidelius投了HPCA，
 期间看看S7系列的比赛，说好的最有希望夺冠的一届呢???
 中间补了教父1、2两部经典的电影。
 
-{% img https://farm5.staticflickr.com/4689/24536731427_6140df732f_z_d.jpg 350 %}
-{% img https://farm5.staticflickr.com/4598/39372289012_51da6515f2_z_d.jpg 350 %}
+  <p><img src="https://farm5.staticflickr.com/4689/24536731427_6140df732f_z_d.jpg" style="display: inline-block" width="300" />
+  <img src="https://farm5.staticflickr.com/4598/39372289012_51da6515f2_z_d.jpg" style="display: inline-block" width="300"/> </p>
 
 * Nov. 亲爱的姐姐，妳嫁人了QAQ
 
