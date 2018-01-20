@@ -174,7 +174,7 @@ The images are all **sparse image**, which means you need [simg2img][20] to conv
 ### Replace boot and kernel image
 
 You may found that `uefi.img` from rpb linux will read configuration from `system partition/boot/grub/grub.cfg`. 
-So, just mount this debian image and replace `root` dir with the one from `rpb`.
+So, just mount this debian image and replace `boot` dir with the one from `rpb`.
 
 Then you need new linux kernel image and dtb. Compile it from [source][21]. (The hieky960-v4.9 branch in this tree)
 
