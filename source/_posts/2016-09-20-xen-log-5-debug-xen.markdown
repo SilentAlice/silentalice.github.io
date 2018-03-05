@@ -61,7 +61,6 @@ sudo minicom -s [-C filename]
 
 在之前安装Xen的时候我们设置了grub自动启动Xen, 这里由于Xen可能会崩溃，所以我们需要的是仅在下一次启动Xen, 这样崩溃后会自动重启到普通的Linux
 
-<!--
 #### With GRUB v1
 在 `/boot/grub/menu.list` set "default" to "saved". For example:
 
@@ -81,7 +80,6 @@ makeactive
 chainloader     +1
 ```
 之后运行`grub-install`来更改设置
--->
 
 #### With GRUB v2
 
