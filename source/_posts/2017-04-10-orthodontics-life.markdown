@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[连载中]牙套日记"
-date: 2018-01-05 20:27:04 +0800
+date: 2018-03-06 20:27:04 +0800
 comments: false
 tags: essay
 keywords: orthodontics, pain
@@ -14,7 +14,16 @@ keywords: orthodontics, pain
 
 <!-- more -->
 
-# 2017-01-25
+# 2018-03-05
+
+这次去复诊弓丝没有动，全程都在看护士打磨平导，最后用了一种神奇的东西和取模一样，直接放到平导上然后贴到我上颚，那个东西过一会就定好型了，平导再一次完美贴合上颚...
+感慨一下技术的进步！用的材料应该是聚乙酸乙烯酯+什么东西，味道和小学的泡泡胶一模一样。
+
+<p><img src="/images/2018/20180306teeth16.jpg" style="display: inline-block; height: 120px;">
+<img src="/images/2018/20180306teeth17.jpg" style="display: inline-block; height: 120px;"></p>
+
+
+# 2018-01-25
 
 医生说需要再次带平导，因为现在下边的牙会挡住上边，所以上边的牙没有办法往里面收，所以这次复诊上面的弓丝没有换，只把下面的稍微加粗了一点。
 基本上没有任何变化，就不不放照片啦..

@@ -14,7 +14,7 @@ HPCA'18圆满落幕，为了调整时差，回来的航班上也没怎么睡觉�
 
 ## 概况
 
-这次去维也纳是因为要去HPCA'18做Paper的报告，不过由于我只需要参加主会(只有两天半)，会议全程还有Workshop，所以得以申请到5天+前后各多1天共计7天的出差。
+这次去维也纳是因为要去HPCA'18做Paper的报告，不过我只需要参加主会(只有两天半)，会议全程还有Workshop，得以申请到5天+前后各多1天共计7天的出差。
 导师由于工作事宜而无法陪同，但是恰好这次HPCA<sup>[1](#hpca)</sup>、PPoPP<sup>[2](#ppopp)</sup>、CGO<sup>[3](#cgo)</sup>、CC<sup>[4](#cc)</sup>是在同一个地方开，
 另一个同学F中了PPoPP的会议，所以我也能够有个同行的伴。
 
@@ -28,8 +28,8 @@ HPCA'18圆满落幕，为了调整时差，回来的航班上也没怎么睡觉�
 
 ## 住宿
 
-国外的宾馆没有牙具牙膏拖鞋，洗发液这类东西最后自己也带上，不一定有瓶装水或烧水壶= =
-自己也要带好转换头应对不同国家插座的问题。
+国外的宾馆没有牙具牙膏拖鞋，洗发液这类东西最好自己也带上，不一定有瓶装水或烧水壶= =
+也要带好转换头应对不同国家插座的问题。
 
 会议酒店在[Austria Trend Eventhotel Pyramide][hotel1],在官网预定的。交通还是非常方便的，不过地方非常偏...坐轨道交通去市里需要30min-50min，不过酒店对面有奥地利最大的SCS Shopping Mall, 虽说可以买各种东西，但是真的贵啊...
 
@@ -59,7 +59,7 @@ HPCA'18圆满落幕，为了调整时差，回来的航班上也没怎么睡觉�
 ## 交通
 
 维也纳的公交分为轨道交通、火车、公交车等。轨道交通和国内的地铁差不多，U1、U2这样，
-基本上覆盖整个市内，感觉是公家的。小火车都是S1、S2这样，是QBB管理下的。
+基本上覆盖整个市内，感觉是公家的。小火车都是S1、S2这样，是ÖBB管理下的。
 公共交通只要随便找个自动售票机买个48小时卡之类的就可以随便坐了。
 
 轨道交通有地上也有地下部分~
@@ -71,12 +71,12 @@ HPCA'18圆满落幕，为了调整时差，回来的航班上也没怎么睡觉�
 <p><img src="https://farm5.staticflickr.com/4616/40633077881_638fe47fd2_z_d.jpg" style="display: inline-block; height:280px;">
 <img src="https://farm5.staticflickr.com/4752/40633079091_1424087594_z_d.jpg" style="display: inline-block; height:280px;"></p>
 
-QBB还管理着Railjet这种长途的高铁，去欧洲其他国家的时候可以坐，网上有售票:
-[QBB官网](http://www.oebb.at/en/)，和国内的高铁差不多。去Salzburg的话54.1欧/人。
+ÖBB还管理着Railjet这种长途的高铁，去欧洲其他国家的时候可以坐，网上有售票:
+[ÖBB官网](http://www.oebb.at/en/)，和国内的高铁差不多。去Salzburg的话54.1欧/人。
 
-如果只是要去奥地利的其他城市，也有WestBahn，双层高铁，可以上车后买票也可以在官网订好到时候让她扫码：[WestBahn官网](https://westbahn.at/en)。这个的好处是买了票可以坐任意班次，一般一小时会有一班来往东西的列车，买这个的话比较自由不用卡时间，游玩结束直接坐下一班就行，而且相比Railjet便宜得多。去Salzburg的话不到26.5欧一人.
+如果只是要去奥地利的其他城市，也有WestBahn，双层高铁，可以上车后买票也可以在官网订好到时候让她扫码：[WestBahn官网](https://westbahn.at/en)。这个的好处是买了票可以坐任意班次，一般一小时会有一班来往东西的列车，买这个的话比较自由不用卡时间，游玩结束直接坐下一班就行，而且相比Railjet便宜得多，去Salzburg的话26.5欧一人。我对比了一下，和国内的高铁速度差不多的。
 
-QBB的Railjet以及Westbahn内的售票员
+ÖBB的Railjet以及Westbahn内的售票员
 
 <p><img src="https://farm5.staticflickr.com/4742/40633225411_683235c663_z_d.jpg" style="display: inline-block; height:280px;">
 <img src="https://farm5.staticflickr.com/4750/39922847154_c6f398fe52_z_d.jpg" style="display: inline-block; height:280px;"></p>
@@ -91,7 +91,8 @@ QBB的Railjet以及Westbahn内的售票员
 出来后就在机场吃了顿麦当劳当午餐。
 在吃饭的时候刚好认识了一位来自中科院计算所同样去开PPoPP的同学，
 我们一起等到同行的老师也到机场后就坐Uber去了会议宾馆。
-Uber不需要手机也可以，上面可以与司机打字聊天。接我们的小哥是个约旦人，大雪天怀中抱着一个自己救助的受过伤的小狗狗。
+Uber不需要手机也可以，上面可以与司机打字聊天。接我们的小哥是个约旦人，大雪天怀中抱着一个自己救助的受过伤的小狗狗，
+人家十分聪明，过来看我们像是打车的，主动走过来领我们去他车那！！
 
 需要注意的是，中国移动的国际漫游是30元一天，4G不限流量，但是！由于流量会经过移动，所以还是会从中国大陆向外经过防火墙的..Google上不去= =；不过相对的，可以以中国IP访问一些只有国内才能上网站╮(╯▽╰)╭。
 
@@ -112,7 +113,7 @@ SCS里面大概有400家左右门店，真的超级大...
 <p><img src="https://farm5.staticflickr.com/4802/40591504762_8f40265a6b_z_d.jpg" style="display: inline-block; height:320px;">
 <img src="https://farm5.staticflickr.com/4758/40591503572_c115b7eb14_z_d.jpg" style="display: inline-block; height:320px;"></p>
 
-下午去地标St.史蒂芬大教堂玩了一波,教堂里面有6欧一趟的电梯可以上教堂塔顶俯瞰维也纳，
+下午去地标St.史蒂芬大教堂玩了一波,教堂本身是免费游览的，里面有6欧一趟的电梯可以上教堂塔顶俯瞰维也纳，
 运气好的话能看到没有因为维修而被围起来的教堂。
 老教堂的庄严神圣依然如旧，不愧是维也纳的地标。
 
@@ -125,7 +126,8 @@ SCS里面大概有400家左右门店，真的超级大...
 
 这一天气温零下十几度！！简直不是人呆的地方... 而且周末整个城市就像我们这里初一一样，超市关门、商店停业，只有麦当劳依然是我们的好伙伴，能让我填饱肚子。
 
-因为我的报到临近，这一天都在修改Slides，在下午交给导师最后一版后趁机溜到外面浏览了Hofburg Imperial Palace 霍夫堡皇家宫殿，也包含Sisi博物馆。
+因为我的报到临近，这一天都在修改Slides，在下午交给导师最后一版后趁机溜到外面浏览了Hofburg Imperial Palace 霍夫堡皇家宫殿，也包含Sisi博物馆，门票十几欧。
+这边是认可国内的学生证的，27岁以下的学生都能便宜个1、2欧，不过需要自己给他解释上面的中文是什么..她不认也没办法..好在我们学生证上有个xxx University，似乎还是认可的。
 
 <p><img src="https://farm5.staticflickr.com/4708/38823553000_5d535cd98f_z_d.jpg" style="display: inline-block; height:230px;">
 <img src="https://farm5.staticflickr.com/4778/38823433270_ac6741b74d_z_d.jpg" style="display: inline-block; height:230px;"></p>
@@ -142,7 +144,7 @@ HPCA'18主会正式开始！HPCA General Chair Michael Gschwind、PPoPP 的Chair
 <p><img src="https://farm5.staticflickr.com/4656/26762507338_460d5aa475_z_d.jpg" style="display: inline-block; ">
 <img src="https://farm5.staticflickr.com/4656/40592155952_42d8d9cc33_z_d.jpg" style="display: inline-block; "></p>
 
-中午和舍友F屁颠屁颠地跑到市里吃了之前预约好的[Ribs of Vienna](http://www.ribsofvienna.at/)，这最好的炸猪排！
+中午和舍友F屁颠屁颠地跑到市里吃了之前预约好的[Ribs of Vienna](http://www.ribsofvienna.at/)，这最好的烤猪排！
 这家店是防空洞改造过来的，有**400多年**的历史了。。
 顺带一张牛排~~
 
@@ -159,21 +161,21 @@ HPCA'18主会正式开始！HPCA General Chair Michael Gschwind、PPoPP 的Chair
 
 <p><img src="https://farm5.staticflickr.com/4609/38823814370_1f1de73a88_z_d.jpg" style="display: inline-block; "></p>
 
-萨尔茨堡作为音乐天才莫扎特的故乡其艺术氛围令维也纳也难以匹及，错综复杂的粮食胡同让我有一种在异国北京胡同穿梭往来的错觉。
-趁着夜色未至，我一路走到要塞，坐着小火车上到要塞顶端鸟瞰萨尔茨堡。其中绿色的建筑便是萨尔茨堡大教堂。
+萨尔茨堡作为音乐天才莫扎特的故乡其艺术氛围即使是维也纳也难以匹及，错综复杂的粮食胡同让我有一种在异国北京胡同穿梭往来的错觉。
+趁着夜色未至，我一路走到要塞，坐着小火车(6欧多一点)上到要塞顶端鸟瞰萨尔茨堡。其中绿色的建筑便是萨尔茨堡大教堂。
 
 <p><img src="https://farm5.staticflickr.com/4759/25764176557_2730a1ddc3_z_d.jpg" style="display: inline-block; height:280px;">
 <img src="https://farm5.staticflickr.com/4602/25764175477_e9fbe566ea_z_d.jpg" style="display: inline-block; height:280px;"></p>
 
 <p><img src="https://farm5.staticflickr.com/4699/25764176137_b0a67a1958_z_d.jpg" style="display: inline-block; "></p>
 
-晚餐在意大利连锁餐厅L'OSTERIA...至于吃的..我实在是不认识菜单啊...全是意大利语和德语，没有英文菜单我也很无奈啊..
-随缘点餐，一共11欧😔
+晚餐在意大利连锁餐厅[L'OSTERIA](http://losteria.co.uk/restaurants/austria/)...至于吃的..我实在是不认识菜单啊...10样主菜，随便翻译下有意大利语、德语、西班牙语、挪威语和英语，没有英文的小字注解我也很无奈啊..但是这家据说是以其超大Pizza闻名的。
+佛系随缘点餐，一共11欧😔
 
 <p><img src="https://farm5.staticflickr.com/4618/39738938555_b7abb8aa6f_z_d.jpg" style="display: inline-block; height:250px;">
 <img src="https://farm5.staticflickr.com/4649/39738938985_1bdcd7cf57_z_d.jpg" style="display: inline-block; height:250px;"></p>
 
-回去的路上还经过了《音乐之声》取景地：米拉贝尔花宫和其背后已被大学深深覆盖的花园，(花园晚上看不清，第二天早上补拍的)
+回去的路上还经过了《音乐之声》取景地：[米拉贝尔宫 Mirabell Palace](https://www.salzburg.info/en/sights/top10/mirabell-palace-gardens)和其背后已被大学深深覆盖的米拉贝尔花园，(花园晚上看不清，第二天早上补拍的)
 
 <p><img src="https://farm5.staticflickr.com/4758/39738938365_2cd0c9b362_z_d.jpg" style="display: inline-block; height:250px;">
 <img src="https://farm5.staticflickr.com/4710/39738939135_063bec680f_z_d.jpg" style="display: inline-block; height:250px;"></p>
@@ -182,10 +184,10 @@ HPCA'18主会正式开始！HPCA General Chair Michael Gschwind、PPoPP 的Chair
 
 ### Day6
 
-本来预计是想去海伦贝尔宫的，但是那里只在4-11月开放，以Wate Play闻名，现在这冰天雪地水机关也无法运行，残念。
+本来预计是想去[海伦贝尔宫 Hellbrunn Palace](https://www.hellbrunn.at/en/)的，但是那里只在4-11月开放，以Wate Play闻名，现在这冰天雪地水机关也无法运行，残念。
 在萨尔斯这条带给当地人财富的盐河周边漫步，穿过画满涂鸦的地道，拜访了音乐天才莫扎特的故居。
 不过实话讲非常不值...4间小屋摆几件乐器，音频解说90%的都在放音乐，还不如自己买碟，
-可能对于学音乐人来说更像是一种朝圣吧。
+可能对于学音乐人来说更像是一种朝圣吧。票价11欧，学生票9欧。
 
 <p><img src="https://farm5.staticflickr.com/4654/25764175027_da4e4083b3_z_d.jpg" style="display: inline-block; height:250px;">
 <img src="https://farm5.staticflickr.com/4648/39738938205_4150a7f1ac_z_d.jpg" style="display: inline-block; height:250px;"></p>
