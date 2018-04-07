@@ -78,20 +78,20 @@ comments: false
   With so many things to do and so much knowledge to learn, I sincerely welcome any advice, questions and critics.&hellip;
   </p>
 
-  <p> This is my blog recording some notes, ideas and diaries. The blog is mainly written in Chinese anyway.  </p>
+  <p> This is my blog recording some notes, ideas and diaries. The blog is mainly written in Chinese anyway. 
+  You can find my resume in ***LinkedIn*** and my coming illustrations in ***Pixiv***.</p> 
   <p> For any questions, please contact me via <a href="mailto:yumingwu233@gmail.com">yumingwu233@gmail.com</a>. English, Chinese and Japanses are all OK.</p>
 
   <h3>Study</h3>
-  <p>Currently, I am a master candidate and am studying at <a href="http://ipads.se.sjtu.edu.cn/">Institute of Parallel and Distributed Systems (IPADS)</a>.
-  I major in virtualization and system securities. My advisor is <a href="http://ipads.se.sjtu.edu.cn/doku.php?id=pub:members:haibo_chen">Haibo Chen</a>.
+  <p>Currently, I am a master candidate and am studying at <a href="http://ipads.se.sjtu.edu.cn/">Institute of Parallel and Distributed Systems (IPADS)</a>, Shanghai Jiao Tong University. I major in virtualization and system securities. My advisor is <a href="http://ipads.se.sjtu.edu.cn/doku.php?id=pub:members:haibo_chen">Haibo Chen</a>. I finished my bachelor degree of engineering (Software Engineering) and arts (Japanese) in Xi'an Jiaotong University. (These two universities spell "Jiaotong" in different ways)
   </p>
 
   <h3>Tech Otaku</h3>
 
   <p>
-  My hobby includes japanese manga, animation and various games. That is why I learned Japanese and joined in some game localization group. 
+  My hobbies include manga, animation and various games. That is why I learned Japanese and joined in some game localization group. 
 
-  To be able to draw some "doujin illustration", I am learning digital painting. (I will post some in the future if I can graduate from this painting school...) 
+  To be able to draw some "doujin illustration", I am learning digital painting (mainly japanese illustration). I will post some in the future if I can graduate from this painting school... 
   </p>
 
   <p>The first animation I watched is <font style="font-style:italic">CODE GEASS Lelouch of the Rebellion</font> (<a href="http://www.geass.jp/first/story.html">コードギアス　反逆のルルーシュ</a>). The leading characters Lelouch and C.C. are so successfully pictured that I am still willing to recommend this animation

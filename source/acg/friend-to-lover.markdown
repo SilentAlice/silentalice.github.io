@@ -15,10 +15,12 @@ comments: false
 从此开始恋爱的历程。<br>
 恋爱是不会不请自来的
 
-{% img /images/misc0-mochizuki_rina.jpg 望月里奈 %}
-{% img /images/misc0-sawatari_misaki.jpg 沢渡岬 %}
-{% img /images/misc0-hiiragi_yuzuyu.jpg 柊ゆずゆ %}
-{% img /images/misc0-minahara_himari.jpg 皆原ひまり %}
+
+<p><img src="/images/misc0-mochizuki_rina.jpg" title="望月里奈" style="display: inline-block; ">
+<img src="/images/misc0-sawatari_misaki.jpg" title="沢渡岬" style="display: inline-block; ">
+<img src="/images/misc0-hiiragi_yuzuyu.jpg" title="柊ゆずゆ" style="display: inline-block; ">
+<img src="/images/misc0-minahara_himari.jpg" title="皆原ひまり" style="display: inline-block; ">
+</p>
 
 ####Staff:
 {% img /images/misc0-ftl1.jpg Staff %}

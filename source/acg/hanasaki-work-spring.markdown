@@ -4,14 +4,17 @@ comments: false
 ---
 [花咲ワークスプリング官网](http://sagaplanets.product.co.jp/works/hanasaki/)
 
-{% img /images/misc1-shiranui_inori.jpg 不知火祈 %}
-{% img /images/misc1-kuon_ayano.jpg 玖音彩乃 %}
-{% img /images/misc1-kotobuki_hikari.jpg 琴吹光 %}
-<br>
-{% img /images/misc1-soramori_wakaba.jpg 空森若葉 %}
-{% img /images/misc1-kootsuki_kanna.jpg 上月柑南 %}
-{% img /images/misc1-hanasaki_nonoka.jpg 花咲ののか %}
-{% img /images/misc1-yamashita_kumi.jpg 山下久美 %}
+
+<p><img src="/images/misc1-shiranui_inori.jpg" title="不知火祈" style="display: inline-block; ">
+<img src="/images/misc1-kuon_ayano.jpg" title="玖音彩乃" style="display: inline-block; ">
+<img src="/images/misc1-kotobuki_hikari.jpg" title="琴吹光" style="display: inline-block; ">
+</p>
+<p>
+<img src="/images/misc1-soramori_wakaba.jpg" title="空森若葉" style="display: inline-block; ">
+<img src="/images/misc1-kootsuki_kanna.jpg" title="上月柑南" style="display: inline-block; ">
+<img src="/images/misc1-hanasaki_nonoka.jpg" title="花咲ののか" style="display: inline-block; ">
+<img src="/images/misc1-yamashita_kumi.jpg" title="山下久美" style="display: inline-block; ">
+</p>
 
 春日烂漫。于相遇和恋爱中悄然躁动的这个世间。 对于世间那玫瑰色氛围完全不在意呢。 今日也一如往常地、在怠惰之路上一往无前的主人公・花咲游真。 虽然今天也想继续吊儿郎当地度过……<br>
 「欢迎来到幽灵部！从今天开始你就是部长哟」<br>
