@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[连载中]牙套日记"
-date: 2018-03-06 20:27:04 +0800
+date: 2018-04-03 20:27:04 +0800
 comments: false
 tags: essay
 keywords: orthodontics, pain
@@ -13,6 +13,14 @@ keywords: orthodontics, pain
 **2017-04-10 - Present**
 
 <!-- more -->
+
+# 2018-04-03
+
+这次的复诊调整了平导的厚度，整个平导缩小了一圈，主治医生说要开始收上门牙了(开心~(*^▽^*))。下边的门牙有点靠左歪，所以上了个推簧往中间推，上面的弓丝弄了两个"牵引钩"，上牵引钩的时候痛死我了...因为要使好大的劲把牵引钩给固定到弓丝上，不知道护士怎么弄的，我的牙当时非常痛orz..
+
+<p><img src="/images/2018/20180403teeth18.jpg" style="display: inline-block; height: 120px;">
+<img src="/images/2018/20180403teeth19.jpg" style="display: inline-block; height: 120px;"></p>
+
 
 # 2018-03-05
 
@@ -111,7 +119,7 @@ keywords: orthodontics, pain
 带上半天的牙套只能感受到些微的张力，但是牙齿还不至于网上说的那种疼痛难忍的地步..就是以后吃完饭都要刷牙，早起晚睡再刷一次差不多一天要刷3-5次..这两年是告别火锅这种辛辣食物了。坚硬的坚果倒是可以打豆浆喝掉，本身自己就不怎么喜欢大鱼大肉和碳酸饮料，所以对饮食的影响也不算太过严重，还不错~
 
   <p><img src="/images/20170426teeth00.jpg" style="display: inline-block">
-  <img src="/images/20170426teeth01.jpg" style="display: inline-block">
+  <img src="/images/20170426teeth01.jpg" style="display: inline-block; height: 150px;">
   <img src="/images/20170426teeth02.jpg" style="display: inline-block"></p>
 
 # 2017-04-19

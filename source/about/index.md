@@ -16,22 +16,26 @@ comments: false
 
   <h3>About Me</h3>
 
-  <p>从历史沧桑的废都离开后，来到了艳丽繁华的魔都，一个小白目前在深海苦苦寻觅中，希望各位大大能不吝赐教，趁本小白还有救时再抢救一下 :)</p>
+  <p>在历史沧桑的废都西安完成本科学习，来艳丽繁华的魔都上海结束了硕士学业，一个小白刚刚跨入编码的大门，目前作为操作系统工程师就职于上海华为研究所，希望各位大大能不吝赐教，趁本小白还有救时再抢救一下 :)</p>
 
-  <h3>Study</h3>
+  <h3>Experience</h3>
 
-  <p>目前在<a href="http://ipads.se.sjtu.edu.cn/zh">并行与分布式系统研究所(IPADS)</a>学习研究虚拟化与系统安全。结识各路神棍，压力虽大然痛并快乐着.</p>
+ <p>目前作为操作系统工程师就职于上海华为研究所，与一群大咖一起为理想拼搏，时不时的因为工作中的琐事扯扯皮，空闲时间偷偷摸摸鱼=v=</p>
+
+  <p>硕士期间在上海交通大学<a href="http://ipads.se.sjtu.edu.cn/zh">并行与分布式系统研究所(IPADS)</a>学习研究虚拟化与系统安全，师从[陈海波](http://ipads.se.sjtu.edu.cn/doku.php?id=pub:members:haibo_chen)与[夏虞斌](http://ipads.se.sjtu.edu.cn/doku.php?id=pub:members:yubin_xia)教授。承蒙各路大神相助，顺利完成了学业，过得九分充实(少一分是因为单身= =)。</p>
+  
+  <p>本科在西安交通大学完成了软件工程与日语的双学士学位，西交注重工程实践，没有进什么实验室，也因此得以学习自己感兴趣的二外。</p>
 
   <h3>Tech Otaku</h3>
 
   <p>在我心中，技术宅 = Programming + 日本語 + 绘画。</p>
 
-  <p>博客主要还是一些技术科普文章, (难的我也没那能耐..), 技术类文章转载的话请注明出处和链接就好~</p>
+  <p>博客主要是一些技术科普文章与生活中的点点滴滴, 技术类文章转载的话请注明出处和链接就好，生活类的...你确定不是粉我了？？~</p>
 
-  <p>有时间的时候也会做一些无偿汉化工作来复习一下学过的日语。之前是城彩学园汉化组的校对，现在属于与她❀心渐近汉化组(别问我名字，不知道起名的他们怎么想的，好羞耻o\\\o).
-  参与汉化的游戏在game中可以看到~ 汉化方面的工作本人不参与18X内容相关、也不参与传播和分发O O, 请不要找我要资源~</p>
+  <p>之前有时间的时候也会做一些无偿汉化工作来复习一下学过的日语。先后做过“城彩学园汉化组”与“与她❀心渐近汉化组”的校对。(别问我名字，不知道起名的他们怎么想的，好羞耻o\\\o).
+  参与汉化的游戏在ACG中可以看到~ 汉化方面的工作本人不参与18X内容相关、也不参与传播和分发O O, 请不要找我要资源~</p>
 
-  <p>画画还在学习中，等有作品了我再Po出来哈哈</p>
+  <p>绘画方面正在学习日系插画，跟着蓝铅笔的艾皇学习中，等有作品了我再Po出来哈哈</p>
 
   <h4>Hobby</h4>
 
@@ -48,23 +52,20 @@ comments: false
 
   <h3>Misc-昵称由来</h3>
 
-    <p>接触网络的时候用的网名是“蓝色火焰5”，小小的脑袋中还找不出来什么词汇，只是觉得火帅帅哒，又非常喜欢蓝色。
-      在玩游戏遇到同名的时候就加个5(Wu)用来区别，QQ空间里还留着当时冒险岛的几张截图o(╯□╰)o。</p>
-
+  <p>接触网络的时候用的网名是“蓝色火焰5”，小小的脑袋中还找不出来什么词汇，只是觉得火帅帅哒，又非常喜欢蓝色。
+  在玩游戏遇到同名的时候就加个5(Wu)用来区别，QQ空间里还留着当时冒险岛的几张截图o(╯□╰)o。</p>
 
   <p>
   <img src="/images/about-maplestory1320x200.jpg" title="冒险岛" style="display: inline-block">
-  <img src="/images/about-maplestory2320x200.jpg" title="冰雷3转" style="display: inline-block"></p>
+  <img src="/images/about-maplestory2320x200.jpg" title="冰雷3转" style="display: inline-block">     </p>
 
-    <p>到了初中的时候，亲切的同桌给我找了“昕潇汐月”这个名字，“昕”为初升的太阳，“潇”形容水深而清，“汐”则为夜间的潮水，而自古水月为一家，于是取“月”与“汐”搭配。这个名字是个好名字，但是过于女性化，仍对火情有独钟的我将最后一个字改为“焱”(形容火焰)用来形容自己的矛盾心情。所以至今百度的账号仍为“昕潇汐焱”。</p>
-    <p>高中的时候开始接触MMORPG，作为一个正常的男性当然喜欢看萌妹的背影！因此我用的角色基本上都为女性，取名上也就考虑使用女性网名。在当时刚接触“東方Project”(作者Zun<a href="http://www16.big.or.jp/~zun/">主页</a>)系列的th12.5作，<a href="http://www.tasofro.net/touhou123/">東方非想天則</a>。自己的主机为"Alice Margatroid"(副机是小野塚小町)，加上经常被叫"小明"这个中文里极其常见的名字，所以昵称就选用英文里极其常见的Alice，依旧附上中二的DeviL为前缀形成DeviLAlice这个名字。当用多个角色的时候就用LittleAlice等xxxAlice。</p>
-
+  <p>到了初中的时候，亲切的同桌给我找了“昕潇汐月”这个名字，“昕”为初升的太阳，“潇”形容水深而清，“汐”则为夜间的潮水，而自古水月为一家，于是取“月”与“汐”搭配。这个名字是个好名字，但是过于女性化，仍对火情有独钟的我将最后一个字改为“焱”(形容火焰)用来形容自己的矛盾心情。所以至今百度的账号仍为“昕潇汐焱”。</p>
+  <p>高中的时候开始接触MMORPG，作为一个正常的男性当然喜欢看萌妹的背影！因此我用的角色基本上都为女性，取名上也就考虑使用女性网名。在当时刚接触“東方Project”(作者Zun<a href="http://www16.big.or.jp/~zun/">主页</a>)系列的th12.5作，<a href="http://www.tasofro.net/touhou123/">東方非想天則</a>。自己的主机为"Alice Margatroid"(副机是小野塚小町)，加上经常被叫"小明"这个中文里极其常见的名字，所以昵称就选用英文里极其常见的Alice，依旧附上中二的DeviL为前缀形成DeviLAlice这个名字。当用多个角色的时候就用LittleAlice等xxxAlice。</p>
 
   <p><img src="/images/about-alice320x200.jpg" title="Alice Margatroid" style="display: inline-block" >
   <img src="/images/about-komachi320x200.jpg" title="小野塚小町" style="display: inline-block"></p>
 
-    <p>本科的时候发现有的时候需要使用男性名，恰逢当时在玩SilentHill，Silent又与"无语Wuyu"近义，于是就以SilentMing作为个人使用的昵称，而SilentAlice用做虚拟形象的昵称，重复的时候亦会使用Silentの尛明。</p>
-
+  <p>本科的时候发现有的时候需要使用男性名，恰逢当时在玩SilentHill，Silent又与"无语Wuyu"近义，于是就以SilentMing作为个人使用的昵称，而SilentAlice用做虚拟形象的昵称，重复的时候亦会使用Silentの尛明。</p>
 
   <p>至此便形成了最终的昵称体系╮(╯▽╰)╭</p>
 </div>
@@ -74,16 +75,20 @@ comments: false
   <h3>About Me</h3>
 
   <p>
-  After my departure from Xi'an, I move my stage to the exciting Shanghai, one of the most developed cities in the world.
+  After my departure from Xi'an, I finished my master degree in Shanghai. Currently, I am working in Huawei.
   With so many things to do and so much knowledge to learn, I sincerely welcome any advice, questions and critics.&hellip;
   </p>
 
   <p> This is my blog recording some notes, ideas and diaries. The blog is mainly written in Chinese anyway. 
   You can find my resume in ***LinkedIn*** and my coming illustrations in ***Pixiv***.</p> 
+  
   <p> For any questions, please contact me via <a href="mailto:yumingwu233@gmail.com">yumingwu233@gmail.com</a>. English, Chinese and Japanses are all OK.</p>
 
-  <h3>Study</h3>
-  <p>Currently, I am a master candidate and am studying at <a href="http://ipads.se.sjtu.edu.cn/">Institute of Parallel and Distributed Systems (IPADS)</a>, Shanghai Jiao Tong University. I major in virtualization and system securities. My advisor is <a href="http://ipads.se.sjtu.edu.cn/doku.php?id=pub:members:haibo_chen">Haibo Chen</a>. I finished my bachelor degree of engineering (Software Engineering) and arts (Japanese) in Xi'an Jiaotong University. (These two universities spell "Jiaotong" in different ways)
+  <h3>Experience</h3>
+  
+  <p>Currently, I am working as  an operating system engineer at Huawei(Shanghai). I finished my master in software engineering from  <a href="http://ipads.se.sjtu.edu.cn/">Institute of Parallel and Distributed Systems (IPADS)</a>, Shanghai Jiao Tong University. I major in virtualization and system securities and my advisor is <a href="http://ipads.se.sjtu.edu.cn/doku.php?id=pub:members:haibo_chen">Haibo Chen</a>. </p>
+  <p>
+  My bachelor degrees of  engineering (Software Engineering) and arts (Japanese) are completed in Xi'an Jiaotong University. (These two universities spell "Jiaotong" in different ways)
   </p>
 
   <h3>Tech Otaku</h3>
