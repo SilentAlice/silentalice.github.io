@@ -92,7 +92,7 @@ Wait, see what we found. The contents of PML4[258] has the same physical address
 
 From the question, it seems that this can faciliate the locating of a PTE from VA but how and why? (In this post I will use l4pt-l1pt instead of pgd, pud, pmd and pt)
 
-###Page Table Walking
+### Page Table Walking
 
 In development, we may want to change a data page to be readonly. Traditionally, you will get a 48-bit VA (The high 16-bit will always be 1 or 0 according to AMD specification).
 We will devide 48-bit VA in this way:
@@ -123,7 +123,7 @@ Each level PT is a 4K page saving 64-bit info \* 512 entries.
 
 While current OS supporting max 52-bit physical address, the higher/most 16 bits of 64-bit info is reserved for future hardware/software using (63-bit is used as NX, non-executable on some hardware). And lower 52-bit will store the physical address of next level PT. As physical memory is also devided into 4K page, the least 12 bits will always be zero for one page. That's why we can use least 12bits to store flags.
 
-###Linear Page Table
+### Linear Page Table
 
 Now we want to set one **data page** as readonly (We can only control them in page granularity), meaning that we need to change R/W flag of L1PTE that pointing to this data page. Then, the address of this L1PT is needed.
 
@@ -157,11 +157,11 @@ So walk this PTE will give you infinite loop of it self. Take the example in Xen
 
 |---------------------- 48-bit Virtual Address ------------------------|
 |- 258/0x102 -|--- 9 bit ---|--- 9 bit ---|--- 9 bit ---|--- 12 bit ---|
-|--L4 offset--|--L4 offset--|--L3 offset--|--L2 offset--|--- 12 bit ---|
+|--L4 offset--|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset:000--|
 ```
 
 Because offset<sub>4</sub> 258 will bring you into L4PT again instead of L3PT, **you will use next 9-bit seg as L4 offset to walk L4PT again**. <br>
-Eventually, you will have no extra 9-bit to walk L1PT and stop at L2PTE which saves PA of L1PTE(PA<sub>1</sub>).
+Eventually, you will have no extra 9-bit to walk L1PT and stop at L2PTE which saves PA of L1PT(PA<sub>1</sub>).
 
 !!! The PA<sub>1</sub> is gotten ?! We made so much effort and walk the 4-level so many times...
 
@@ -172,19 +172,21 @@ So, let's constuct the new VA: I will use 49-19 to note each 9-bit seg in VA.
 ```c
 /* Original VA: */
 |------------------------ 48-bit Virtual Address --------------------------|
-|--- 49 bit ---|--- 39 bit ---|--- 29 bit ---|--- 19 bit ---|--- 12 bit ---|
+|--  9 bits ---|--- 9 bits ---|--- 9 bits ---|--- 9 bits ---|--- 12 bits --|
+|--- 47:39  ---|--- 38:30  ---|--- 29:21  ---|--- 20: 12 ---|---- 11:0 ----|
+|-- L4 offset--|-- L3 offset--|-- L2 offset--|-- L1 offset--|-- PA offset--|
 
 /* Constructed new VA of L1PTE: */
-|- 258/0x102 --|--- 49 bit ---|--- 39 bit ---|--- 29 bit ---|- 19 bit 000 -|
+|- 258/0x102 --|--L4 offset --|--L3 offset --|--L2 offset --|L1 offset 000 |
 
 /* Similarly, VA of L2PTE: */
-|- 258/0x102 --|- 258/0x102 --|--- 49 bit ---|--- 39 bit ---|- 29 bit 000 -|
+|- 258/0x102 --|- 258/0x102 --|--L4 offset --|--L3 offset --|L2 offset 000 |
 
 /* VA of L3PTE: */
-|- 258/0x102 --|- 258/0x102 --|- 258/0x102 --|--- 49 bit ---|- 39 bit 000 -|
+|- 258/0x102 --|- 258/0x102 --|- 258/0x102 --|--L4 offset --|L3 offset 000 |
 
 /* VA of L4PTE: */
-|- 258/0x102 --|- 258/0x102 --|- 258/0x102 --|- 258/0x102 --|- 49 bit 000 -|
+|- 258/0x102 --|- 258/0x102 --|- 258/0x102 --|- 258/0x102 --|L4 offset 000 |
 ```
 
 The least 12-bit, we can append 9-bit three zero. Because each 64-bit info entry is 8 bytes (so we need 3 zero) and with such sugar, we can locate each level of PTE and any VA as we want.
@@ -213,6 +215,10 @@ pte_t * fun(vaddr_t vaddr, unsigned lv)
 }
 ```
 
-###End
+### End
 
 This is better to be used in full 4-level page walking. Be careful when use this trick for PSE page (which will not go througn full 4-level page walking). 
+
+### ChangeLog
+
+- 2018-06-27: Refine the desciption of constructed virtual address

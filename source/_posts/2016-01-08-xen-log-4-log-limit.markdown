@@ -71,7 +71,7 @@ If you have seen the patch of XSA-152 etc, you will find that they replace `prin
 
 **PS**: `__LINE__` and `__FILE__` is predefined macro which can show line nubmer and file name.
 
-There are some **[Standard Predefined Macro](https://gcc.gnu.org/onlinedocs/gcc-3.1/cpp/Standard-Predefined-Macros.html)**s in GCC, You can see the full defination.
+There are some **[Standard Predefined Macro](https://gcc.gnu.org/onlinedocs/gcc-3.1/cpp/Standard-Predefined-Macros.html)**s in GCC, You can see the full definition.
 
 XENLOG_GUEST is a macro `#define XENLOG_GUEST   "<G>"`, and `current` is a macro can get current vCPU. It seems that this macro didn't add any rate limitation in printk. So, I send email to the discoverer [Jan Beulich of SUSE](https://www.linkedin.com/in/jbeulich). Although this is not a good way :) and I am criticized for sending such a private e-mail and less effort on this question :(. Normally, you can seed email to **xen-devel@lists.xen.org** :). You can see the full mailing-list descripton [here](http://www.xenproject.org/help/mailing-list.html).
 

@@ -1,0 +1,283 @@
+---
+title: ARM Device Tree 1 - PCIe
+comments: true
+date: 2018-06-20 09:42:01
+tags:
+- linux
+- tutorial
+keywords: ARM, dtb, device tree, linux, tutorial, silentming, PCI, PCIe, interrupt
+---
+
+续上文[《ARM Device Tree 0》](https://silentming.net/blog/2018/06/19/arm-device-tree-0/), 本篇看一下中断部分和一些Device Tree的相关总结。
+
+<!-- more -->
+
+## Overview
+
+```sh foundation-v8.dsti https://github.com/96boards-hikey/linux/blob/hikey960-v4.9/arch/arm64/boot/dts/arm/foundation-v8.dtsi
+/ {
+    model = "Foundation-v8A";
+    compatible = "arm,foundation-aarch64", "arm,vexpress";
+    interrupt-parent = <&gic>;
+
+    #address-cells = <2>;
+    #size-cells = <2>;
+
+    smb@08000000 {
+        compatible = "arm,vexpress,v2m-p1", "simple-bus";
+        arm,v2m-memory-map = "rs1";
+        #address-cells = <2>; /* SMB chipselect number and offset */
+        #size-cells = <1>;
+
+        ranges = <0 0 0 0x08000000 0x04000000>,
+               <1 0 0 0x14000000 0x04000000>,
+               <2 0 0 0x18000000 0x04000000>,
+               <3 0 0 0x1c000000 0x04000000>,
+               <4 0 0 0x0c000000 0x04000000>,
+               <5 0 0 0x10000000 0x04000000>;
+
+        #interrupt-cells = <1>;
+        interrupt-map-mask = <0 0 63>;
+        interrupt-map = <0 0  0 &gic 0 0 0  0 4>,
+            <0 0  1 &gic 0 0 0  1 4>,
+            <0 0  2 &gic 0 0 0  2 4>,
+            <0 0  3 &gic 0 0 0  3 4>,
+            <0 0  4 &gic 0 0 0  4 4>,
+            ...
+            <0 0 42 &gic 0 0 0 42 4>;
+
+        ethernet@2,02000000 {
+            compatible = "smsc,lan91c111";
+            reg = <2 0x02000000 0x10000>;
+            interrupts = <15>;
+        };
+        ...
+    };
+    ...
+
+    /* In foundation-v8.dst */
+    gic: interrupt-controller@2c001000 {
+        compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+        #interrupt-cells = <3>;
+        #address-cells = <2>;
+        interrupt-controller;
+        reg = <0x0 0x2c001000 0 0x1000>,
+            <0x0 0x2c002000 0 0x2000>,
+            <0x0 0x2c004000 0 0x2000>,
+            <0x0 0x2c006000 0 0x2000>;
+        interrupts = <1 9 0xf04>;
+    };
+};
+```
+
+我们再来看一次SMBus的内容，这次我们主要看中断映射部分。
+SMB并不是中断控制器，
+我们可以发现，在SMB上的设备只用一个中断cell, 比如ethernet@2, 
+02000000的`interrupts = <15>`. 这个中断需要被映射到GIC上的中断，这里就需要用`interrupt-map`。
+
+Interrupt 的模型也同样是一个树形结构，子节点有自己的中断空间(Interrupt Space)，
+如果需要把子节点的中断空间与父节点的联系起来，与地址空间类似，
+中断也就需要映射。Interrupt-map描述的是一种接线的规则，
+或者中断路由的规则(子设备的中断如何均衡地发给中断控制器).
+
+具有`interrupt-map`的结点必须也同时定义`#interrupt-cells`，
+`#interrupt-cells`定义了子节点的`interrupts`要用几个cell来描述。
+如果需要`interrupt-map`但是没有发现这个属性，那么映射被认为是1:1的映射。
+
+
+`interrupt-map-mask`会对**unit interrupt specifier**进行Mask后再进行map的映射，
+**unit interrupt specifier**顾名思义，就是子节点的地址`child-unit-address`+中断说明`interrupt specifier`
+
+
+`interrupt-map`里面数据项的格式一般为: 
+
+|`child-unit-address`| `child-interrupt-specifier`| `interrupt-parent` | `parent-unit-address`| `parent-interrupt-specifier`|
+|:---|:---|:---|:---|:---|
+|`0 0`|`1`|`&gic`|`0 0`| `0 1 4`|
+|`0 0`|`2`|`&gic`|`0 0`| `0 2 4`|
+|`0 0`|`3`|`&gic`|`0 0`| `0 3 4`|
+|...|
+|`0 0`|`42`|`&gic`|`0 0`| `0 42 4`|
+
+- `child-unit-address`: 0 0, 这个是12行的`#address-cells = <2>`决定
+- `child-interrupt-specifier`: 1, 这个是22行的 `#interrupt-cells = <1>`决定
+- `interrupt-parent`: &gic, 这个的值就是phandle, smb继承自4行root指定的`interrupt-parent = <&gic>`
+- `parent-unit-address`: `0 0`, 这个是45行GIC的`#address-cells = <2>`决定
+- `parent-interrupt-specifier`: `0 1 4`, 由root下第44行， GIC中的`#interrupt-cells = <3>`决定
+
+现在我们再次看ethernet@2,02000000的15号中断，通过interrupt-map我们知道，
+smb下设备的地址和gic中的地址没有区别, `interrupt-map-mask`为`<0 0 63>` or `<0 0 0x002f>`.
+也就是最大支持64个`child-interrupt-specifier`, 其中15号中断会被映射为GIC的`<0 15 4>`,
+也就是SPI的15号，flag为*active high level-sensitive*. 
+
+### ARM GIC
+
+```sh foundation-v8.dts https://github.com/96boards-hikey/linux/blob/hikey960-v4.9/arch/arm64/boot/dts/arm/foundation-v8.dts
+/ {
+	gic: interrupt-controller@2c001000 {
+		compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+		#interrupt-cells = <3>;
+		#address-cells = <2>;
+		interrupt-controller;
+		reg = <0x0 0x2c001000 0 0x1000>,
+		      <0x0 0x2c002000 0 0x2000>,
+		      <0x0 0x2c004000 0 0x2000>,
+		      <0x0 0x2c006000 0 0x2000>;
+		interrupts = <1 9 0xf04>;
+	};
+};
+```
+
+从Linux中[ARM GIC的文档](https://elixir.bootlin.com/linux/v4.2/source/Documentation/devicetree/bindings/arm/gic.txt)我们可以知道，
+第一个reg区域是`GIC distributor`的基址和大小，第二个区域是`GIC cpu interface register`的基址和大小, 后面两个区域和interrupts又表示什么呢？
+
+interrupts有两种情况可以出现，第一个是作为二级GIC, 那么其自身会将中断连到上一个GIC上，也就需要指明自己的中断；
+第二种就是支持虚拟化的primary gic，**GIC virtualization extensions (VGIC)**.
+第三个区域`<0x0 0x2c004000 0 0x2000>`就是GIC virtual interface control register 的基址和大小；
+第四个区域是GIC `virtual cpu interface register` 的基址和大小, 
+virtual cpu interface使得GIC能在不退出guest的情况下发送IRQ ACKs 和 EOIs，从而减少VMExit。<br>
+
+`interrupts`则指定了VGIC maintenance interrupt的中断号，
+在ARM [GIC-400](http://infocenter.arm.com/help/topic/com.arm.doc.ddi0471a/DDI0471A_gic400_r0p0_trm.pdf)(2.3.2 PPIs)的文档中: 
+> This is a configurable event generated by the corresponding virtual CPU interface to
+> indicate a situation that might require hypervisor action.
+
+说明了当vGIC需要Hypervisor的处理时会注入这个中断，从而产生下陷(VMExit)，之后Hypervisor就可以进行处理。
+关于vGIC的用法如果有机会了我之后再虚拟化的相关文章中再介绍，本文不再赘述。
+
+## PCI(e)
+
+现在我们再来看看设备中的一大类PCI(Peripheral Component Interconnect)设备，
+现在新的是PCI-e, 这类设备都会接到PCI-e总线上，
+而设备的地址也更加复杂。
+
+```sh hi3660.dsti https://github.com/96boards-hikey/linux/blob/hikey960-v4.9/arch/arm64/boot/dts/hisilicon/hi3660.dtsi
+/ {
+	compatible = "hisilicon,hi3660";
+	interrupt-parent = <&gic>;
+	#address-cells = <2>;
+	#size-cells = <2>;
+    ...
+    soc {
+        compatible = "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+        ...
+        pcie@f4000000 {
+			compatible = "hisilicon,kirin960-pcie";
+			reg = <0x0 0xf4000000 0x0 0x1000>,
+			      <0x0 0xff3fe000 0x0 0x1000>,
+			      <0x0 0xf3f20000 0x0 0x40000>,
+			      <0x0 0xf5000000 0x0 0x2000>;
+			reg-names = "dbi", "apb", "phy", "config";
+			bus-range = <0x0  0x1>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			ranges = <0x02000000 0x0 0x00000000
+				  0x0 0xf6000000
+				  0x0 0x02000000>;
+			num-lanes = <1>;
+			#interrupt-cells = <1>;
+			interrupt-map-mask = <0xf800 0 0 7>;
+			interrupt-map = <0x0 0 0 1
+					 &gic GIC_SPI 282 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 2
+					 &gic GIC_SPI 283 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 3
+					 &gic GIC_SPI 284 IRQ_TYPE_LEVEL_HIGH>,
+					<0x0 0 0 4
+					 &gic GIC_SPI 285 IRQ_TYPE_LEVEL_HIGH>;
+                     ...
+			reset-gpios = <&gpio11 1 0 >;
+		};
+    };
+};
+```
+
+foundation上没有pcie, 所以我们看看hikey960上的pcie。
+从compatible可以知道这是hisilicon的kirin960-pcie, 所以我们可以从linux的源码里面找到它的文档:
+[designware-pcie.txt](https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/pci/designware-pcie.txt),
+[kirin-pcie.txt](https://github.com/Xilinx/linux-xlnx/blob/master/Documentation/devicetree/bindings/pci/kirin-pcie.txt)(kirin-pcie是基于上面设计的).
+
+- `reg`就是配置的物理地址
+- `reg-names`: 
+ - `dbi`: controller configuration registers;
+ - `apb`: apb Ctrl register defined by Kirin;
+ - `phy`: apb PHY register defined by Kirin;
+ - `config`: PCIe configuration space registers.
+- `reset-gpios`: The GPIO to generate PCIe PERST# assert and deassert signal.
+- `num-lanes:` number of lanes to use (this property should be specified unless
+  the link is brought already up in BIOS)
+- `clocks`: Must contain an entry for each entry in clock-names.
+	See ../clocks/clock-bindings.txt for details.
+- `clock-names`: Must include the following entries:
+	- `pcie`
+	- `pcie_bus`
+
+上面这些是PCIe里面新增或者比较特殊的一些property, 从binding的文档可以很简单看出来这些用法，
+我们主要看看PCI-e的地址映射。
+
+### PCI-e Address Mapping
+
+pice总线都是被唯一标记的，总线号通过`bus-range`暴露出来，
+第一个cell记录的是这条总线被分配的总线号， 第二个cell是它下属PCI总线的最大总线号。
+
+pcie也同样具有自己的地址空间，类似的使用`range`, `#address-cells`和`#size-cells`,
+`ranges = <0x02000000 0x0 0x00000000 0x0 0xf6000000 0x0 0x02000000>;`
+这里的问题在于，为什么PCI-e使用3个cell来描述子节点的地址，外部的地址空间(64-bit)是正常的2个cell.
+
+PCI-e的子节点地址分为三个部分: 
+- `phys.hi:  npt000ss bbbbbbbb dddddfff rrrrrrrr`
+- `phys.mid: hhhhhhhh hhhhhhhh hhhhhhhh hhhhhhhh` 
+- `phys.low: llllllll llllllll llllllll llllllll`
+
+PCI-e地址总长为64位，地址是在phys.mid与phys.low里面，而phys.hi中的bit则有着特殊的意义:
+- `n`: is 0 if the address is relocatable, 1 otherwise (doesn't play a role here)
+- `p`: is 1 if prefetchable (cacheable) region flag
+- `t`: is 1 if the address is aliased (for non-relocatable I/O), below 1 MB (for Memory), or below 64 KB (for relocatable I/O)
+- `ss`: space code
+ - `00`: configuration space
+ - `01`: I/O space
+ - `10`: 32 bit memory space
+ - `11`: 64 bit memory space
+- `bbbbbbbb`: The PCI bus number. PCI may be structured hierarchically. So we may have PCI/PCI bridges which will define sub busses.
+- `ddddd`: The device number, typically associated with IDSEL signal connections.
+- `fff`: The function number. Used for multifunction PCI devices.
+- `rrrrrrrr`: Register number; used for configuration cycles.
+
+所以我们的range `0x0200_0000`表示`ss`为`10`，我们的PCI-e有一个32-bit的 non-prefetchabled,大小为32MB的地址空间`0x0000_0000`-`0x01FF_FFFF`
+将被映射到`0xf600_0000 - 0xf7FF_FFFF`这段内存区域。Kernel会找到pci，并将相关的详细数据解读出来。
+
+关于地址这部分，`ss`会影响phys.hi里面的其他位的含义，具体的可以参考文档[PCI Bus Binding to: IEEE Std 1275-1994 Standard for Boot (Initialization Configuration) Firmware, v2.1](https://www.openfirmware.info/data/docs/bus.pci.pdf)。
+
+**PCI-e DMA Address Translation**
+
+如果PCI-e支持DMA (Direct Memory Access)的话，还会有一个类似与`dma-ranges = <0x02000000 0 0x00000000 0x80000000 0 0x20000000>`property.
+这个是告诉系统PCI-e会认为PCIe地址空间中大小为512MB，从0x0000\_0000开始的地址空间会被映射到主存0x8000\_0000的地方，`ss`为`02`表示这是一段32-bit的内存。
+
+**Interrupt**
+
+在PCI-e这边的中断，我们发现`interrupt-map-mask`多了一个cell, 这也是因为PCI-e这边的`#address-cells`为3的原因，
+剩余的内容和上面的类似，就不再赘述了。
+
+**PCI-e Devices**
+
+配置PCI-e上的设备不能像直接挂在root下设备一样被CPU直接访问，
+而是统一通过PCI-e的Configuration Space (最后一个reg region)进行配置。
+`phys.hi`中的device-num、function-number等等就可以用上了;
+从这个`phys.hi`的格式我们可以知道，每个PCI-e可以支持最多256 buses * 32devices * 8 functions,
+找一个设备使用其Bus, Device, Function (BDF)就可以唯一确定，
+
+关于PCI-e or PCI设备的访问和配置，[wiki](https://en.wikipedia.org/wiki/PCI_configuration_space)上有更详细的介绍。
+
+
+## Reference List
+
+- [Devicetree Specification v0.1](https://www.devicetree.org/downloads/devicetree-specification-v0.1-20160524.pdf)
+- [The Devicetree Specification](https://www.devicetree.org/specifications/)
+- [Open Firmware: Interrupt Mapping version 0.5](https://www.devicetree.org/open-firmware/proposals/Attachments/321att.pdf)
+- [CoreLink GIC-400 Generic Interrupt Controller revision:r0p0](http://infocenter.arm.com/help/topic/com.arm.doc.ddi0471a/DDI0471A_gic400_r0p0_trm.pdf)
+- [PCI Bus Binding to: IEEE Std 1275-1994 Standard for Boot (Initialization Configuration) Firmware, v2.1](https://www.openfirmware.info/data/docs/bus.pci.pdf)
+- [PCI configuration space](https://en.wikipedia.org/wiki/PCI_configuration_space)
