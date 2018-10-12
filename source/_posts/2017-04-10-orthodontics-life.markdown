@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[连载中]牙套日记"
-date: 2018-06-24 20:27:04 +0800
+date: 2018-09-16 20:27:04 +0800
 comments: false
 tags: essay
 keywords: orthodontics, pain
@@ -13,6 +13,21 @@ keywords: orthodontics, pain
 **2017-04-10 - Present**
 
 <!-- more -->
+
+# 2018-09-16
+
+医生姐姐感觉我的牙缝并没有缩小...发了包橡皮筋继续带，不知道什么时候能把缝收起来了o(╯□╰)o...
+
+# 2018-08-04
+
+终于不用带平导了！进入收缝阶段，现在改成给我一包橡皮筋自己每天每天换了，橡皮筋一般极限是大半天，基本上大半天后吃饭的时候就会断掉，我一般是晚上睡觉前统一换。
+
+<p><img src="/images/2018/20180804teeth20.jpg" style="display: inline-block; height: 120px;">
+<img src="/images/2018/20180804teeth21.jpg" style="display: inline-block; height: 120px;">
+<img src="/images/2018/20180804teeth22.jpg" style="display: inline-block; height: 120px;"></p>
+
+{% img /images/2018/20180804teeth23.jpg %}
+
 
 # 2018-06-24
 
@@ -28,7 +43,6 @@ keywords: orthodontics, pain
 
 <p><img src="/images/2018/20180403teeth18.jpg" style="display: inline-block; height: 120px;">
 <img src="/images/2018/20180403teeth19.jpg" style="display: inline-block; height: 120px;"></p>
-
 
 # 2018-03-05
 
