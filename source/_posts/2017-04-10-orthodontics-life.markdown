@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[连载中]牙套日记"
-date: 2018-09-16 20:27:04 +0800
+date: 2018-12-01 20:27:04 +0800
 comments: false
 tags: essay
 keywords: orthodontics, pain
@@ -13,6 +13,17 @@ keywords: orthodontics, pain
 **2017-04-10 - Present**
 
 <!-- more -->
+
+# 2018-12-01
+
+换个橡皮筋，上下门牙中线不太齐，加了弹簧一起拉，和之前的照片差不多，就不放图啦~
+
+# 2018-10-21
+
+现在基本上就是收缝阶段，长期带橡皮筋，这里放一张暂时的收缝效果，这个也是最终的阶段了，收完缝如果有没对齐的对齐下就完工啦！
+
+<p><img src="/images/2018/20181021teeth24.jpg" style="display: inline-block; height: 120px;">
+<img src="/images/2018/20181021teeth25.jpg" style="display: inline-block; height: 120px;"></p>
 
 # 2018-09-16
 
