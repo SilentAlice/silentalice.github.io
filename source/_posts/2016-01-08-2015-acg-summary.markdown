@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2015追番总结"
+title: "2015 追番总结"
 date: 2016-01-08 19:08:57 +0800
 comments: true
 tags: ACG
