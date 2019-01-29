@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://silentming.net/"/>
-  <updated>2019-01-29T16:09:31.584Z</updated>
+  <updated>2019-01-29T16:09:31.710Z</updated>
   <id>http://silentming.net/</id>
   
   <author>
@@ -15,32 +15,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>(DesignWare 8250) UART Driver</title>
-    <link href="http://silentming.net/blog/2019/01/16/uart/"/>
-    <id>http://silentming.net/blog/2019/01/16/uart/</id>
-    <published>2019-01-16T06:58:22.000Z</published>
-    <updated>2019-01-29T16:09:31.584Z</updated>
-    
-    <content type="html"><![CDATA[<p>工作中遇到了UART的编写，UART算是一个比较简单和经典的驱动了，之前调试的时候也用过，最简单版本的只需要一个TX(Transmit)传输口和RX(Receive)接受口再加个电源就可以直接工作，而软件处理逻辑则都需要我们驱动来完成。本篇就以 DesignWare标准的 8250 UART为例，简单介绍一个串口的驱动。</p><p>本文参考了: <a href="https://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf" target="_blank" rel="noopener">DesignWare DW_apb_uart Databook</a>官方手册。</p><a id="more"></a><h2 id="Basic-Info"><a href="#Basic-Info" class="headerlink" title="Basic Info"></a>Basic Info</h2><p>对于需要编写功能全备的驱动开发人员来说，手册和Linux源码已经足够参考，也没必要看这篇简陋的新手向文章，所以本篇主要介绍的是:1)UART涉及到的常用寄存器与2)最简单功能的驱动代码。</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;工作中遇到了UART的编写，UART算是一个比较简单和经典的驱动了，之前调试的时候也用过，
-最简单版本的只需要一个TX(Transmit)传输口和RX(Receive)接受口再加个电源就可以直接工作，
-而软件处理逻辑则都需要我们驱动来完成。本篇就以 DesignWare标准的 8250 UART为例，
-简单介绍一个串口的驱动。&lt;/p&gt;
-&lt;p&gt;本文参考了: &lt;a href=&quot;https://linux-sunxi.org/images/d/d2/Dw_apb_uart_db.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;DesignWare DW_apb_uart Databook&lt;/a&gt;官方手册。&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="tutorial" scheme="http://silentming.net/tags/tutorial/"/>
-    
-      <category term="linux" scheme="http://silentming.net/tags/linux/"/>
-    
-  </entry>
   
   <entry>
     <title>2018 追番总结</title>
@@ -455,6 +429,28 @@
     
     
       <category term="essay" scheme="http://silentming.net/tags/essay/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>KVM Log 4-kgdb KVM on Hikey960 (ARM64)</title>
+    <link href="http://silentming.net/blog/2017/08/16/kvm-log-4-debug-kvm/"/>
+    <id>http://silentming.net/blog/2017/08/16/kvm-log-4-debug-kvm/</id>
+    <published>2017-08-16T14:44:28.000Z</published>
+    <updated>2018-04-07T13:42:45.954Z</updated>
+    
+    <content type="html"><![CDATA[<p>kvm因为是和qemu一起跑的，想必网上搜出来的都是用QEMU-gdb去调试kernel, 本文记录的则是利用kgdb调试kvm module, 利用gdb调试qemu-kvm, 这样就能够在串口调试的基础上更方便的追踪程序的执行流了。</p><a id="more"></a><h1 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h1><p>我用的是Hikey960的板子，里面有4个Cortex-A73和4个Cortex-A53的核，ARMv8, aarch64的架构。QEMU用的4.10.2</p><h1 id="Run-qemu-KVM"><a href="#Run-qemu-KVM" class="headerlink" title="Run qemu-KVM"></a>Run qemu-KVM</h1><p>需要注意的是目前Cortex-A73还没有被支持，所以直接跑的话如果vcpu被调度到A73的核上那么是会崩的, qemu会报不支持的cpu类型，所以我们要用<code>taskset</code>来指定线程被调度的核(0-3是A53, 4-7是A73)</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taskset -c 0-3 qemu-system-aarch64 -m 1024 -M virt -cpu cortex-a53 -smp 4 -bios <span class="string">"bios.fd"</span> -nographic -device -virtio-blk-device,drive-image -drive <span class="keyword">if</span>=none,id=image,file=<span class="string">"disk.img"</span> -<span class="built_in">enable</span>-kvm</span><br></pre></td></tr></table></figure><h1 id="Debug-QEMU-kvm"><a href="#Debug-QEMU-kvm" class="headerlink" title="Debug QEMU-kvm"></a>Debug QEMU-kvm</h1><p>首先我们要下载qemu的源码并编译，之后只要正常用gdb调试程序一样即可，不过依旧要注意的是使用<code>taskset</code>来绑定核:</p><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taskset -c 0 gdb --args qemu-system-aarch64 -m 1024 -M virt -cpu cortex-a53 -smp 4 -bios <span class="string">"bios.fd"</span> -nographic -device -virtio-blk-device,drive-image -drive <span class="keyword">if</span>=none,id=image,file=<span class="string">"disk.img"</span> -<span class="built_in">enable</span>-kvm</span><br></pre></td></tr></table></figure><p>这样启动后只要使用<code>run</code>就可以执行qemu-kvm了。</p><h1 id="Remote-kgdb-kvm-module"><a href="#Remote-kgdb-kvm-module" class="headerlink" title="Remote kgdb kvm module"></a>Remote kgdb kvm module</h1><p>与调试Xen遇到的情况一样，由于kvm是Hypervisor，所以不能放到qemu里面去调试，但是与Xen不同的是kvm属于Linux的一个module, 这样我们就可以借助kgdb来调试kvm module部分的代码:</p><p>参考了: <a href="http://blog.chinaunix.net/uid-23366077-id-4711134.html" target="_blank" rel="noopener">Reference</a></p><ul><li>target ARM Board (e.g. Hikey960)</li><li>Host LinuxPC (e.g. Ubuntu)  target is connected to host via <strong>Serial</strong> (e.g. ttyAMA6 of target &lt;—&gt; ttyUSB0 of host)</li></ul><p>在这之前请先保证Host可以通过串口连接target~</p><h3 id="Enable-feature-in-kernel-config"><a href="#Enable-feature-in-kernel-config" class="headerlink" title="Enable feature in kernel config:"></a>Enable feature in kernel config:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CONFIG_KGDB = y</span><br><span class="line">/* Enable kgdb support */</span><br><span class="line"></span><br><span class="line">CONFIG_KGDB_SERIAL_CONSOLE = y</span><br><span class="line">/* Allow serial to debug */</span><br><span class="line"></span><br><span class="line">CONFIG_DEBUG_INFO = y</span><br><span class="line">/* Including debug info */</span><br><span class="line"></span><br><span class="line">CONFIG_FRAME_POINTER = y</span><br><span class="line">/* Using frame pointer to maintain stack for traceback */</span><br><span class="line"></span><br><span class="line">CONFIG_MAGIC_SYSRQ = y</span><br><span class="line">/* We can use echo &quot;g&quot; &gt; /proc/sysrq_trigger to break kernel */</span><br><span class="line"></span><br><span class="line">CONFIG_DEBUG_RODATA = n</span><br><span class="line">/* No readonly data */</span><br><span class="line"></span><br><span class="line">CONFIG_DEBUG_SET_MODULE_RONX = n</span><br><span class="line">/* No readonly kernel code */</span><br></pre></td></tr></table></figure><p>Recompile kernel and reboot targetReinstall kernel modules</p><ul><li>Target</li></ul><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># you can add linux_cmdline arg: kgdbwait kgdboc=ttyAMA6，115200</span></span><br><span class="line"><span class="comment"># to break kernel at startup</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># or using:</span></span><br><span class="line"><span class="built_in">echo</span> ttyAMA6 &gt; /sys/module/kgdboc/parameters/kgdboc</span><br><span class="line"></span><br><span class="line"><span class="comment"># then break kernel:</span></span><br><span class="line"><span class="built_in">echo</span> g &gt; /proc/sysrq-trigger</span><br></pre></td></tr></table></figure><p>我的板子用kgdbwait并没有什么效果..所以最后还是用了<code>sysrq-trigger</code>的方法来暂停kernel</p><ul><li>Host</li></ul><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apt-get install gdb-multiarch</span><br><span class="line"></span><br><span class="line">gdb-multiarch vmlinux (cross-comiled)</span><br><span class="line"><span class="comment">#(gdb) set_remotebdevaud 115200</span></span><br><span class="line">(gdb) target remote /dev/ttyAMA6</span><br><span class="line"></span><br><span class="line">remote debugging using /dev/ttyS0</span><br></pre></td></tr></table></figure><h3 id="Remote-Cross-debugging-pogram"><a href="#Remote-Cross-debugging-pogram" class="headerlink" title="Remote Cross-debugging pogram"></a>Remote Cross-debugging pogram</h3><p>You need to ensure target can connect to host via <strong>Network</strong></p><ul><li>Target</li></ul><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdbserver :port ./program args</span><br></pre></td></tr></table></figure><ul><li>Host</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb-multiarch ./program (cross-compiled)</span><br><span class="line">(gdb) target remote target_IP:port</span><br></pre></td></tr></table></figure><p>之后只要在Host上使用对应的gdb命令就可以调试运行在target上的Kernel(kvm module)了.</p><p>めでたしめでたし~</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;kvm因为是和qemu一起跑的，想必网上搜出来的都是用QEMU-gdb去调试kernel, 本文记录的则是利用kgdb调试kvm module, 利用gdb调试qemu-kvm, 这样就能够在串口调试的基础上更方便的追踪程序的执行流了。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="linux" scheme="http://silentming.net/tags/linux/"/>
+    
+      <category term="virtualization" scheme="http://silentming.net/tags/virtualization/"/>
     
   </entry>
   
