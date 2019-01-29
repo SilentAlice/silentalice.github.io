@@ -64,7 +64,7 @@
 
 
 
-  <meta name="keywords" content="SilentMing, SilentAlice" />
+  <meta name="keywords" content="Xen, debug, serial, virtualization" />
 
 
 
@@ -77,17 +77,22 @@
 
 
 
-<meta name="description" content="Y9PbsTMt7q">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SilentMing&#39;s Gensokyo">
-<meta property="og:url" content="http://silentming.net/baidu_verify_Y9PbsTMt7q.html">
+<meta name="description" content="一开始的时候我们是在虚拟机里面调试Xen的，但是因为Qemu是不能模拟EPT的，所以在虚拟机里面起一个Xen，这个Xen的功能非常受限(不能使用EPT)。而且当时项目在虚拟机里面能跑，一到真机上就跑不了，所以不得不用真机来调，这里记录一下调试Xen的环境搭建。">
+<meta name="keywords" content="Xen, debug, serial, virtualization">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xen Log 5-Debug Xen on Physical Machine">
+<meta property="og:url" content="http://silentming.net/blog/2016/09/18/xen-log-5-debug-xen/index.html">
 <meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
-<meta property="og:description" content="Y9PbsTMt7q">
+<meta property="og:description" content="一开始的时候我们是在虚拟机里面调试Xen的，但是因为Qemu是不能模拟EPT的，所以在虚拟机里面起一个Xen，这个Xen的功能非常受限(不能使用EPT)。而且当时项目在虚拟机里面能跑，一到真机上就跑不了，所以不得不用真机来调，这里记录一下调试Xen的环境搭建。">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-04-07T13:42:45.964Z">
+<meta property="og:image" content="http://silentming.net/images/20160920debugxen1.png">
+<meta property="og:image" content="http://silentming.net/images/20160920debugxen0.png">
+<meta property="og:image" content="http://silentming.net/images/20160920debugxen2.png">
+<meta property="og:updated_time" content="2018-04-07T13:42:45.938Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SilentMing&#39;s Gensokyo">
-<meta name="twitter:description" content="Y9PbsTMt7q">
+<meta name="twitter:title" content="Xen Log 5-Debug Xen on Physical Machine">
+<meta name="twitter:description" content="一开始的时候我们是在虚拟机里面调试Xen的，但是因为Qemu是不能模拟EPT的，所以在虚拟机里面起一个Xen，这个Xen的功能非常受限(不能使用EPT)。而且当时项目在虚拟机里面能跑，一到真机上就跑不了，所以不得不用真机来调，这里记录一下调试Xen的环境搭建。">
+<meta name="twitter:image" content="http://silentming.net/images/20160920debugxen1.png">
 
 
 
@@ -119,7 +124,7 @@
 
 
 
-  <link rel="canonical" href="http://silentming.net/baidu_verify_Y9PbsTMt7q.html"/>
+  <link rel="canonical" href="http://silentming.net/blog/2016/09/18/xen-log-5-debug-xen/"/>
 
 
 
@@ -247,7 +252,6 @@
             
               
                 Tags
-                <span class="badge">11</span>
               
             
 
@@ -264,7 +268,6 @@
             
               
                 Archives
-                <span class="badge">63</span>
               
             
 
@@ -280,7 +283,7 @@
 
             
               
-                gallery
+                Gallery
               
             
 
@@ -697,9 +700,9 @@ var jiathis_config={
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/archives">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">70</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -828,7 +831,7 @@ var jiathis_config={
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

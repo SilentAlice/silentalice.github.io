@@ -64,7 +64,7 @@
 
 
 
-  <meta name="keywords" content="SilentMing, SilentAlice" />
+  <meta name="keywords" content="Xen, Linear Page Table" />
 
 
 
@@ -77,17 +77,20 @@
 
 
 
-<meta name="description" content="Y9PbsTMt7q">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SilentMing&#39;s Gensokyo">
-<meta property="og:url" content="http://silentming.net/baidu_verify_Y9PbsTMt7q.html">
+<meta name="description" content="When you see memory layout of Xen, you may found that there is a range named :Guest Linear Page Table. You can find this in $XEN_DIR/xen/include/include/asm-x86/config.h. So what is the purpose of thi">
+<meta name="keywords" content="Xen, Linear Page Table">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xen Log 7-Linear Page Table">
+<meta property="og:url" content="http://silentming.net/blog/2016/11/30/xen-log-7-guest-linear-page-table/index.html">
 <meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
-<meta property="og:description" content="Y9PbsTMt7q">
+<meta property="og:description" content="When you see memory layout of Xen, you may found that there is a range named :Guest Linear Page Table. You can find this in $XEN_DIR/xen/include/include/asm-x86/config.h. So what is the purpose of thi">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-04-07T13:42:45.964Z">
+<meta property="og:image" content="http://silentming.net/images/20161130pt.png">
+<meta property="og:updated_time" content="2019-01-15T14:53:29.871Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SilentMing&#39;s Gensokyo">
-<meta name="twitter:description" content="Y9PbsTMt7q">
+<meta name="twitter:title" content="Xen Log 7-Linear Page Table">
+<meta name="twitter:description" content="When you see memory layout of Xen, you may found that there is a range named :Guest Linear Page Table. You can find this in $XEN_DIR/xen/include/include/asm-x86/config.h. So what is the purpose of thi">
+<meta name="twitter:image" content="http://silentming.net/images/20161130pt.png">
 
 
 
@@ -119,7 +122,7 @@
 
 
 
-  <link rel="canonical" href="http://silentming.net/baidu_verify_Y9PbsTMt7q.html"/>
+  <link rel="canonical" href="http://silentming.net/blog/2016/11/30/xen-log-7-guest-linear-page-table/"/>
 
 
 
@@ -247,7 +250,6 @@
             
               
                 Tags
-                <span class="badge">11</span>
               
             
 
@@ -264,7 +266,6 @@
             
               
                 Archives
-                <span class="badge">63</span>
               
             
 
@@ -280,7 +281,7 @@
 
             
               
-                gallery
+                Gallery
               
             
 
@@ -444,8 +445,7 @@ So what is the purpose of this range?</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">(XEN) |=========PT Info========|</span><br><span class="line">(XEN) |-------L4: 000000008ce4b000</span><br><span class="line">(XEN)   |------id: 0, L3: 000000008d40d000</span><br><span class="line">(XEN)     |-----id: 0, L2: 000000008d40c000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008ce4c000</span><br><span class="line">(XEN)   |------id: 256, L3: 00000002393b9000</span><br><span class="line">(XEN)     |-----id: 0, L2: 00000002393b7000</span><br><span class="line">(XEN)   |------id: 258, L3: 000000008ce4b000</span><br><span class="line">(XEN)     |-----id: 0, L2: 000000008d40d000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008d40c000</span><br><span class="line">(XEN)     |-----id: 256, L2: 00000002393b9000</span><br><span class="line">(XEN)       |----id: 0, L1: 00000002393b7000</span><br><span class="line">(XEN)     |-----id: 258, L2: 000000008ce4b000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008d40d000</span><br><span class="line">(XEN)       |----id: 256, L1: 00000002393b9000</span><br><span class="line">(XEN)       |----id: 258, L1: 000000008ce4b000</span><br><span class="line">(XEN)       |----id: 261, L1: 000000008ce4a000</span><br><span class="line">(XEN)       |----id: 262, L1: 000000008ce49000</span><br><span class="line">(XEN)     |-----id: 261, L2: 000000008ce4a000</span><br><span class="line">(XEN)       |----id: 0, L1: 00000002393b8000</span><br><span class="line">(XEN)       |----id: 256, L1: 00000002393bb000</span><br><span class="line">(XEN)       |----id: 319, L1: 000000008ce48000</span><br><span class="line">(XEN)       |----id: 320, L1: 00000002393b5000</span><br><span class="line">(XEN)       |----id: 321, L1: 00000002393b6000</span><br><span class="line">(XEN)       |----id: 322, L1: 000000008ce47000</span><br><span class="line">(XEN)       |----id: 384, L1: 000000023cd9e000</span><br><span class="line">(XEN)     |-----id: 262, L2: 000000008ce49000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008ce43000</span><br><span class="line">(XEN)       |----id: 2, L1: 000000008ce45000</span><br><span class="line">(XEN)       |----id: 3, L1: 000000008ce46000</span><br><span class="line">(XEN)       |----id: 4, L1: 000000008f7fd000</span><br><span class="line">(XEN)       |----id: 8, L1: 000000008f7fb000</span><br><span class="line">(XEN)   |------id: 261, L3: 000000008ce4a000</span><br><span class="line">(XEN)     |-----id: 0, L2: 00000002393b8000</span><br><span class="line">(XEN)     |-----id: 256, L2: 00000002393bb000</span><br><span class="line">(XEN)       |----id: 0, L1: 00000002393ba000</span><br><span class="line">(XEN)     |-----id: 319, L2: 000000008ce48000</span><br><span class="line">(XEN)       |----id: 510, L1: 000000008f7fe000</span><br><span class="line">(XEN)       |----id: 511, L1: 000000008d408000</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 <p>Wait, see what we found. The contents of PML4[258] has the same physical address of PML4 itself! (See line: 2, 8, 13, 16) They all have same physical address: 8ce4b000. So when we walk this page table, we will always find PML4 and if we use a recursive function withoud limitation, this will cause stack overflow.</p>
 <p>From the question, it seems that this can faciliate the locating of a PTE from VA but how and why? (In this post I will use l4pt-l1pt instead of pgd, pud, pmd and pt)</p>
-<p>###Page Table Walking</p>
-<p>In development, we may want to change a data page to be readonly. Traditionally, you will get a 48-bit VA (The high 16-bit will always be 1 or 0 according to AMD specification).
+<h3 id="Page-Table-Walking"><a href="#Page-Table-Walking" class="headerlink" title="Page Table Walking"></a>Page Table Walking</h3><p>In development, we may want to change a data page to be readonly. Traditionally, you will get a 48-bit VA (The high 16-bit will always be 1 or 0 according to AMD specification).
 We will devide 48-bit VA in this way:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">|---------------------- <span class="number">48</span>-bit Virtual Address ------------------------|</span><br><span class="line">|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">12</span> bit ---|</span><br><span class="line">|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset--|--- offset ---|</span><br><span class="line"></span><br><span class="line">|------------ offset is used in corresponding PT/Data Page ------------|</span><br><span class="line"></span><br><span class="line">|--- L4 PT ---|--- L3 PT ---|--- L2 PT ---|--- L1 PT ---|- Data Page --|</span><br><span class="line">|<span class="number">64</span>-bit * <span class="number">512</span> |<span class="number">64</span>-bit * <span class="number">512</span> |<span class="number">64</span>-bit * <span class="number">512</span> |<span class="number">64</span>-bit * <span class="number">512</span> |-- <span class="number">4</span>KB Page --|</span><br></pre></td></tr></table></figure>
 <img src="/images/20161130pt.png" width="500" height="300" title="Page Table Walking">
@@ -453,8 +453,7 @@ We will devide 48-bit VA in this way:</p>
 <p>Each level PT is a 4K page saving 64-bit info * 512 entries. </p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Info stored in each level PTE */</span></span><br><span class="line">|------------ <span class="number">64</span>-bit info stored in PTE -----------|</span><br><span class="line">|--- <span class="number">16</span> bit ---|------ <span class="number">40</span> bit ------|--- <span class="number">12</span> bit ---|</span><br><span class="line">|-- reserved --|- PA of next level -|---- flag ----|</span><br></pre></td></tr></table></figure>
 <p>While current OS supporting max 52-bit physical address, the higher/most 16 bits of 64-bit info is reserved for future hardware/software using (63-bit is used as NX, non-executable on some hardware). And lower 52-bit will store the physical address of next level PT. As physical memory is also devided into 4K page, the least 12 bits will always be zero for one page. That’s why we can use least 12bits to store flags.</p>
-<p>###Linear Page Table</p>
-<p>Now we want to set one <strong>data page</strong> as readonly (We can only control them in page granularity), meaning that we need to change R/W flag of L1PTE that pointing to this data page. Then, the address of this L1PT is needed.</p>
+<h3 id="Linear-Page-Table"><a href="#Linear-Page-Table" class="headerlink" title="Linear Page Table"></a>Linear Page Table</h3><p>Now we want to set one <strong>data page</strong> as readonly (We can only control them in page granularity), meaning that we need to change R/W flag of L1PTE that pointing to this data page. Then, the address of this L1PT is needed.</p>
 <p>The intuitive way is using VA of data page to walk PT and stop at L1PTE. And change the flag of L1PTE. So, you need to:</p>
 <ul>
 <li>L4PT->L3PT<ul>
@@ -482,17 +481,19 @@ We will devide 48-bit VA in this way:</p>
 <p>We can find that, to change the flag of this data page, we need to walk 4-level PT 4 times! It’s inefficient. And make every PA to VA, we have to prepare a <strong>Direct Mapping</strong> of all physical memory. Now it is the job of Linear Page Table.</p>
 <p>Linear Page Table is actually one L4PTE, and its 64-bit info saves the PA<sub>4</sub>. (Not PA<sub>3</sub>! but PA<sub>4</sub> which is exactly same with PA stored in CR3).<br>
 So walk this PTE will give you infinite loop of it self. Take the example in Xen (<code>PML[258]</code>). If we have a VA that offset<sub>4</sub> is 258, you will find this:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">|---------------------- <span class="number">48</span>-bit Virtual Address ------------------------|</span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> -|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">12</span> bit ---|</span><br><span class="line">|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset--|--- offset ---|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* L4 offset (PML4[258]) will give you L4PT! ===&gt;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">|---------------------- 48-bit Virtual Address ------------------------|</span></span><br><span class="line"><span class="comment">|- 258/0x102 -|--- 9 bit ---|--- 9 bit ---|--- 9 bit ---|--- 12 bit ---|</span></span><br><span class="line"><span class="comment">|--L4 offset--|--L4 offset--|--L3 offset--|--L2 offset--|--- 12 bit ---|</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">|---------------------- <span class="number">48</span>-bit Virtual Address ------------------------|</span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> -|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">12</span> bit ---|</span><br><span class="line">|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset--|--- offset ---|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* L4 offset (PML4[258]) will give you L4PT! ===&gt;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">|---------------------- 48-bit Virtual Address ------------------------|</span></span><br><span class="line"><span class="comment">|- 258/0x102 -|--- 9 bit ---|--- 9 bit ---|--- 9 bit ---|--- 12 bit ---|</span></span><br><span class="line"><span class="comment">|--L4 offset--|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset:000--|</span></span><br></pre></td></tr></table></figure>
 <p>Because offset<sub>4</sub> 258 will bring you into L4PT again instead of L3PT, <strong>you will use next 9-bit seg as L4 offset to walk L4PT again</strong>. <br>
-Eventually, you will have no extra 9-bit to walk L1PT and stop at L2PTE which saves PA of L1PTE(PA<sub>1</sub>).</p>
+Eventually, you will have no extra 9-bit to walk L1PT and stop at L2PTE which saves PA of L1PT(PA<sub>1</sub>).</p>
 <p>!!! The PA<sub>1</sub> is gotten ?! We made so much effort and walk the 4-level so many times…</p>
 <p>And, you get a bonus. Don’t forget the least 12-bit, the 12-bit is final offset, we can use this to locate the L1PTE we want! And this strange new VA is just the VA of this L1PTE (VA<sub>1</sub>). Just with a special L4PTE, we have saved us from 3-times 4-level PT walking and don’t need to prepare the <strong>Direct Mapping</strong> as well.</p>
 <p>So, let’s constuct the new VA: I will use 49-19 to note each 9-bit seg in VA.</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Original VA: */</span></span><br><span class="line">|------------------------ <span class="number">48</span>-bit Virtual Address --------------------------|</span><br><span class="line">|--- <span class="number">49</span> bit ---|--- <span class="number">39</span> bit ---|--- <span class="number">29</span> bit ---|--- <span class="number">19</span> bit ---|--- <span class="number">12</span> bit ---|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constructed new VA of L1PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|--- <span class="number">49</span> bit ---|--- <span class="number">39</span> bit ---|--- <span class="number">29</span> bit ---|- <span class="number">19</span> bit <span class="number">000</span> -|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Similarly, VA of L2PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|--- <span class="number">49</span> bit ---|--- <span class="number">39</span> bit ---|- <span class="number">29</span> bit <span class="number">000</span> -|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* VA of L3PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|--- <span class="number">49</span> bit ---|- <span class="number">39</span> bit <span class="number">000</span> -|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* VA of L4PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">49</span> bit <span class="number">000</span> -|</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Original VA: */</span></span><br><span class="line">|------------------------ <span class="number">48</span>-bit Virtual Address --------------------------|</span><br><span class="line">|--  <span class="number">9</span> bits ---|--- <span class="number">9</span> bits ---|--- <span class="number">9</span> bits ---|--- <span class="number">9</span> bits ---|--- <span class="number">12</span> bits --|</span><br><span class="line">|--- <span class="number">47</span>:<span class="number">39</span>  ---|--- <span class="number">38</span>:<span class="number">30</span>  ---|--- <span class="number">29</span>:<span class="number">21</span>  ---|--- <span class="number">20</span>: <span class="number">12</span> ---|---- <span class="number">11</span>:<span class="number">0</span> ----|</span><br><span class="line">|-- L4 offset--|-- L3 offset--|-- L2 offset--|-- L1 offset--|-- PA offset--|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constructed new VA of L1PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|--L4 offset --|--L3 offset --|--L2 offset --|L1 offset <span class="number">000</span> |</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Similarly, VA of L2PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|--L4 offset --|--L3 offset --|L2 offset <span class="number">000</span> |</span><br><span class="line"></span><br><span class="line"><span class="comment">/* VA of L3PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|--L4 offset --|L3 offset <span class="number">000</span> |</span><br><span class="line"></span><br><span class="line"><span class="comment">/* VA of L4PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|L4 offset <span class="number">000</span> |</span><br></pre></td></tr></table></figure>
 <p>The least 12-bit, we can append 9-bit three zero. Because each 64-bit info entry is 8 bytes (so we need 3 zero) and with such sugar, we can locate each level of PTE and any VA as we want.</p>
 <figure class="highlight c"><figcaption><span>An Implementation</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LINEAR_PT_OFFSET 258</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> L4_PAGETABLE_SHIFT 39             <span class="comment">/* 12 + 9 * 3 */</span></span></span><br><span class="line"><span class="meta">#typedef unsigned long vaddr_t</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">pte_t</span> * fun(<span class="keyword">vaddr_t</span> vaddr, <span class="keyword">unsigned</span> lv)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">vaddr_t</span> ret = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">uintptr_t</span> offset = LINEAR_PT_OFFSET &lt;&lt; L4_PAGETABLE_SHIFT; </span><br><span class="line">    <span class="keyword">uintptr_t</span> vmask = (<span class="number">1U</span>L &lt;&lt; <span class="number">48</span>) - <span class="number">1</span>;    <span class="comment">/* Most 16 bits are reserved */</span></span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( lv &lt; <span class="number">1</span> || lv &gt; <span class="number">4</span> )</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    ret |= vaddr &amp; (~vmask);              <span class="comment">/* Clear VA, put reserved 16 bits */</span></span><br><span class="line">    vaddr &amp;= vmask;                       <span class="comment">/* Just keep VA */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; lv; i++ )</span><br><span class="line">        ret |= offset &gt;&gt; (i * <span class="number">9</span>);         <span class="comment">/* Construct our new vaddr as above */</span></span><br><span class="line">    ret |= (vaddr &gt;&gt; (<span class="number">9</span> * lv) &gt;&gt; <span class="number">3</span> &lt;&lt; <span class="number">3</span>); <span class="comment">/* Append 3 zero */</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">pte_t</span> *)ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>###End</p>
-<p>This is better to be used in full 4-level page walking. Be careful when use this trick for PSE page (which will not go througn full 4-level page walking). </p>
+<h3 id="End"><a href="#End" class="headerlink" title="End"></a>End</h3><p>This is better to be used in full 4-level page walking. Be careful when use this trick for PSE page (which will not go througn full 4-level page walking). </p>
+<h3 id="ChangeLog"><a href="#ChangeLog" class="headerlink" title="ChangeLog"></a>ChangeLog</h3><ul>
+<li>2018-06-27: Refine the desciption of constructed virtual address</li>
+</ul>
 
       
     </div>
@@ -652,8 +653,17 @@ var jiathis_config={
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -671,9 +681,9 @@ var jiathis_config={
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/archives">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">70</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -775,6 +785,20 @@ var jiathis_config={
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Page-Table-Walking"><span class="nav-text">Page Table Walking</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linear-Page-Table"><span class="nav-text">Linear Page Table</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChangeLog"><span class="nav-text">ChangeLog</span></a></li></ol>
+            
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -788,7 +812,7 @@ var jiathis_config={
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

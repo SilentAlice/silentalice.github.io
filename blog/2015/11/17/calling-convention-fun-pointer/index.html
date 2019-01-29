@@ -64,7 +64,7 @@
 
 
 
-  <meta name="keywords" content="SilentMing, SilentAlice" />
+  <meta name="keywords" content="ICS, Introduction to Computer Systems, 深入理解计算机系统, C, C++, 函数指针, Calling Convention, C#, event, delegate, 委托, 事件, .net, 数组, 指针" />
 
 
 
@@ -77,17 +77,18 @@
 
 
 
-<meta name="description" content="Y9PbsTMt7q">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SilentMing&#39;s Gensokyo">
-<meta property="og:url" content="http://silentming.net/baidu_verify_Y9PbsTMt7q.html">
+<meta name="description" content="这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：https://www.cs.cmu.edu/~213/, 本校的主页：http://ipads.se.sjtu.edu.cn/courses/ics/。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的">
+<meta name="keywords" content="ICS, Introduction to Computer Systems, 深入理解计算机系统, C, C++, 函数指针, Calling Convention, C#, event, delegate, 委托, 事件, .net, 数组, 指针">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Calling Convention&amp;Function Pointer">
+<meta property="og:url" content="http://silentming.net/blog/2015/11/17/calling-convention-fun-pointer/index.html">
 <meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
-<meta property="og:description" content="Y9PbsTMt7q">
+<meta property="og:description" content="这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：https://www.cs.cmu.edu/~213/, 本校的主页：http://ipads.se.sjtu.edu.cn/courses/ics/。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-04-07T13:42:45.964Z">
+<meta property="og:updated_time" content="2018-04-07T13:42:45.931Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SilentMing&#39;s Gensokyo">
-<meta name="twitter:description" content="Y9PbsTMt7q">
+<meta name="twitter:title" content="Calling Convention&amp;Function Pointer">
+<meta name="twitter:description" content="这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：https://www.cs.cmu.edu/~213/, 本校的主页：http://ipads.se.sjtu.edu.cn/courses/ics/。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的">
 
 
 
@@ -119,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://silentming.net/baidu_verify_Y9PbsTMt7q.html"/>
+  <link rel="canonical" href="http://silentming.net/blog/2015/11/17/calling-convention-fun-pointer/"/>
 
 
 
@@ -247,7 +248,6 @@
             
               
                 Tags
-                <span class="badge">11</span>
               
             
 
@@ -264,7 +264,6 @@
             
               
                 Archives
-                <span class="badge">63</span>
               
             
 
@@ -280,7 +279,7 @@
 
             
               
-                gallery
+                Gallery
               
             
 
@@ -752,9 +751,9 @@ var jiathis_config={
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/archives">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">70</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -869,7 +868,7 @@ var jiathis_config={
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

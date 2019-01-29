@@ -64,7 +64,7 @@
 
 
 
-  <meta name="keywords" content="SilentMing, SilentAlice" />
+  <meta name="keywords" content="xen, event channel, linux, irq, interrupt" />
 
 
 
@@ -77,17 +77,18 @@
 
 
 
-<meta name="description" content="Y9PbsTMt7q">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SilentMing&#39;s Gensokyo">
-<meta property="og:url" content="http://silentming.net/baidu_verify_Y9PbsTMt7q.html">
+<meta name="description" content="前一篇我们已经了解了Event Channel是如何被注册和被Hypervisor实现的，本篇将利用kernel module，使用Event Channel进行Guest间的通信。">
+<meta name="keywords" content="xen, event channel, linux, irq, interrupt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xen Log 12-Event Channel Usage">
+<meta property="og:url" content="http://silentming.net/blog/2017/03/01/xen-log-12-using-event-channel/index.html">
 <meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
-<meta property="og:description" content="Y9PbsTMt7q">
+<meta property="og:description" content="前一篇我们已经了解了Event Channel是如何被注册和被Hypervisor实现的，本篇将利用kernel module，使用Event Channel进行Guest间的通信。">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-04-07T13:42:45.964Z">
+<meta property="og:updated_time" content="2018-04-07T13:42:45.946Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SilentMing&#39;s Gensokyo">
-<meta name="twitter:description" content="Y9PbsTMt7q">
+<meta name="twitter:title" content="Xen Log 12-Event Channel Usage">
+<meta name="twitter:description" content="前一篇我们已经了解了Event Channel是如何被注册和被Hypervisor实现的，本篇将利用kernel module，使用Event Channel进行Guest间的通信。">
 
 
 
@@ -119,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://silentming.net/baidu_verify_Y9PbsTMt7q.html"/>
+  <link rel="canonical" href="http://silentming.net/blog/2017/03/01/xen-log-12-using-event-channel/"/>
 
 
 
@@ -247,7 +248,6 @@
             
               
                 Tags
-                <span class="badge">11</span>
               
             
 
@@ -264,7 +264,6 @@
             
               
                 Archives
-                <span class="badge">63</span>
               
             
 
@@ -280,7 +279,7 @@
 
             
               
-                gallery
+                Gallery
               
             
 
@@ -662,9 +661,9 @@ var jiathis_config={
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/archives">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">70</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -793,7 +792,7 @@ var jiathis_config={
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
