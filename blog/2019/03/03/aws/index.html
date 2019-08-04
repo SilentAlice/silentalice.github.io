@@ -87,7 +87,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://silentming.net/images/2019/20190303aws00.jpg">
 <meta property="og:image" content="http://silentming.net/images/2019/20190303aws01.jpg">
-<meta property="og:updated_time" content="2019-03-03T08:20:47.949Z">
+<meta property="og:updated_time" content="2019-03-08T15:40:16.979Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用免费的亚马逊云服务(AWS)">
 <meta name="twitter:description" content="之前一直使用的搬瓦工: https://bandwagonhost.com/, 使用上感觉还不错，但是当vps IPf被封了之后， 需要等待180天才能更换一次IP。 而且其速度并没有非常的快(当然也是因为买的是最便宜的19$/year的套餐)。 听闻Amazon的云服务AWS(Amazon Web Service)可以试用，第一年免费，今天便拿来尝试了一把。 本篇记录了使用Amazon的服务建立">
@@ -452,7 +452,7 @@
 <li>密码需要还有大写字母和数字/符号</li>
 </ul>
 </li>
-<li>登陆进去后进入的就是我们的控制台界面: <a href="https://console.aws.amazon.com/console/home" target="_blank" rel="noopener">https://console.aws.amazon.com/console/home</a> </li>
+<li>登陆进去后进入的就是我们的控制台界面: <a href="https://console.aws.amazon.com/console/home" target="_blank" rel="noopener">https://console.aws.amazon.com/console/home</a></li>
 <li>右上角分别是通知、账户、区域、和支持(Support)，在区域里面选择自己服务器想要申请的区域。
 听说国内用<code>Tokyo</code>东京的比较快。</li>
 <li>在页面中<code>Build a solution</code>中选择<code>Launch a virtual machine</code></li>
@@ -509,7 +509,7 @@ EC2 Dashboard:</p>
 之后就可以通过这个Elastic IP来访问我们的VM。</p>
 </li>
 <li><p>Configure Security Group</p>
-<p>选择<code>Security Groups</code>选项卡，点击我们自己的Security Group, 最下面会显示<code>Description</code>, 
+<p>选择<code>Security Groups</code>选项卡，点击我们自己的Security Group, 最下面会显示<code>Description</code>,
 <code>Inbound</code>, <code>Outbound</code>, <code>Tags</code>。我们需要修改<code>Inbound</code>的安全策略:</p>
 <p>Inbound默认只允许ssh协议的链接通过22号端口访问我们的VM，如果我们想用它作为代理服务器的话，
 还需要添加一个规则, 比如我想用shadowsocks, shadowsocks的链接用的TCP协议: Edit, 选择<code>Custom TCP Rule</code>,
@@ -550,7 +550,7 @@ Port Range 我填一个22334, Source 选择Anywhere。
 <p>使用使用上，感觉连接速度比搬瓦工的更快一些，但是流量上限就没有那么高了，
 而且一个月15GB的流量限制也确实不能干太多事情。
 不过能看出来AWS的易用性非常的高，无论是后续切换Region, 还是更换Key Pair、换IP等等，
-在EC2 Dashboard上面非常显眼的就列出了所有的常用功能。再一次深刻意识到Amazon作为私有云领域的老大，
+在EC2 Dashboard上面非常显眼的就列出了所有的常用功能。再一次深刻意识到Amazon作为公有云领域的老大，
 其技术能力的深厚与用户体验的优化都铸就了它现在巨大的成功。</p>
 
       
@@ -622,6 +622,10 @@ Port Range 我填一个22334, Source 选择Anywhere。
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/08/04/phukey-trip/" rel="prev" title="泰国的明珠——普吉岛之行">
+                泰国的明珠——普吉岛之行 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -739,7 +743,7 @@ var jiathis_config={
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-count">72</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
