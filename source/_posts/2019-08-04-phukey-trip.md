@@ -20,6 +20,8 @@ keywords: phukey, 普吉岛, 旅游, SilentAlice, SilentMing
 普吉是泰国的明星景点，而普吉岛的巴东地区则是普吉最最热闹与繁华地段，巴东海滩亦成为了游客们的打卡必经之地，
 回来的小可爱和我虽筋疲力尽，但也不会忘记这夏日海滩的美丽。
 
+<!-- more -->
+
 <img align="middle" src="https://live.staticflickr.com/65535/48451178871_260ac81df6_o_d.jpg" title="Lovely" style="height:800px;"/>
 
 ### 对国人友好的旅游胜地
