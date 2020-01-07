@@ -64,7 +64,7 @@
 
 
 
-  <meta name="keywords" content="SilentMing, SilentAlice" />
+  <meta name="keywords" content="ARM, dtb, device tree, linux, tutorial, silentming, PCI, PCIe, interrupt" />
 
 
 
@@ -77,17 +77,18 @@
 
 
 
-<meta name="description" content="Y9PbsTMt7q">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SilentMing&#39;s Gensokyo">
-<meta property="og:url" content="http://silentming.net/baidu_verify_Y9PbsTMt7q.html">
+<meta name="description" content="续上文《ARM Device Tree 0》, 本篇看一下中断部分和一些Device Tree的相关总结。">
+<meta name="keywords" content="ARM, dtb, device tree, linux, tutorial, silentming, PCI, PCIe, interrupt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM Device Tree 1 - PCIe">
+<meta property="og:url" content="http://silentming.net/blog/2018/06/20/arm-device-tree-1/index.html">
 <meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
-<meta property="og:description" content="Y9PbsTMt7q">
+<meta property="og:description" content="续上文《ARM Device Tree 0》, 本篇看一下中断部分和一些Device Tree的相关总结。">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-04-07T13:42:45.964Z">
+<meta property="og:updated_time" content="2019-01-15T14:53:29.874Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SilentMing&#39;s Gensokyo">
-<meta name="twitter:description" content="Y9PbsTMt7q">
+<meta name="twitter:title" content="ARM Device Tree 1 - PCIe">
+<meta name="twitter:description" content="续上文《ARM Device Tree 0》, 本篇看一下中断部分和一些Device Tree的相关总结。">
 
 
 
@@ -119,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="http://silentming.net/baidu_verify_Y9PbsTMt7q.html"/>
+  <link rel="canonical" href="http://silentming.net/blog/2018/06/20/arm-device-tree-1/"/>
 
 
 
@@ -791,7 +792,7 @@ var jiathis_config={
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">72</span>
+                    <span class="site-state-item-count">73</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -920,7 +921,7 @@ var jiathis_config={
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
