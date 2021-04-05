@@ -87,7 +87,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://silentming.net/images/2019/20190303aws00.jpg">
 <meta property="og:image" content="http://silentming.net/images/2019/20190303aws01.jpg">
-<meta property="og:updated_time" content="2019-03-08T15:40:16.979Z">
+<meta property="og:updated_time" content="2021-04-05T04:09:23.693Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用免费的亚马逊云服务(AWS)">
 <meta name="twitter:description" content="之前一直使用的搬瓦工: https://bandwagonhost.com/, 使用上感觉还不错，但是当vps IPf被封了之后， 需要等待180天才能更换一次IP。 而且其速度并没有非常的快(当然也是因为买的是最便宜的19$/year的套餐)。 听闻Amazon的云服务AWS(Amazon Web Service)可以试用，第一年免费，今天便拿来尝试了一把。 本篇记录了使用Amazon的服务建立">
@@ -529,20 +529,31 @@ Port Range 我填一个22334, Source 选择Anywhere。
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$uname</span> -a</span><br><span class="line">Linux ip-xxx-xxx-xxx-xxx.ap-northeast-1.compute.internal 4.14.97-90.72.amzn2.x86_64 <span class="comment">#1 SMP Tue Feb 5 20:46:19 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$lscpu</span></span><br><span class="line">Architecture:        x86_64</span><br><span class="line">CPU op-mode(s):      32-bit, 64-bit</span><br><span class="line">Byte Order:          Little Endian</span><br><span class="line">CPU(s):              1</span><br><span class="line">On-line CPU(s) list: 0</span><br><span class="line">Thread(s) per core:  1</span><br><span class="line">Core(s) per socket:  1</span><br><span class="line">Socket(s):           1</span><br><span class="line">NUMA node(s):        1</span><br><span class="line">Vendor ID:           GenuineIntel</span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               63</span><br><span class="line">Model name:          Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz</span><br><span class="line">Stepping:            2</span><br><span class="line">CPU MHz:             2400.224</span><br><span class="line">BogoMIPS:            4800.04</span><br><span class="line">Hypervisor vendor:   Xen</span><br><span class="line">Virtualization <span class="built_in">type</span>: full</span><br><span class="line">L1d cache:           32K</span><br><span class="line">L1i cache:           32K</span><br><span class="line">L2 cache:            256K</span><br><span class="line">L3 cache:            30720K</span><br><span class="line">NUMA node0 CPU(s):   0</span><br><span class="line">Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp</span><br><span class="line">                     lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer</span><br><span class="line">                     aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti fsgsbase bmi1 avx2 smep bmi2 erms invpcid xsaveopt</span><br></pre></td></tr></table></figure>
 <p>可以看到亚马逊的AWS用的是基于Xen的虚拟机监控器，<code>Virtualization type:full</code>, 表明我们是全虚拟化。</p>
 </li>
-<li><p>Install ssserver</p>
-<p>简单瞄两眼后，我们就着手安装自己要的工具吧。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install m2crypto python-setuptools</span><br><span class="line">$ sudo easy_install pip</span><br><span class="line">$ sudo pip install shadowsocks</span><br></pre></td></tr></table></figure>
-<p>这样我们就安好了shadowsocks服务。建立一个配置文件:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/shadowsocks.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># Write following contents</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"><span class="string">"server"</span>:<span class="string">"0.0.0.0"</span>,</span><br><span class="line"><span class="string">"server_port"</span>:22334,</span><br><span class="line"><span class="string">"password"</span>:<span class="string">"your_passwd"</span>,</span><br><span class="line"><span class="string">"timeout"</span>:300,</span><br><span class="line"><span class="string">"method"</span>:<span class="string">"aes-256-cfb"</span>,</span><br><span class="line"><span class="string">"fast_open"</span>:<span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>里面<code>password</code>是连接代理服务时需要输入的密码。里面的<code>server_port</code>记得和
-我们AWS上Security Group里面Inbound配置的内容一致，不然会被AWS拦截下来。</p>
-<p>启动shadowsocks server</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo ssserver -c /etc/shadowsocks.json -d start</span><br><span class="line"><span class="comment"># Stop service: sudo ssserver -d stop</span></span><br><span class="line"><span class="comment"># Restart service: sudo ssserver -c /etc/shadowsocks.json -d restart</span></span><br><span class="line"><span class="comment"># View logs: less /var/log/shadowsocks.log</span></span><br></pre></td></tr></table></figure>
-<p>设置我们的IP table, 不要屏蔽掉22334的包:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -I INPUT -p tcp --dport 22334 -j ACCEPT</span><br></pre></td></tr></table></figure>
-<p>大功造成，剩下的就是常规操作了(Client端的就省略了，相信看到这里的你不可能不会用的)</p>
-</li>
 </ul>
+<h3 id="Install-ssserver"><a href="#Install-ssserver" class="headerlink" title="Install ssserver"></a>Install ssserver</h3><p>  简单瞄两眼后，我们就着手安装自己要的工具吧。</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install m2crypto python-setuptools</span><br><span class="line">$ sudo easy_install pip</span><br><span class="line">$ sudo pip install shadowsocks</span><br></pre></td></tr></table></figure>
+<p>  这里pip可能因为更新导致Amazon的pip版本过老出现错误，我们重新装一个就行~:</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install python37</span><br><span class="line">$ sudo pip3 install shadowsocks</span><br></pre></td></tr></table></figure>
+<p>  这样我们就安好了shadowsocks服务。建立一个配置文件:</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/shadowsocks.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># Write following contents</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"><span class="string">"server"</span>:<span class="string">"0.0.0.0"</span>,</span><br><span class="line"><span class="string">"server_port"</span>:22334,</span><br><span class="line"><span class="string">"password"</span>:<span class="string">"your_passwd"</span>,</span><br><span class="line"><span class="string">"timeout"</span>:300,</span><br><span class="line"><span class="string">"method"</span>:<span class="string">"aes-256-cfb"</span>,</span><br><span class="line"><span class="string">"fast_open"</span>:<span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  里面<code>password</code>是连接代理服务时需要输入的密码。里面的<code>server_port</code>记得和
+  我们AWS上Security Group里面Inbound配置的内容一致，不然会被AWS拦截下来。</p>
+<p>  启动shadowsocks server</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo ssserver -c /etc/shadowsocks.json -d start</span><br><span class="line"><span class="comment"># Stop service: sudo ssserver -d stop</span></span><br><span class="line"><span class="comment"># Restart service: sudo ssserver -c /etc/shadowsocks.json -d restart</span></span><br><span class="line"><span class="comment"># View logs: less /var/log/shadowsocks.log</span></span><br></pre></td></tr></table></figure>
+<p>  设置我们的IP table, 不要屏蔽掉22334的包:</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -I INPUT -p tcp --dport 22334 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>  大功造成，剩下的就是常规操作了(Client端的就省略了，相信看到这里的你不可能不会用的)</p>
+<h3 id="Install-V2ray"><a href="#Install-V2ray" class="headerlink" title="Install V2ray"></a>Install V2ray</h3><p>  ssserver 现在经常会被卡擦掉，V2ray使用的vmess协议似乎更好一些:</p>
+<p>  本地(PC)使用的V2rayN可以生成一个id, 也可以自己打一个，无所谓~
+  这里以 <code>81498305-0be0-4923-a270-df4e490a086b</code>为例</p>
+<p>  可以直接参考官方教程: <code>https://www.v2ray.com/en/welcome/install.html</code> or <code>https://github.com/v2fly/fhs-install-v2ray</code></p>
+<p>  在server端: </p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Install needed tools:</span><br><span class="line">$ sudo yum install -y bind-utils curl</span><br><span class="line"></span><br><span class="line"># Official</span><br><span class="line"># $ curl -Ls https://install.direct/go.sh | sudo bash</span><br><span class="line"></span><br><span class="line"># other methods</span><br><span class="line">$ sudo bash &lt;(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)</span><br></pre></td></tr></table></figure>
+<p>  配置比较简单: <code>https://www.v2ray.com/en/welcome/start.html</code></p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Modify /usr/local/etc/v2ray/config.json</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"inbounds"</span>: [&#123;</span><br><span class="line">    <span class="string">"port"</span>: 11223, // Server port, need to add TCP security policy <span class="keyword">in</span> AWS security group</span><br><span class="line">    <span class="string">"protocol"</span>: <span class="string">"vmess"</span>,</span><br><span class="line">    <span class="string">"settings"</span>: &#123;</span><br><span class="line">      <span class="string">"clients"</span>: [&#123; <span class="string">"id"</span>: <span class="string">"81498305-0be0-4923-a270-df4e490a086b"</span> &#125;] // Same as client</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;],</span><br><span class="line">  <span class="string">"outbounds"</span>: [&#123;</span><br><span class="line">    <span class="string">"protocol"</span>: <span class="string">"freedom"</span>,</span><br><span class="line">    <span class="string">"settings"</span>: &#123;&#125;</span><br><span class="line">  &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  运行！</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/bin/v2ray --config /usr/local/etc/v2ray/config.json &amp;</span><br></pre></td></tr></table></figure>
+<p>  Client端加密选Auto就ok</p>
 <h2 id="End"><a href="#End" class="headerlink" title="End"></a>End</h2><p>代理服务有很多种，比如我之前介绍过的<code>cntlm</code>也可以用，shadowsocks的好处是对包进行了加密,
 你可以用自己设计的协议= =。</p>
 <p>AWS的Free Tier一个月的上下行流量总和为15GB, 超了会扣钱钱，可以在左上方<code>Services-&gt;CloudWatch</code>
@@ -552,6 +563,9 @@ Port Range 我填一个22334, Source 选择Anywhere。
 不过能看出来AWS的易用性非常的高，无论是后续切换Region, 还是更换Key Pair、换IP等等，
 在EC2 Dashboard上面非常显眼的就列出了所有的常用功能。再一次深刻意识到Amazon作为公有云领域的老大，
 其技术能力的深厚与用户体验的优化都铸就了它现在巨大的成功。</p>
+<h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><ul>
+<li>20210405: Update V2ray configuration</li>
+</ul>
 
       
     </div>
@@ -598,9 +612,9 @@ Port Range 我填一个22334, Source 选择Anywhere。
       
         <div class="post-tags">
           
-            <a href="/tags/tutorial/" rel="tag"># tutorial</a>
-          
             <a href="/tags/record/" rel="tag"># record</a>
+          
+            <a href="/tags/tutorial/" rel="tag"># tutorial</a>
           
         </div>
       
@@ -743,7 +757,7 @@ var jiathis_config={
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-count">83</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -853,7 +867,7 @@ var jiathis_config={
             
             
               <div class="post-toc-content">
-                <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preparation"><span class="nav-text">Preparation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apply-a-Instance-Virtual-Machine-VM"><span class="nav-text">Apply a Instance/Virtual Machine (VM)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup-Proxy-Server"><span class="nav-text">Setup Proxy Server</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li></ol>
+                <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preparation"><span class="nav-text">Preparation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apply-a-Instance-Virtual-Machine-VM"><span class="nav-text">Apply a Instance/Virtual Machine (VM)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup-Proxy-Server"><span class="nav-text">Setup Proxy Server</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-ssserver"><span class="nav-text">Install ssserver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-V2ray"><span class="nav-text">Install V2ray</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Note"><span class="nav-text">Note</span></a></li></ol>
             
           </div>
         </section>
@@ -872,7 +886,7 @@ var jiathis_config={
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
