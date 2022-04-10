@@ -354,6 +354,148 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2016/01/08/xen-log-4-log-limit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/blog/2016/01/08/xen-log-4-log-limit/" itemprop="url">Xen Log 4-Log without Rate Limiting</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-01-08T12:05:44+08:00">2016-01-08</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2016/01/08/xen-log-4-log-limit/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="blog/2016/01/08/xen-log-4-log-limit/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>#Xen Log without limiting(2016-01-04)</p>
+<p>In many XSAs (43, 96, 118, 141, 146, 152 and 169 till now), The unlimited logging will cause a DoS attack in Hypervisor.
+<br>The prinkt is not rate limited and detailed info is recorded in lwn : <a href="http://lwn.net/Articles/66091/" target="_blank" rel="noopener">http://lwn.net/Articles/66091/</a></p>
+<p>Printk is log unlimited. If the log message is sent to console and the hypervisor vill have to spend all of its time to scrolling the console frame buffer (Try sudo apt-get install and list all possible results). </p>
+<p>###Question about XSA</p>
+<p>In xen, (XEN/xen/common/xenoprof.c)</p>
+<figure class="highlight c"><figcaption><span>xenoprof.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ret_t</span> do_xenoprof_op(<span class="keyword">int</span> op, XEN_GUEST_HANDLE_PARAM(<span class="keyword">void</span>) arg)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">int</span> ret = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> ( (op &lt; <span class="number">0</span>) || (op &gt; XENOPROF_last_op) )</span><br><span class="line">    &#123;</span><br><span class="line">        printk(<span class="string">"xenoprof: invalid operation %d for domain %d\n"</span>,</span><br><span class="line">               op, current-&gt;domain-&gt;domain_id);</span><br><span class="line">        <span class="keyword">return</span> -EINVAL;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( !NONPRIV_OP(op) &amp;&amp; (current-&gt;domain != xenoprof_primary_profiler) )</span><br><span class="line">    &#123;</span><br><span class="line">        printk(<span class="string">"xenoprof: dom %d denied privileged operation %d\n"</span>,</span><br><span class="line">               current-&gt;domain-&gt;domain_id, op);</span><br><span class="line">        <span class="keyword">return</span> -EPERM;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>do_xenoprof_op is hypercall 31, which can be triggered by DomU. So DomU can cause a DoS of hypervisor.
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/blog/2016/01/08/xen-log-4-log-limit/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2015/12/23/pointer-and-function/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1570,152 +1712,6 @@ A (IP_A), B1(IP_B1), B2(IP_B2)， B1与B2是在同一内网下，B1是该内网�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2015/11/13/manage-octopress-deployment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="SilentMing">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="SilentMing's Gensokyo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/blog/2015/11/13/manage-octopress-deployment/" itemprop="url">Octopress博客(3)-同时部署管理GitCafe和GitHub与CDN加速</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-11-13T23:09:18+08:00">2015-11-13</time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/blog/2015/11/13/manage-octopress-deployment/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="blog/2015/11/13/manage-octopress-deployment/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>#Introduction
-在上一篇中我们已经能够成功应用自己的域名，但是会发现github对于国内的用户访问好像比较慢，而gitcafe对于国外的用户又没有github好，因此本篇将说明如何同时部署博客到github和gitcafe，以及调整域名管理让国内的用户访问gitcafe，国外的用户访问github。最后介绍一个CDN(Content Delivery Network)服务来加速博客的访问。</p>
-<p>#Preparation</p>
-<ul>
-<li><p><a href="https://gitcafe.com" target="_blank" rel="noopener">Gitcafe</a>
-<br>注册Gitcafe账号，并仿照Github建立repository (gitcafe里repository是username，不需要加gitcafe.io)。</p>
-</li>
-<li><p><a href="https://www.cloutflare.com" target="_blank" rel="noopener">Cloudflare</a>
-<br>Cloudflare是一个CDN服务提供商，它能将你的网站的CSS、img、js缓存到世界各地的服务器中，当用户访问时便可以用最近的缓存来加载网页提升访问速度，个人使用的话可以使用它的免费计划。
-<br>我们先注册个账号:)</p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/blog/2015/11/13/manage-octopress-deployment/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1771,7 +1767,7 @@ A (IP_A), B1(IP_B1), B2(IP_B2)， B1与B2是在同一内网下，B1是该内网�
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">84</span>
+                    <span class="site-state-item-count">85</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
