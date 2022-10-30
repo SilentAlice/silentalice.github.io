@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ICS, Introduction to Computer Systems, 深入理解计算机系统, C, C++, 函数指针, Calling Convention, C#, event, delegate, 委托, 事件, .net, 数组, 指针">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：https://www.cs.cmu.edu/~213/, 本校的主页：http://ipads.se.sjtu.edu.cn/courses/ics/。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的">
+<meta name="keywords" content="ICS, Introduction to Computer Systems, 深入理解计算机系统, C, C++, 函数指针, Calling Convention, C#, event, delegate, 委托, 事件, .net, 数组, 指针">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Calling Convention&amp;Function Pointer">
+<meta property="og:url" content="http://silentming.net/blog/2015/11/17/calling-convention-fun-pointer/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：https://www.cs.cmu.edu/~213/, 本校的主页：http://ipads.se.sjtu.edu.cn/courses/ics/。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2022-10-30T13:44:37.777Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Calling Convention&amp;Function Pointer">
+<meta name="twitter:description" content="这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：https://www.cs.cmu.edu/~213/, 本校的主页：http://ipads.se.sjtu.edu.cn/courses/ics/。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2015/11/17/calling-convention-fun-pointer/">
+
+
+
+
+
+  <title>Calling Convention&Function Pointer | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2015/11/17/calling-convention-fun-pointer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Calling Convention&Function Pointer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-11-17T21:54:51+08:00">2015-11-17</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2015/11/17/calling-convention-fun-pointer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2015/11/17/calling-convention-fun-pointer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这一年因为工作原因得以跟着本科生一起学习ICS(Introduction to Computer Systems), ICS原本好像是CMU的课：<a href="https://www.cs.cmu.edu/~213/" target="_blank" rel="noopener">https://www.cs.cmu.edu/~213/</a>, 本校的主页：<a href="http://ipads.se.sjtu.edu.cn/courses/ics/" target="_blank" rel="noopener">http://ipads.se.sjtu.edu.cn/courses/ics/</a>。内容基本上涵盖了我本科时期操作系统、计算机组成与x86汇编的大部分内容，而且由于是一门课，所以很好的把这些内容都串了起来，我也有幸能再次学习和温习一下专业的基础知识。这一系列博文主要总结这次学习中的新的收获和以混淆的点，用来温习和回顾。</p>
+<p>这次总结函数调用的 Calling Convention和C语言的Function Pointer, 本来还想加上Round to Even 和 x86与x86-64种struct, union对齐的，不过因为扯了C#的事件和委托机制，导致内容有点多，就放到下一篇好了。
+<a id="more"></a></p>
+<p>#Calling Convention
+函数调用过程中Registers需要进行保存和恢复，有一些约定来表明哪些寄存器由Caller保存，哪些由Callee保存，编译器会以这种约定来进行编译。约定与ABI(Application Binary Interface)有关</p>
+<p>###ARM</p>
+<p>在ARM中(From <a href="http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042e/IHI0042E_aapcs.pdf" target="_blank" rel="noopener">AAPCS</a> $5.1.1), 这里不记录浮点寄存器。</p>
+<ul>
+<li>r0-r3 are the arguments and scratch registers;<ul>
+<li>r0-r3(a1-a4) 传递arg1-4</li>
+</ul>
+</li>
+<li>r0-r1 are also the result registers<ul>
+<li>r0, r1也用于返回值</li>
+</ul>
+</li>
+<li>r4-r8 are callee-save registers<ul>
+<li>r4-r8(v1-v5)用来存放变量的值</li>
+</ul>
+</li>
+<li>r9 might be a callee-save register or not (on some variants of AAPCS it is a special register)<ul>
+<li>v6/sb(static base),v6就是存放第6个变量，Static Base in PID,/re-entrant/shared-library variants</li>
+</ul>
+</li>
+<li>r10-r11 are callee-save registers<ul>
+<li>r10: v7/sl(stack limit)，在检查栈的限长时使用</li>
+<li>r11: v8/fp(ARM-state frame pointer), 用来存放帧指针，类似于EBP的作用</li>
+</ul>
+</li>
+<li>r12-r15 are special registers<ul>
+<li>r12:ip (Intra-Procedure-call scratch register) new-sb in inter-link-unit calls. Used by compiler code generators as a local code generator temporary register </li>
+<li>r13:sp (Stack Pointer)，类似于ESP的作用</li>
+<li>r14:lr (Link Regiser), scratch register, 用来存放return address</li>
+<li>r15:pc (Program Counter)</li>
+</ul>
+</li>
+</ul>
+<p>###Microsoft x64 Software Conventions</p>
+<p>From <a href="https://msdn.microsoft.com/en-us/library/9z1stfyw.aspx" target="_blank" rel="noopener">Register Usage MSDN</a></p>
+<ul>
+<li>Volatile (Caller-saved)<ul>
+<li>RAX:    return value</li>
+<li>RCX:    1st arg</li>
+<li>RDX:    2nd arg</li>
+<li>R8:    3rd arg</li>
+<li>R9:    4th arg</li>
+<li>R10, R11: used in syscall/sysret instructions</li>
+</ul>
+</li>
+<li>Nonvolatile (Callee-saved)<ul>
+<li>R12:R15, RDI, RSI, RBX</li>
+<li>RBP:    可能作为frame pointer使用</li>
+<li>RSP:    stack pointer</li>
+</ul>
+</li>
+</ul>
+<p>###AMD64</p>
+<p>From <a href="http://www.x86-64.org/documentation/abi.pdf" target="_blank" rel="noopener">System V.application binary interface amd64 architecture processor supplement</a></p>
+<ul>
+<li>Caller-save<ul>
+<li>%rax:    1st return reg; tmp reg</li>
+<li>%rcx:    4th arg</li>
+<li>%rdx:    3rd arg</li>
+<li>%rsi: 2nd arg</li>
+<li>%rdi: 1st arg</li>
+<li>%r8:    5th arg</li>
+<li>%r9:    6th arg</li>
+<li>%r10:    tmp reg; passing function’s static chain pointer(听老大说是函数嵌套时使用)</li>
+<li>%r11: tmp reg</li>
+</ul>
+</li>
+<li>Callee-save<ul>
+<li>%r12-%r15</li>
+<li>%rbx:    有时用作基址指针(Base Pointer)</li>
+<li>%rsp: stack pointer</li>
+<li>%rbp: 有时用作帧指针</li>
+</ul>
+</li>
+</ul>
+<p>其他寄存器可以参考给出的各个链接或手册</p>
+<p>x86的Calling Convention比较简单，就不列出来了。</p>
+<p>#Pointer and Array
+首先看看指针和数组声明：</p>
+<figure class="highlight cpp"><figcaption><span>Pointer & Array</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[];       <span class="comment">// 1D(imension) Array</span></span><br><span class="line"><span class="keyword">int</span> a[][];     <span class="comment">// 2D Array</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> *p;        <span class="comment">// 1L(evel) Pointer p point to int</span></span><br><span class="line"><span class="keyword">int</span> **p;       <span class="comment">// 2L Pointer p point to int *</span></span><br></pre></td></tr></table></figure>
+<p>这是平常会用到的指针和数组的声明，但是int[]和int ** 实际上是不同的。</p>
+<p>比如说下面的声明：</p>
+<figure class="highlight cpp"><figcaption><span>Pointer & Array 2</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *a[];      <span class="comment">// Pointers</span></span><br><span class="line"><span class="keyword">int</span> (*a)[];    <span class="comment">// Pointer a point to an array</span></span><br></pre></td></tr></table></figure>
+<p>第一个是许多的指针，比如我们可以一个含有3个指针的数组：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *a[] = &#123;<span class="literal">NULL</span>, (<span class="keyword">int</span>*)<span class="number">0x80000000</span>, <span class="literal">NULL</span>&#125;;</span><br></pre></td></tr></table></figure>
+<p>第二个是指向数组的指针，我们可以声明一个指向数组a地址的指针p:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[] = &#123;<span class="number">233</span>, <span class="number">123</span>&#125;</span><br><span class="line"><span class="keyword">int</span> (*p)[] = &amp;a;</span><br><span class="line"></span><br><span class="line"><span class="comment">// (*p)[0] is 233</span></span><br><span class="line"><span class="comment">// (*p)[1] is 123</span></span><br></pre></td></tr></table></figure>
+<p>其实总结一下，下面四种声明方式我们都可以当做二级指针来操作：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[][];</span><br><span class="line"><span class="keyword">int</span> ** a;</span><br><span class="line"><span class="keyword">int</span> *a[];</span><br><span class="line"><span class="keyword">int</span> (*a)[];</span><br></pre></td></tr></table></figure>
+<p>之所以会产生这样的区别，在语法上是因为[]的优先级比*高，所以在*a外加不加括号会有区别。而对于编译器，如果是int a[][] 在嵌套循环的时候会进行优化，因为每一行所占的空间是已知的，所以就可以声明行指针与列指针。比如下面的函数在使用-O2优化的时候，就会变成下面的样子。</p>
+<figure class="highlight cpp"><figcaption><span>Optimization of Embedded Loop</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Original Function</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">transpose</span><span class="params">(Marray_t A)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i, j;</span><br><span class="line">	<span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; M; i++ )</span><br><span class="line">	    <span class="keyword">for</span> ( j = <span class="number">0</span>; j &lt; i; j++ ) &#123;</span><br><span class="line">			<span class="keyword">int</span> t = A[i][j];</span><br><span class="line">			A[i][j] = A[j][i];</span><br><span class="line">			A[j][i] = t;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Optimized Function</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">transpose_opt</span><span class="params">(Marray_t A)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i, j;</span><br><span class="line">	<span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; M; i++ ) &#123;</span><br><span class="line">		<span class="keyword">int</span> *Arow = &amp;A[i][<span class="number">0</span>];    <span class="comment">// 第i行的第一个元素的地址</span></span><br><span class="line">		<span class="keyword">int</span> *Acol = &amp;A[<span class="number">0</span>][i];    <span class="comment">// 第0行的第i个元素的地址</span></span><br><span class="line">		<span class="keyword">for</span> ( j = <span class="number">0</span>; j &lt; i; j++ ) &#123;</span><br><span class="line">			<span class="keyword">int</span> t1 = *Acol;      <span class="comment">// 下面Acol += M会把Acol变成第j行的第i个元素</span></span><br><span class="line">			<span class="keyword">int</span> t2 = Arow[j];    <span class="comment">// 第i行的第j个元素</span></span><br><span class="line">			*Acol = t2;</span><br><span class="line">			Arow[j] = t1;</span><br><span class="line">			Acol += M;           <span class="comment">// 等于是 &amp;A[0 + j*M][i]，把Acol变成第j行的第i个元素</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于数组是有边界的，所以这种优化才得以实现。但是在二维指针的情况下就不行了:)</p>
+<p>#Function Pointer
+首先看一组声明：</p>
+<figure class="highlight cpp"><figcaption><span>Declaration</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a;          <span class="comment">// Integer</span></span><br><span class="line"><span class="keyword">int</span> a[<span class="number">10</span>];      <span class="comment">// Integer Array</span></span><br><span class="line"><span class="keyword">int</span> *a;         <span class="comment">// Integer Pointer</span></span><br><span class="line"><span class="keyword">int</span> *a[<span class="number">10</span>];     <span class="comment">// Integer Pointers(array)</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">a</span><span class="params">()</span></span>;        <span class="comment">// Function Declaration(return int)</span></span><br><span class="line"><span class="function"><span class="keyword">int</span>* <span class="title">a</span><span class="params">()</span></span>;       <span class="comment">// Function Declaration(return int*)</span></span><br><span class="line"><span class="keyword">int</span> (*a)()      <span class="comment">// Function Pointer(return int)</span></span><br><span class="line"><span class="keyword">int</span> (*a[<span class="number">10</span>])()  <span class="comment">// Function Pointers(all return int)</span></span><br><span class="line"><span class="keyword">int</span>* (*a[<span class="number">10</span>])()  <span class="comment">// Function Pointers(all return int*)</span></span><br></pre></td></tr></table></figure>
+<p>在记忆的时候，只要记住函数指针的声明需要将*与变量名括起来即可，记忆的形式可以参考普通的指针数组。</p>
+<hr>
+<p><strong>以下内容并没有实际使用的意义</strong>，<a href="#skip">点我跳过</a></p>
+<p>现在我们把前面的数组和指针也放到函数指针数组里面，看看下面的声明:)</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> cons = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> * pcons = &amp;cons;</span><br><span class="line"><span class="keyword">int</span> acons[] = &#123;<span class="number">1</span>&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span>* (*a[<span class="number">10</span>])(<span class="keyword">int</span>, <span class="keyword">int</span>*) </span><br><span class="line"><span class="comment">// Function Pointers (All return int*, args:int, int*) use it ↓</span></span><br><span class="line">pcons = (*a[n])(cons, pcons);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int a(int, int*, int[])[];</span><br><span class="line"><span class="comment">// Funtion a, return int array. use it as ↓</span></span><br><span class="line">cons = a(cons, pcons, acons)[<span class="number">0</span>];</span><br><span class="line">acons = a(cons, pcons, acons);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> (* fun(<span class="keyword">int</span>))[];</span><br><span class="line"><span class="comment">// Function declaration, return pointer pointing to int array, use ↓</span></span><br><span class="line"><span class="keyword">int</span> (*p)[] = fun(cons);</span><br><span class="line">acons = *fun(cons);</span><br><span class="line">cons = (*fun(cons))[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span>* (* fun(<span class="keyword">int</span>))[];</span><br><span class="line"><span class="comment">// Function declaration, return pointer pointing to int* array, use ↓</span></span><br><span class="line">pcons = (* fun(<span class="keyword">int</span>))[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> *(*(*apfun[<span class="number">2</span>])(<span class="keyword">int</span>[], <span class="keyword">int</span>*, <span class="keyword">int</span>))[];</span><br><span class="line"><span class="comment">// Function Pointers, each pointer is a function that </span></span><br><span class="line"><span class="comment">// get int[], int*, int as args,</span></span><br><span class="line"><span class="comment">// return a pointer which points to an array</span></span><br><span class="line"><span class="comment">// The array consists of int* (pointers pointing to int)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// We can use this one like this:</span></span><br><span class="line">cons = *(*(*apfun[<span class="number">2</span>])(acons, pcons, cons))[<span class="number">0</span>];</span><br><span class="line">pcons = (*(*apfun[<span class="number">2</span>])(acons, pcons, cons))[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+<p>看到这里，想必感觉非常蛋疼，简直是非人类啊。其实里面有个原因是C语言中数组是不能用来赋值的，所以不能出现这种情况：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> Array[] = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> a[] = Array; <span class="comment">// Wrong</span></span><br></pre></td></tr></table></figure>
+<p>那么想把数组弄过来怎么办呢？
+<br>于是自然想到传递 &amp;Array,这样就可以声明一个指向数组的指针就好了：↓</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> Array[] = &#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> (*pa)[] = Array;</span><br><span class="line"></span><br><span class="line"><span class="comment">//(*pa)[0] = 1;</span></span><br><span class="line"><span class="comment">//(*pa)[1] = 2;</span></span><br></pre></td></tr></table></figure>
+<p>这样就可以实现数组的传递，当然更简单的方法还是 <code>int *p = Array</code>。所以一般也没人抽风这么用
+<a name="skip"></a>
+<br>在记忆的时候，使用和声明的形式是一致的，所以可以通过使用来理解声明的含义。</p>
+<p>#Usage of Function Pointer(s)
+那么来看看C语言中函数指针的用法：</p>
+<figure class="highlight c"><figcaption><span>function pointer</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Suppose number 1-4 represent cheap food </span></span><br><span class="line"><span class="comment"> * 5+ represent delicious food</span></span><br><span class="line"><span class="comment"> * less than or equal to 0 means no food</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">EatFood</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (i &gt; <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">666</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">JudgeFood</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (i &lt;= <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (i &lt; <span class="number">5</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">60</span>;</span><br><span class="line">	<span class="keyword">else</span> </span><br><span class="line">		<span class="keyword">return</span> <span class="number">100</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">People_t</span>  &#123;</span></span><br><span class="line">	<span class="keyword">char</span> *strName;</span><br><span class="line">	<span class="keyword">int</span> (*eat)(<span class="keyword">int</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* Initialization */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">People_t</span> <span class="title">customer</span> = </span></span><br><span class="line"><span class="class">	&#123;</span> “Alice”, EatFood &#125;</span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">People_t</span> <span class="title">gourmet</span> =</span></span><br><span class="line"><span class="class">	&#123;</span> “Ming”, JudgeFood &#125;</span><br><span class="line"></span><br><span class="line">	customer.eat(<span class="number">1</span>); <span class="comment">/* return 666 */</span></span><br><span class="line">	gourmet.eat(<span class="number">4</span>);	 <span class="comment">/* return 60 */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种形式就非常像面向对象编程了，所以在C语言里面可以通过使用函数指针来达到OO(Object Oriented)编程的目的。</p>
+<p>那么再看看函数指针数组的使用：</p>
+<figure class="highlight c"><figcaption><span>Function Pointers Array</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Add another defination Food Provider*/</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Provider_t</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> (*gave[<span class="number">2</span>])(<span class="keyword">int</span>);</span><br><span class="line">&#125; provider;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Register</span><span class="params">(struct Provider_t *p1, struct People_t *p2, <span class="keyword">int</span> index)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	p1-&gt;gave[index] = p2-&gt;eat;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	Register(&amp;provider, &amp;customer, <span class="number">0</span>);</span><br><span class="line">	Register(&amp;provider, &amp;gourmet, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">	provider.gave[<span class="number">0</span>](<span class="number">10</span>);</span><br><span class="line">	provider.gave[<span class="number">1</span>](<span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Register表明有人向Provider注册信息，要求provider提供食物给他们。对于Provider来说，他只用关心有多少人注册了，等到有新货来的时候就给所有注册者分发食物。
+而具体的注册者会根据自己的函数定义实现不同的行为。</p>
+<p>如果写过C#的delegate的话，会发现有点相似点，事件的发起人会获得接受者的函数指针，并在出现时间时调用这些函数。</p>
+<p>不过真正的delegate不但可以引用静态函数，还可以引用非静态成员函数(C语言因为没有成员所以也不存在这种函数);delegate是面向对象、类型安全的。由于C本身并不是面向对象语言，而且也不存在class这种东西，所以他们的区别还是非常好理解的。而刚才介绍的C函数指针的用法实际上也是为了借鉴OO编程的思想而已。</p>
+<p>现在看看C#中Delegate的用法：</p>
+<figure class="highlight plain"><figcaption><span>Delegate Example1</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public class DelegateTest &#123;</span><br><span class="line">	// 声明delegate对象</span><br><span class="line">	public delegate void AliceDelegate(int a, int b);</span><br><span class="line"></span><br><span class="line">	// 实际执行的函数</span><br><span class="line">	public static void AliceDo(int a, int b)</span><br><span class="line">	&#123;</span><br><span class="line">		Console.WriteLine((a+b).ToString()+&quot;Alice do something&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void Main()</span><br><span class="line">	&#123;</span><br><span class="line">		// 创建delegate对象：</span><br><span class="line">		AliceDelegate ad = </span><br><span class="line">			// 这里传进去AliceDo的函数地址</span><br><span class="line">			new AliceDelegate(DelegateTest.AliceDo);</span><br><span class="line">		</span><br><span class="line">		// 执行ad, 通过ad实际上执行的是AliceDo函数</span><br><span class="line">		ad(1,2);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>是不是觉得和函数指针的感觉很像？</p>
+<figure class="highlight plain"><figcaption><span>Delegate Example2</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public delegate void AliceDelegate(int i);</span><br><span class="line">public class Program</span><br><span class="line">&#123;</span><br><span class="line">	public static void Main()</span><br><span class="line">	&#123;</span><br><span class="line">		// 创建delegate</span><br><span class="line">		ReceiveAliceDelegateArgsFunc(new AliceDelegate(AliceDo));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void ReceiveAliceDelegateArgsFunc(AliceDelegate func)</span><br><span class="line">	&#123;</span><br><span class="line">		func(666);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// 实际执行的函数</span><br><span class="line">	public static void AliceDo(int i)</span><br><span class="line">	&#123;</span><br><span class="line">		System.Console.WriteLine(&quot;Get A: &#123;0&#125;&quot;, i);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当要发出一个消息的时候，ReceiveAliceDelegateArgsFunc就会被执行，它会调用拿到的delegate，而delegate实际上代表的函数AliceDo则是在new AliceDelegate(AliceDo)的时候传给AliceDelegate的。</p>
+<p>delegate支持+=，可以将许多函数交给这个委托，这一点就和函数指针数组很像了。</p>
+<p>.Net中的event事件其实也是一种具有特殊签名的delegate，因为实际在实现的时候如果真的是发送了一些消息给接受者，那只有当接受者被激活或者被调度器调度到的时候才能知道自己收到了一个消息，这样就无法立即响应这个消息。所以在实现的时候还是需要由消息的发起者主动去调用这些函数。</p>
+<p>来看看OnClick的实现：
+<figure class="highlight plain"><figcaption><span>OnClick</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">public class ButtonClickArgs : EventArgs</span><br><span class="line">&#123;</span><br><span class="line">	// 参数可以由我们定义，获得Clicker的信息</span><br><span class="line">	public string Clicker;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class AliceButton</span><br><span class="line">&#123;</span><br><span class="line">	// 定义一个委托</span><br><span class="line">	public delegate void ClickHandler(object sender, ButtonClickArgs e);</span><br><span class="line"></span><br><span class="line">	// 定义事件，类型就是上面的委托</span><br><span class="line">	public event ClickHandler OnClick;</span><br><span class="line"></span><br><span class="line">	public void Click()</span><br><span class="line">	&#123;</span><br><span class="line">		// 触发Click事件，传入Clicker信息</span><br><span class="line">		OnClick(this, new ButtonClickArgs() &#123; Clicker = &quot;Alice&quot; &#125;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Program</span><br><span class="line">&#123;</span><br><span class="line">	public static void Main()</span><br><span class="line">	&#123;</span><br><span class="line">		AliceButton btn = new AliceButton();</span><br><span class="line"></span><br><span class="line">		// 注册事件， 把btn_OnClick压入事件队列</span><br><span class="line">		// 这里btn_OnClick就是实际执行的函数</span><br><span class="line">		btn.OnClick += new AliceButton.ClickHandler(btn_OnClick);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void btn_OnClick(object sender, ButtonClickArgs e)</span><br><span class="line">	&#123;</span><br><span class="line">		Console.WriteLine(&quot;Alice be clicked&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在Program执行过程中，我们点击了AliceButton，这时就触发了btn里的Click()函数
+<br>在Click()函数中，调用了OnClick并传入sender和Arg
+<br>OnClick是个事件，而其本身类型是ClickHandler委托类型的事件。所以OnClick可以看做一个函数指针变量(类型为ClickHandler的这种类型)。
+<br>而在Program中，通过注册事件:
+<br><code>btn.Onclick += new AliceButton.ClickHander(btn_OnClick)</code>
+<br>可以看做声明了一个函数指针(类型为ClickHandler的这种类型)，并把这个函数指针赋给event Onclick。
+<br>ClickHandler这种类型就是返回值为void，参数为object和ButtonClickArgs的函数类型
+<br>所以调用btn.OnClick的时候，等于就调用了btn_OnClick()这一实际执行的函数。</p>
+<p>我想现在应该能理解函数指针和C#中的event了吧。关于event的说明，参考了<a href="http://www.cnblogs.com/zhangchenliang/archive/2012/09/19/2694430.html" target="_blank" rel="noopener">这篇博文</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/programming/" rel="tag"># programming</a>
+          
+            <a href="/tags/note/" rel="tag"># note</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2015/11/16/add-chinese-in-english-debian/" rel="next" title="在英文版Debian/Ubuntu中添加中文拼音(双拼)输入法">
+                <i class="fa fa-chevron-left"></i> 在英文版Debian/Ubuntu中添加中文拼音(双拼)输入法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2015/11/23/compile-qemu-in-linux-x86/" rel="prev" title="在x64linux下编译Qemu">
+                在x64linux下编译Qemu <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2015/11/17/calling-convention-fun-pointer/';
+          this.page.identifier = 'blog/2015/11/17/calling-convention-fun-pointer/';
+          this.page.title = 'Calling Convention&Function Pointer';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

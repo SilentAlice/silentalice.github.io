@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Xen, Grant Table">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="本篇是为了解Grant Table这一共享内存机制。之前的项目中心在Memory上，不过关于内存的部分带我的大哥在Xen的启动之内存相关实现和Xen的内存布局中已经比较详细的说明了。在之后的工作中由于要用到I/O的相关部分，所以先探究一下Grant Table，为之后的I/O的章节做个基础准备。">
+<meta name="keywords" content="Xen, Grant Table">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xen Log 8-Grant Table">
+<meta property="og:url" content="http://silentming.net/blog/2016/12/26/xen-log-8-grant-table/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="本篇是为了解Grant Table这一共享内存机制。之前的项目中心在Memory上，不过关于内存的部分带我的大哥在Xen的启动之内存相关实现和Xen的内存布局中已经比较详细的说明了。在之后的工作中由于要用到I/O的相关部分，所以先探究一下Grant Table，为之后的I/O的章节做个基础准备。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://farm1.staticflickr.com/270/31817428581_bf80f18f8d_o_d.png">
+<meta property="og:image" content="https://farm1.staticflickr.com/275/31561008440_95d6fc3b82_o_d.png">
+<meta property="og:image" content="https://farm1.staticflickr.com/641/31786684502_62f56faf37_o_d.png">
+<meta property="og:image" content="https://farm1.staticflickr.com/342/31933900005_50079d313e_o_d.png">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xen Log 8-Grant Table">
+<meta name="twitter:description" content="本篇是为了解Grant Table这一共享内存机制。之前的项目中心在Memory上，不过关于内存的部分带我的大哥在Xen的启动之内存相关实现和Xen的内存布局中已经比较详细的说明了。在之后的工作中由于要用到I/O的相关部分，所以先探究一下Grant Table，为之后的I/O的章节做个基础准备。">
+<meta name="twitter:image" content="https://farm1.staticflickr.com/270/31817428581_bf80f18f8d_o_d.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2016/12/26/xen-log-8-grant-table/">
+
+
+
+
+
+  <title>Xen Log 8-Grant Table | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2016/12/26/xen-log-8-grant-table/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Xen Log 8-Grant Table</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-26T15:17:57+08:00">2016-12-26</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2016/12/26/xen-log-8-grant-table/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2016/12/26/xen-log-8-grant-table/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇是为了解Grant Table这一共享内存机制。之前的项目中心在Memory上，不过关于内存的部分带我的大哥在<a href="http://ytliu.info/blog/2015/07/30/xende-qi-dong-zhi-nei-cun-xiang-guan-shi-xian/" target="_blank" rel="noopener">Xen的启动之内存相关实现</a>和<a href="http://ytliu.info/blog/2015/07/28/xende-nei-cun-bu-ju/" target="_blank" rel="noopener">Xen的内存布局</a>中已经比较详细的说明了。在之后的工作中由于要用到I/O的相关部分，所以先探究一下Grant Table，为之后的I/O的章节做个基础准备。</p>
+<a id="more"></a>
+<p>I/O部分暂定为以下部分:</p>
+<ol>
+<li><strong>Grant Table (本篇)</strong></li>
+<li><a href="http://silentming.net/blog/2016/12/28/xen-log-9-io-ring/">I/O Ring Structure</a></li>
+<li><a href="http://silentming.net/blog/2017/02/20/xen-log-10-event-channel/">Event Channel Implementation</a></li>
+<li><a href="http://silentming.net/blog/2017/03/01/xen-log-12-using-event-channel/">Event Channel Usage</a></li>
+<li><a href="http://silentming.net/blog/2017/03/02/xen-log-13-xenstore/">XenStore Usage</a></li>
+<li><a href="http://silentming.net/blog/2017/03/20/xen-log-14-pv-driver/">Write a PV Driver</a></li>
+<li><a href="http://silentming.net/blog/2017/03/21/xen-log-15-xenbus/">Connect to XenBus</a></li>
+</ol>
+<p>在虚拟化环境中，Hypervisor往往要提供内存共享机制以便Dom之间进行交流，而Grant table就是为此而创作的。</p>
+<h1 id="Grant-Table"><a href="#Grant-Table" class="headerlink" title="Grant Table"></a>Grant Table</h1><p>Xen的内存共享基于页粒度，一次共享的就是一个页，一个DomU可以把自己的一部分内存分享给别人，而其他人则通过<strong>Grant Reference</strong>来获取到这个页，GrantRef可以视为一个整数或者Key来获取到其他Dom共享的页</p>
+<p>Xen通过提供<code>grant_table_op</code>一系列hypercall以供DomU使用来实现内存共享。 不同的操作可能需要用到不同的结构体，都定义在<code>$XENDIR/xen/include/public/grant_table.h</code><br> 
+每一个Dom都有自己的Grant Table, 这个Table是在Xen Tools 建立(build)dom的时候为Guest创建的，并且和Xen共享以提供给Xen”Granted Page”被赋予了什么样的权限等信息。而Table中的各项就是使用Grant Reference来进行索引。目前Xen只支持一个Dom有最多一个Grant Table。</p>
+<p>Guest在启动的时候通过调Hypercall 使用setup op让xen把初始化后的Grant Table映射给Guest使用。 Linux里面在<a href="http://lxr.free-electrons.com/source/drivers/xen/grant-table.c" target="_blank" rel="noopener">$DIR/drivers/xen/grant_table.c</a>让Xen进行映射。</p>
+<figure class="highlight c"><figcaption><span>grant_table.h</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* [XEN]: Filled by Xen, [GST]: Filled by Guest */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">uint32_t</span> <span class="keyword">grant_ref_t</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">grant_entry_v1</span> &#123;</span></span><br><span class="line">    <span class="comment">/* GTF_xxx: various type and flag information.  [XEN,GST] */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> flags;</span><br><span class="line">    <span class="comment">/* The domain being granted foreign privileges. [GST] */</span></span><br><span class="line">    <span class="keyword">domid_t</span>  domid;</span><br><span class="line">    <span class="comment">/* GTF_permit_access: Frame that @domid is allowed to map and access. [GST]</span></span><br><span class="line"><span class="comment">     * GTF_accept_transfer: Frame whose ownership transferred by @domid. [XEN]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> frame;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment">Flag:  16bit |----- 7bit -----| 1 | 1 | 1 | 1 | 1 | 1 | 1 |   2   |</span></span><br><span class="line"><span class="comment">             |---------------- Sub Flags -----------------| Types |</span></span><br><span class="line"><span class="comment">             |----Reserved----|SUB|PAT|PCD|PWT| W | R |RO |PERMITS|</span></span><br><span class="line"><span class="comment">             |--------------Reserved- ------------|CMT|CPT| TRANS |</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>我们可以发现，grant_ref类型就是个无符号整型。Grant_Table中的entry就如上，<code>flags</code>里面是定义这个grant frame的各种类型、权限等，<code>domid</code>是接受者的ID, <code>frame</code>则根据flag中的信息不同，有不同含义，不过都是这个grantRef对应的页。</p>
+<p>而根据Type的不同，sub_flags中的bit也表达不同的含义:</p>
+<ul>
+<li>0-Invalid: 这个entry不给予任何权限</li>
+<li>1-Permit Access(PERMITS): 允许@domid访问或映射这个@frame</li>
+<li>2-Accept Transfer(TRANS) : 允许@domid将页的拥有者转移给当前dom, 此时frame由Xen填写</li>
+<li>3-Transitive            : 允许@domid访问给予的部分页，但不允许映射 (v2)</li>
+</ul>
+<p>Sub_flags在Type为Permit Access时:  W/R/RO 分别定义写、读和只读权限，PAT/PCD/PWT则是定义cache类型的(和控制页表的entry里的语义一样, Page Attribute Table Index, Page Cache Disable, Page Write Through, 这里不赘述…), Sub_page (SUB)则是限制@domid的访问范围(v2)<br>
+当Type为Accept Transfer时transfer_commited(CMT)表示当前的Frame正在转移拥有者，这时Guest不能对这个Frame进行任何修改，只有当状态变为transfer_completed(CPT)表示frame已经的拥有者已经转移完毕时Guest才能开始正式使用这个frame。</p>
+<p>因此通过查这张表，Xen就能知道当前的DomU能对这些Grant Ref做什么样的操作了。</p>
+<h3 id="Grant-Table-OPs"><a href="#Grant-Table-OPs" class="headerlink" title="Grant Table OPs"></a>Grant Table OPs</h3><p>Grant Table上可以进行两种操作：Mapping 和 Transfer。Mapping 会将Grant Ref这一Page映射到自己的地址空间内，接收方收到后也将这个Page映射到自己的地址空间，则建立了一个共享页；而Transfer则是将自己的一个Page交给别人，用于传输数据给其他的Dom或者用于Dom0分发空闲页给DomU(balloon driver)</p>
+<figure class="highlight c"><figcaption><span>grant_table.h</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* enum neg_errnoval</span></span><br><span class="line"><span class="comment"> * HYPERVISOR_grant_table_op(enum grant_table_op cmd, void *args, unsigned int count)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @args points to an array of a per-command data structure.</span></span><br><span class="line"><span class="comment"> * The array has @count members (struct gnttab_*)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_map_grant_ref        0 <span class="comment">/* 映射一个ref */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_unmap_grant_ref      1 <span class="comment">/* 取消ref的映射 */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_setup_table          2 <span class="comment">/* 建立grant table */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_dump_table           3 <span class="comment">/* 导出grant table到console, 仅用于debug */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_transfer             4 <span class="comment">/* 移交一个页 */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_copy                 5 <span class="comment">/* 拷贝一些页/gref对应的页 */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_query_size           6 <span class="comment">/* 查询grant table的当前/最大大小 */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> GNTTABOP_unmap_and_replace    7 <span class="comment">/* 撤销对gref的映射，并替换为其他的映射 */</span></span></span><br></pre></td></tr></table></figure>
+<p>传给Hypercall的操作有上面这些，其中在map操作执行后，会返回一个handle(一个记录当前映射的整型), 在unmap的时候需要传入对应的handle以及HPA(Host Physical Address)并将原来的映射替换为映射到新的Machine Address (可以是Null)。</p>
+<h1 id="Grant-Table-Version"><a href="#Grant-Table-Version" class="headerlink" title="Grant Table Version"></a>Grant Table Version</h1><p>Xen在3.0之后加入了Grant Table Version 2 (v2), 对1进行了一些扩展，在Version 2中有更多的操作和更细粒度的控制(比如transitive access, 让接受者只能访问部分页而非全部页，并且要求接受者不能映射到这个页，只能通过拷贝数据的方式读取其中的数据)等等。也相应的增加了一些其他的操作和种类。不过v2是向后兼容的，所以做的事情都是一样的。</p>
+<p>一个dom在启动的时候会设置好自己使用的是哪个版本的grant table，一旦设置后在运行期间该dom中的所有grant table都必须为这一版本。上面介绍的也是以比较简单的v1版本为准。</p>
+<h1 id="Map-amp-Transfer-a-Page-Frame"><a href="#Map-amp-Transfer-a-Page-Frame" class="headerlink" title="Map &amp; Transfer a Page Frame"></a>Map &amp; Transfer a Page Frame</h1><p>很显然我们最关心的是如何共享或移交一个page给另一个dom。这里就着重看一下Mapping 和 Transfer。</p>
+<h4 id="Mapping"><a href="#Mapping" class="headerlink" title="Mapping"></a>Mapping</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">gnttab_map_grant_ref</span> &#123;</span></span><br><span class="line">    <span class="comment">/* IN parameters. */</span></span><br><span class="line">    <span class="keyword">uint64_t</span> host_addr;</span><br><span class="line">    <span class="keyword">uint32_t</span> flags;               <span class="comment">/* GNTMAP_* */</span></span><br><span class="line">    <span class="keyword">grant_ref_t</span> ref;</span><br><span class="line">    <span class="keyword">domid_t</span>  dom;</span><br><span class="line">    <span class="comment">/* OUT parameters. */</span></span><br><span class="line">    <span class="keyword">int16_t</span>  status;              <span class="comment">/* =&gt; enum grant_status */</span></span><br><span class="line">    <span class="keyword">grant_handle_t</span> handle;</span><br><span class="line">    <span class="keyword">uint64_t</span> dev_bus_addr;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在前面已经介绍了，每个操作都对应有自己相应的结构体类型作为参数，map_grant_ref的结构体如上，<code>dom</code>:ref的来源；<code>flags</code>会描述如何map这个页:</p>
+<ul>
+<li>GNTMAP_device_map: page会被I/O设备使用，如果系统使用了IOMMU，那么就会在IO地址空间中加入新的映射。相应的，dev_bus_addr就会被填上对应的IO地址作为返回值。</li>
+<li>GNTMAP_host_map: page会被映射到调用者的地址空间中</li>
+<li>GNTMAP_application_map: 在host_map被set的情况下，如果这个flag也被set，那么就可以ring3级访问，否则只能被ring0级访问。</li>
+<li>GNTMAP_readonly: 映射为只读，比如单向传数据的时候，给予方写数据，接收方读数据</li>
+<li>GNTMAP_contains_pte: 指明<code>host_addr</code>的类型，默认情况下，host_addr是要更新的PTE的paddr。</li>
+</ul>
+<h4 id="Transferring"><a href="#Transferring" class="headerlink" title="Transferring"></a>Transferring</h4><p>如果是移交一个页(用于dom间传数据), 这时接收方需要首先声明它愿意接受页..(不能你想给我就给我，要先经过我同意，或者…我求求你给我一个页吧..)，通过在自己的Grant Table建一个entry(设置flag为accept transfer), 这个entry会告诉Xen当前的Dom允许domid给它页, 也能表示为请求domid给它页。Xen发现后会通知相关的dom，由dom通过<code>gnttab_transfer</code>来移交一个页过来。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">gnttab_transfer</span> &#123;</span></span><br><span class="line">    <span class="comment">/* IN parameters. */</span></span><br><span class="line">    <span class="keyword">xen_pfn_t</span>     mfn;</span><br><span class="line">    <span class="keyword">domid_t</span>       domid;</span><br><span class="line">    <span class="keyword">grant_ref_t</span>   ref;</span><br><span class="line">    <span class="comment">/* OUT parameters. */</span></span><br><span class="line">    <span class="keyword">int16_t</span>       status;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>将mfn所指的frame交给<domid, ref>, @domid在之前已经通过它grant_table中的ref请求了页。无论操作成功与否，mfn所指的页都将不再属于当前的Guest。</domid,></p>
+<h1 id="Demo-Sharing-Memory-between-Domains"><a href="#Demo-Sharing-Memory-between-Domains" class="headerlink" title="Demo: Sharing Memory between Domains"></a>Demo: Sharing Memory between Domains</h1><p>现在我们就来尝试使用Grant Table在DomU和Dom0之间共享数据。由于Grant Table没有提供用户接口，所以我们就使用Kernel Module来写吧..这篇《<a href="http://silentming.net/blog/2016/12/28/kernel-module/">Kernel Module</a>》介绍如何写一个Kernel Module.</p>
+<h4 id="DomainU"><a href="#DomainU" class="headerlink" title="DomainU"></a>DomainU</h4><p>想要Map一块共享内存，首先需要给予方(domU)在自己的Grant Table中添加一条entry: <flag, domid, frame>；因此我们先来看DomU的代码:</flag,></p>
+<figure class="highlight c"><figcaption><span>alice_domU.c</span><a href="https://github.com/SilentAlice/BlogExamples/blob/master/Xen_Log_8/domU/alice_domU.c" target="_blank" rel="noopener">source</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">init_alice</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    pr_info(<span class="string">"---------&gt;Hello, This is Alice\n"</span>);</span><br><span class="line">    vpage = __get_free_pages(GFP_KERNEL, <span class="number">1</span>);</span><br><span class="line">    pr_info(<span class="string">"Alice: Get free page from kernel, virt: 0x%lx\n"</span>, vpage);</span><br><span class="line"></span><br><span class="line">    mfn = virt_to_mfn(vpage);</span><br><span class="line">    gref = gnttab_grant_foreign_access(DOM0_ID, mfn, <span class="number">0</span>);</span><br><span class="line">    pr_info(<span class="string">"Alice: Grant_Ref is %d, input this as alice_dom0.ko param\n"</span>, gref);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Step 2: Write some contents */</span></span><br><span class="line">    <span class="built_in">strcpy</span>((<span class="keyword">char</span> *)vpage, <span class="string">"Hello, by Alice in domU\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">exit_alice</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ( gnttab_query_foreign_access(gref) == <span class="number">0</span> ) &#123;</span><br><span class="line">        pr_info(<span class="string">"Alice: No one is mapping this ref\n"</span>);</span><br><span class="line">        gnttab_end_foreign_access(gref, <span class="number">0</span>, vpage);</span><br><span class="line">    &#125;</span><br><span class="line">    pr_info(<span class="string">"Alice: Exit Successfully\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先使用<code>__get_free_pages</code>从kernel里拿一个物理页，获取到machine frame number。在Xen提供给的linux的头文件中已经对grant table的相关操作进行了封装，具体的可以查看linux源码，其中<code>gnttab_grant_foreign_access(DOM0ID, mfn, 0);</code>的声明是:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">gnttab_grant_foreign_access</span><span class="params">(<span class="keyword">domid_t</span> domid, <span class="keyword">unsigned</span> <span class="keyword">long</span> frame, <span class="keyword">int</span> readonly)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>这个函数会调用<code>gnttab_interface-&gt;update_entry</code>去更新自己的grant table并加入一个entry, 表示同意别人进行映射。<br>
+之后向里面写入”Hello, by Alice in domU”。在domU中插入这个Module: </p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">alice@domU $ sudo insmod alice_domU.ko</span><br><span class="line">alice@domU $ dmesg</span><br><span class="line"></span><br><span class="line">[  210.410379] ---------&gt;Hello, This is Alice</span><br><span class="line">[  210.410385] Alice: Get free page from kernel, virt: 0xffff880034372000</span><br><span class="line">[  210.410389] Alice: Grant_Ref is 399, input this as alice_dom0.ko param</span><br></pre></td></tr></table></figure>
+<img src="https://farm1.staticflickr.com/270/31817428581_bf80f18f8d_o_d.png" title="domU_init">
+<p>记下gref是399, 以及domUID</p>
+<h4 id="Domain0"><a href="#Domain0" class="headerlink" title="Domain0"></a>Domain0</h4><p>Dom0则要用我们上面提到的map_grant_ref, 部分代码如下: (完整代码请点source)</p>
+<figure class="highlight c"><figcaption><span>alice_dom0.c</span><a href="https://github.com/SilentAlice/BlogExamples/blob/master/Xen_Log_8/dom0/alice_dom0.c" target="_blank" rel="noopener">full source</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">init_alice</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">vm_struct</span> *<span class="title">v_start</span>;</span></span><br><span class="line">    info.gref = gref;</span><br><span class="line">    info.domid = domid;</span><br><span class="line">    pr_info(<span class="string">"Alice: init_module with gref = %d, domid = %d\n"</span>, info.gref, info.domid);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Reserve a range of kernel address space, fill page table to map this range </span></span><br><span class="line"><span class="comment">     * This PAGE_SIZE is used for map granted page */</span></span><br><span class="line">    v_start = alloc_vm_area(PAGE_SIZE, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Init map ops */</span></span><br><span class="line">    gnttab_set_map_op(&amp;ops, (<span class="keyword">unsigned</span> <span class="keyword">long</span>)v_start-&gt;addr, GNTMAP_host_map,</span><br><span class="line">            info.gref, info.domid);</span><br><span class="line">    HYPERVISOR_grant_table_op(GNTTABOP_map_grant_ref, &amp;ops, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    pr_info(<span class="string">"Alice: shared_page = %lx, handle = %x, status = %x\n"</span>,</span><br><span class="line">        (<span class="keyword">unsigned</span> <span class="keyword">long</span>)v_start-&gt;addr, ops.handle, ops.status);</span><br><span class="line">    pr_info(<span class="string">"Alice: info from domU: %s\n"</span>, (<span class="keyword">char</span> *)(v_start-&gt;addr));</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Prepare for unmap */</span></span><br><span class="line">    unmap_ops.host_addr = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)(v_start-&gt;addr);</span><br><span class="line">    unmap_ops.handle = ops.handle;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先我们要在地址空间中划出来4K大小用来映射共享的页, <code>alloc_vm_area</code>就是为此而存在的。由于每个domain只有一个grant table, 所以为了拿到grant table的实例，这里需要使用<code>gnttab_set_map_op</code>，它会通过Xen实现映射给自己的grant table来初始化接下来要做的map操作。<br>
+map就比较简单了，通过gref(399)和domid就能找到domU共享的页并映射到刚才申请的虚拟地址空间中。</p>
+<p>运行dom0 module:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">alice@dom0: <span class="variable">$sudo</span> insmod alice_dom0.ko gref=399 domid=1</span><br><span class="line">alice@dom0: <span class="variable">$dmesg</span></span><br><span class="line"></span><br><span class="line">[98367.531038] Alice: init_module with gref = 399, domid = 1</span><br><span class="line">[98367.531053] Alice: shared_page = ffffc90000cf6000, handle = 30c, status = 0</span><br><span class="line">[98367.531055] Alice: info from domU: Hello, by Alice <span class="keyword">in</span> domU</span><br></pre></td></tr></table></figure>
+<p>成功读到了domU共享过来的值, 由于我们这里内存是共享的，所以其实dom0也可以改这些数据的。</p>
+<p>dom0 插入Module:</p>
+<img src="https://farm1.staticflickr.com/275/31561008440_95d6fc3b82_o_d.png" title="dom0_init">
+<p>dom0先删除module:</p>
+<img src="https://farm1.staticflickr.com/641/31786684502_62f56faf37_o_d.png" title="dom0_exit">
+<p>最后domU删除module:</p>
+<img src="https://farm1.staticflickr.com/342/31933900005_50079d313e_o_d.png" title="domU_exit">
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/virtualization/" rel="tag"># virtualization</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/11/30/funny-page-table-terminology/" rel="next" title="The funny page table terminology">
+                <i class="fa fa-chevron-left"></i> The funny page table terminology
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/12/28/kernel-module/" rel="prev" title="Kernel Module Using&Blacklisting">
+                Kernel Module Using&Blacklisting <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Grant-Table"><span class="nav-text">Grant Table</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Grant-Table-OPs"><span class="nav-text">Grant Table OPs</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Grant-Table-Version"><span class="nav-text">Grant Table Version</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Map-amp-Transfer-a-Page-Frame"><span class="nav-text">Map &amp; Transfer a Page Frame</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Mapping"><span class="nav-text">Mapping</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Transferring"><span class="nav-text">Transferring</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Demo-Sharing-Memory-between-Domains"><span class="nav-text">Demo: Sharing Memory between Domains</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DomainU"><span class="nav-text">DomainU</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Domain0"><span class="nav-text">Domain0</span></a></li></ol></li>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2016/12/26/xen-log-8-grant-table/';
+          this.page.identifier = 'blog/2016/12/26/xen-log-8-grant-table/';
+          this.page.title = 'Xen Log 8-Grant Table';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

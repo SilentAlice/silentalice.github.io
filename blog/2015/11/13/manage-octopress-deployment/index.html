@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Octopress, Github, Gitcafe, Page, Cloudflare, CDN">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="#Introduction 在上一篇中我们已经能够成功应用自己的域名，但是会发现github对于国内的用户访问好像比较慢，而gitcafe对于国外的用户又没有github好，因此本篇将说明如何同时部署博客到github和gitcafe，以及调整域名管理让国内的用户访问gitcafe，国外的用户访问github。最后介绍一个CDN(Content Delivery Network)服务来加速博客的访">
+<meta name="keywords" content="Octopress, Github, Gitcafe, Page, Cloudflare, CDN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Octopress博客(3)-同时部署管理GitCafe和GitHub与CDN加速">
+<meta property="og:url" content="http://silentming.net/blog/2015/11/13/manage-octopress-deployment/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="#Introduction 在上一篇中我们已经能够成功应用自己的域名，但是会发现github对于国内的用户访问好像比较慢，而gitcafe对于国外的用户又没有github好，因此本篇将说明如何同时部署博客到github和gitcafe，以及调整域名管理让国内的用户访问gitcafe，国外的用户访问github。最后介绍一个CDN(Content Delivery Network)服务来加速博客的访">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://farm6.staticflickr.com/5500/30090789803_de2c7714fd_o_d.png">
+<meta property="og:image" content="https://farm6.staticflickr.com/5501/30090789673_e232823d2d_o_d.png">
+<meta property="og:image" content="https://farm6.staticflickr.com/5792/30090789563_2e650c1d4a_o_d.png">
+<meta property="og:image" content="https://farm6.staticflickr.com/5738/30425461700_b8746629be_o_d.png">
+<meta property="og:image" content="https://farm6.staticflickr.com/5623/30425461770_c7961de613_o_d.png">
+<meta property="og:image" content="https://farm6.staticflickr.com/5736/30090789883_c195704d8f_o_d.png">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Octopress博客(3)-同时部署管理GitCafe和GitHub与CDN加速">
+<meta name="twitter:description" content="#Introduction 在上一篇中我们已经能够成功应用自己的域名，但是会发现github对于国内的用户访问好像比较慢，而gitcafe对于国外的用户又没有github好，因此本篇将说明如何同时部署博客到github和gitcafe，以及调整域名管理让国内的用户访问gitcafe，国外的用户访问github。最后介绍一个CDN(Content Delivery Network)服务来加速博客的访">
+<meta name="twitter:image" content="https://farm6.staticflickr.com/5500/30090789803_de2c7714fd_o_d.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2015/11/13/manage-octopress-deployment/">
+
+
+
+
+
+  <title>Octopress博客(3)-同时部署管理GitCafe和GitHub与CDN加速 | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2015/11/13/manage-octopress-deployment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Octopress博客(3)-同时部署管理GitCafe和GitHub与CDN加速</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-11-13T23:09:18+08:00">2015-11-13</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2015/11/13/manage-octopress-deployment/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2015/11/13/manage-octopress-deployment/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>#Introduction
+在上一篇中我们已经能够成功应用自己的域名，但是会发现github对于国内的用户访问好像比较慢，而gitcafe对于国外的用户又没有github好，因此本篇将说明如何同时部署博客到github和gitcafe，以及调整域名管理让国内的用户访问gitcafe，国外的用户访问github。最后介绍一个CDN(Content Delivery Network)服务来加速博客的访问。</p>
+<p>#Preparation</p>
+<ul>
+<li><p><a href="https://gitcafe.com" target="_blank" rel="noopener">Gitcafe</a>
+<br>注册Gitcafe账号，并仿照Github建立repository (gitcafe里repository是username，不需要加gitcafe.io)。</p>
+</li>
+<li><p><a href="https://www.cloutflare.com" target="_blank" rel="noopener">Cloudflare</a>
+<br>Cloudflare是一个CDN服务提供商，它能将你的网站的CSS、img、js缓存到世界各地的服务器中，当用户访问时便可以用最近的缓存来加载网页提升访问速度，个人使用的话可以使用它的免费计划。
+<br>我们先注册个账号:)</p>
+</li>
+</ul>
+<a id="more"></a>
+<p>#Deploy on gitcafe
+进入octopress目录：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd _deploy</span><br><span class="line">git remote add gitcafe git@gitcafe.<span class="symbol">com:</span>SilentAlice/silentalice.git</span><br><span class="line">git push -u gitcafe <span class="symbol">master:</span>gitcafe-pages</span><br></pre></td></tr></table></figure>
+<p>Gitcafe的Page只能发布到gitcafe-pages分支上，所以git push -u gitcafe(设定upstream为gitcafe) master:gitcafe-pages(将本地的master分支推送到remote的gitcafe-pages上)。之后博客也就被部署到了gitcafe上。</p>
+<p>如果觉得手动比较麻烦的话，修改octopress/Rakefile, </p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Rake::Task[<span class="symbol">:copydot</span>].invoke(public_dir, deploy_dir)</span><br><span class="line">puts <span class="string">"\n## Copying <span class="subst">#&#123;public_dir&#125;</span> to <span class="subst">#&#123;deploy_dir&#125;</span>"</span></span><br><span class="line">cp_r <span class="string">"<span class="subst">#&#123;public_dir&#125;</span>/."</span>, deploy_dir</span><br><span class="line">cd <span class="string">"<span class="subst">#&#123;deploy_dir&#125;</span>"</span> <span class="keyword">do</span></span><br><span class="line">  system <span class="string">"git add -A"</span></span><br><span class="line">  message = <span class="string">"Site updated at <span class="subst">#&#123;Time.now.utc&#125;</span>"</span></span><br><span class="line">  puts <span class="string">"\n## Committing: <span class="subst">#&#123;message&#125;</span>"</span></span><br><span class="line">  system <span class="string">"git commit -m \"<span class="subst">#&#123;message&#125;</span>\""</span></span><br><span class="line">  puts <span class="string">"\n## Pushing generated <span class="subst">#&#123;deploy_dir&#125;</span> website"</span></span><br><span class="line">  Bundler.with_clean_env &#123; system <span class="string">"git push origin <span class="subst">#&#123;deploy_branch&#125;</span>"</span> &#125;</span><br><span class="line">  puts <span class="string">"\n## Github Pages deploy complete"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Add your new code here</span></span><br><span class="line">  system <span class="string">"git push -u gitcafe master:gitcafe-pages"</span></span><br><span class="line">  puts <span class="string">"\n## Gitcafe Pages deploy complete"</span></span><br></pre></td></tr></table></figure>
+<p>在添加这些代码之前，需要先在_deploy中添加remote add gitcafe哦。现在博客也会发布到Gitcafe上了。</p>
+<p>#Domain</p>
+<p>Gitcafe的域名解析要比Github简单许多：在setting-&gt;Pages添加自己的域名即可：</p>
+<img src="https://farm6.staticflickr.com/5500/30090789803_de2c7714fd_o_d.png">
+<p>依旧是ping gitcafe.io来查看IP：</p>
+<img src="https://farm6.staticflickr.com/5501/30090789673_e232823d2d_o_d.png">
+<p>然后在自己域名的DNS解析管理中添加新的A记录解析：</p>
+<img src="https://farm6.staticflickr.com/5792/30090789563_2e650c1d4a_o_d.png">
+<p>中国数据的DNS解析服务提供针对不同线路不同解析的服务，我们可以将国内的电信、联通等解析到Gitcafe的IP上，而将默认线路解析到Github即可实现让国内外不同用户访问不同服务器的策略。</p>
+<p>#CDN</p>
+<p>刚才已经介绍了，Cloudflare可以让访问你博客的流量通过他们智能的云实现负载均衡。同时Cloudflare还提供对于访问的保护：</p>
+<img src="https://farm6.staticflickr.com/5738/30425461700_b8746629be_o_d.png">
+<p>通过使用他们的服务，我们网站的内容便可以缓存到世界各地他们的服务器上，Octopress很多模板会用到Google字体，Cloudflare会事先缓存js, css, img；当访客得到回复的html时便会使用本地的js, css迅速渲染。只是改动html的话不会影响他们的缓存，所以博客的访问一方面可以实现负载均衡，也能提升安全，尤其是对于使用个人服务器的情况。Cloudflare对免费非盈利的个人网站提供有免费计划，我们便可以借此来提升博客的浏览体验。</p>
+<p>在最上面点Add site后，按照指导一步步走就可以了，最后它会提供给你两个新的DNS:</p>
+<img src="https://farm6.staticflickr.com/5623/30425461770_c7961de613_o_d.png">
+<p>在我们自己的域名管理页面中，替换原来的Nameserver为Cloudflare的即可：</p>
+<img src="https://farm6.staticflickr.com/5736/30090789883_c195704d8f_o_d.png">
+<p>之后就会发现网页的加载速度非常快了。</p>
+<h1 id="Migrate-to-New-Computer"><a href="#Migrate-to-New-Computer" class="headerlink" title="Migrate to New Computer"></a>Migrate to New Computer</h1><p>当我们需要在多个地方维护博客，或者更换电脑时重新回复博客内容，需要先提交最新的source，之后再在新电脑安装环境即可：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># old Computer</span></span><br><span class="line"><span class="built_in">cd</span> octopress</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">'prepare for migration'</span></span><br><span class="line">git push origin <span class="built_in">source</span> <span class="comment">#push 到origin的source分支</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># new Computer</span></span><br><span class="line"><span class="comment"># You need to build your environment first (ruby, python etc)</span></span><br><span class="line">git <span class="built_in">clone</span> -b <span class="built_in">source</span> git@github.com:SilentAlice/silentalice.github.io.git octopress</span><br><span class="line"><span class="built_in">cd</span> octopress</span><br><span class="line">git <span class="built_in">clone</span> -b master git@github.com:SilentAlice/silentalice.github.io.git _deploy</span><br><span class="line"></span><br><span class="line"><span class="comment"># install dependency</span></span><br><span class="line">gem install bundler</span><br><span class="line">bundle install</span><br><span class="line"></span><br><span class="line"><span class="comment"># generate site</span></span><br><span class="line">rake generate</span><br><span class="line">rake preview</span><br></pre></td></tr></table></figure>
+<p>之后就可以在新电脑上继续维护博客啦~</p>
+<p>#Note</p>
+<h4 id="360网站卫士公共库停止运行-2016-09-17"><a href="#360网站卫士公共库停止运行-2016-09-17" class="headerlink" title="360网站卫士公共库停止运行 (2016-09-17)"></a>360网站卫士公共库停止运行 (2016-09-17)</h4><p>这几天打开网站发现一直卡在ajax.useso.com这边，原来以为是360那边抽风就没鸟，后来查了下发现360已经停止了这个服务(Are u kidding me?!)<br>
+(公告)<a href="http://bbs.360.cn/thread-14471550-1-1.html" target="_blank" rel="noopener">http://bbs.360.cn/thread-14471550-1-1.html</a><br>
+不过Google已经在北京设置了服务器，所以直接使用Google API的速度已经非常快了… 于是换回去就行了。<br>
+或者在自己的主题里把google api去掉吧..用离线的也行，只不过享受不了google的CDN服务就是了</p>
+<h4 id="Google-Library-2016-01-30"><a href="#Google-Library-2016-01-30" class="headerlink" title="Google Library (2016-01-30)"></a>Google Library (2016-01-30)</h4><p>由于众所周知的原因，国内一般上Google是上不去的。而Octopress的许多主题都会用到Google的公共库，所以导致网页在国内久久不能打开。我刚加上CDN服务的时候由于频繁的访问使得缓存服务器中缓存了Google的文件，所以也没遇到打开很慢的情况。不过后来博客搭起来之后就没有频繁访问了，估计缓存服务器里面也没相应的文件，打开就很慢。不过好在国内有Google公共库的代理。这次尝试的是360的常用前端公共库CDN服务：<a href="http://libs.useso.com/" target="_blank" rel="noopener">http://libs.useso.com/</a>
+<br>只需要将所有域名换成对应的useso的即可。
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ajax.googleapis.com -&gt; ajax.useso.com</span><br><span class="line">fonts.googleapis.com -&gt; fonts.useso.com</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h4 id="Individual-Repo-2015-12-02"><a href="#Individual-Repo-2015-12-02" class="headerlink" title="Individual Repo (2015-12-02)"></a>Individual Repo (2015-12-02)</h4><p>在添加了home页之后，发现总是出现Not Found。
+<br>本来是将home页的工程单独部署到了一个单独的Repository:WebGL，由于Gitcafe和Github会自己将silentalice.github(cafe).io解析到silentming.net，所以本来只要silentming.net/WebGL就可以直接访问新的添加页。
+<br>但是由于我使用了CDN加速，CloudFlare在加速的时候会将网页的Img、css等文件提前下载到本地服务器，而我的WebGL不在网页的目录树中，所以本地服务器中没有缓存WebGL的相关内容。
+<br>用户在访问的时候会先访问本地服务器，于是就找不到WebGL了orz。
+<br>CDN的加速可以让网页访问速度提高3-5倍，实在是不想放弃啊，当初用的时候就有用户提过这个问题，我还完全没有在意，不过现在看来确实这个是它的弊端。</p>
+<p>最开始我不想将home的相关内容放到octopress的repo中一是想方便管理，而是以为每次ruby的脚本都会删除和重新创建网站，pull的时候会有很大开销。不过今天发现，source里面的目录也只有post会被重新创建，但是img这些是不会的，所以放进来的开销其实也还好。</p>
+<hr>
+<h4 id="GitCafe-is-gone-2016-07-15"><a href="#GitCafe-is-gone-2016-07-15" class="headerlink" title="GitCafe is gone (2016-07-15)"></a>GitCafe is gone (2016-07-15)</h4><p>Gitcafe已经合并到coding.net，coding.net由于建立的初衷不是用来建站，因此其演示功能是按天收费的，并且不支持绑定自己的域名而只能使用其提供的二级域名，所以目前我只部署到github上了，不过由于CDN的加速，国内的访问速度依旧非常快。并且将用到google渲染的内容给去掉后，现在也不会因为需要翻墙等原因导致网页加载缓慢。目前就保持这样了…</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tutorial/" rel="tag"># tutorial</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2015/11/13/domainname-about-git-page/" rel="next" title="Octopress博客(2)-将Github Page绑定到自己的域名上">
+                <i class="fa fa-chevron-left"></i> Octopress博客(2)-将Github Page绑定到自己的域名上
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2015/11/14/octopress-basic/" rel="prev" title="Octopress博客(4)-基础操作">
+                Octopress博客(4)-基础操作 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Migrate-to-New-Computer"><span class="nav-text">Migrate to New Computer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#360网站卫士公共库停止运行-2016-09-17"><span class="nav-text">360网站卫士公共库停止运行 (2016-09-17)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Google-Library-2016-01-30"><span class="nav-text">Google Library (2016-01-30)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Individual-Repo-2015-12-02"><span class="nav-text">Individual Repo (2015-12-02)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GitCafe-is-gone-2016-07-15"><span class="nav-text">GitCafe is gone (2016-07-15)</span></a></li></ol></li></ol>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2015/11/13/manage-octopress-deployment/';
+          this.page.identifier = 'blog/2015/11/13/manage-octopress-deployment/';
+          this.page.title = 'Octopress博客(3)-同时部署管理GitCafe和GitHub与CDN加速';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

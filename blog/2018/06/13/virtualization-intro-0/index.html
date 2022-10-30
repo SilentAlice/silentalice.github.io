@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Virtualization, arm, Xen, kvm, introduction">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="Introduction to Virtualization 0By SilentMing Blog: http://silentming.net Slides">
+<meta name="keywords" content="Virtualization, arm, Xen, kvm, introduction">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Virtualization Intro 0">
+<meta property="og:url" content="http://silentming.net/blog/2018/06/13/virtualization-intro-0/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="Introduction to Virtualization 0By SilentMing Blog: http://silentming.net Slides">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://silentming.net/images/2018/20180613virtualization00.png">
+<meta property="og:image" content="http://silentming.net/images/2018/20180613virtualization01.png">
+<meta property="og:image" content="http://silentming.net/images/2018/20180613virtualization02.png">
+<meta property="og:image" content="http://silentming.net/images/2018/20180613virtualization03.png">
+<meta property="og:image" content="http://silentming.net/images/2018/20180613virtualization04.png">
+<meta property="og:image" content="http://silentming.net/images/2018/20180613virtualization05.png">
+<meta property="og:image" content="http://silentming.net/images/2018/20180613virtualization06.png">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Virtualization Intro 0">
+<meta name="twitter:description" content="Introduction to Virtualization 0By SilentMing Blog: http://silentming.net Slides">
+<meta name="twitter:image" content="http://silentming.net/images/2018/20180613virtualization00.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2018/06/13/virtualization-intro-0/">
+
+
+
+
+
+  <title>Virtualization Intro 0 | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2018/06/13/virtualization-intro-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Virtualization Intro 0</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-13T10:32:23+08:00">2018-06-13</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2018/06/13/virtualization-intro-0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2018/06/13/virtualization-intro-0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Introduction-to-Virtualization-0"><a href="#Introduction-to-Virtualization-0" class="headerlink" title="Introduction to Virtualization 0"></a>Introduction to Virtualization 0</h1><p>By SilentMing</p>
+<p>Blog: <a href="http://silentming.net">http://silentming.net</a></p>
+<p><a href="https://silentming.net/BlogExamples/virtualization-intro/virtualization-intro-0-slides.html#1">Slides</a></p>
+<a id="more"></a>
+<hr>
+<h2 id="Story-Line"><a href="#Story-Line" class="headerlink" title="Story Line"></a>Story Line</h2><ul>
+<li><p>Brief introduction to virtualization</p>
+<ul>
+<li>(Definition, histroy …)</li>
+</ul>
+</li>
+<li><p>Classification</p>
+<ul>
+<li>(Spectrum)</li>
+</ul>
+</li>
+<li><p>Architecture on ARM (Type-2 Hypervisor)</p>
+<ul>
+<li>(It’s simple, but only cover partial)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="What-is-Virtualization"><a href="#What-is-Virtualization" class="headerlink" title="What is Virtualization"></a>What is Virtualization</h2><p><strong>Virtualization:</strong> A layer mapping its visible interface and resources onto the interface and
+resources of the underlying layer or system on which it is implemented</p>
+<ul>
+<li><p>Abstraction – to simplify the use of the underlying resource (e.g., by removing details of the resource’s structure)</p>
+</li>
+<li><p>Replication – to create multiple instances of the resource (e.g., to simplify management or allocation)</p>
+</li>
+<li><p>Isolation – to separate the uses which clients make of the underlying resources (e.g., to improve security)</p>
+</li>
+</ul>
+<hr>
+<h2 id="How-Dose-It-Come"><a href="#How-Dose-It-Come" class="headerlink" title="How Dose It Come ?"></a>How Dose It Come ?</h2><p>Run <strong>multiple OSes</strong> on a <strong>Single</strong> Computer</p>
+<p>Histroy</p>
+<ul>
+<li>1960: <a href="https://en.wikipedia.org/wiki/IBM_CP-40" target="_blank" rel="noopener">CP-40</a> - full virtualization</li>
+<li>1970: <a href="https://en.wikipedia.org/wiki/IBM_System/370" target="_blank" rel="noopener">System/370</a> - without virtual memory, time-sharing</li>
+<li>1999: <a href="https://en.wikipedia.org/wiki/X86_virtualization" target="_blank" rel="noopener">VMware Virtual Platform</a> - x86 virtualization support</li>
+<li>2003: <a href="http://www.cs.yale.edu/homes/yu-minlan/teach/csci599-fall12/papers/xen.pdf" target="_blank" rel="noopener">Xen and the Art of Virtualization</a> - Para-virtualization</li>
+<li>2005: <a href="https://www.usenix.org/legacy/event/usenix05/tech/freenix/full_papers/bellard/bellard_html/" target="_blank" rel="noopener">QEMU(Quick Emulator)</a> -  rescue for those times when VMware is overkill</li>
+<li>2005: Free Desktop Virtualization - VMWare</li>
+<li>2005 &amp; 2006: <a href="https://en.wikipedia.org/wiki/X86_virtualization" target="_blank" rel="noopener">Intel VT-x &amp; AMD-V</a> (Hardware support for virtualization)</li>
+<li>2007: <a href="https://ols.fedoraproject.org/OLS/Reprints-2007/OLS2007-Proceedings-V1.pdf#page=225" target="_blank" rel="noopener">KVM(Kernel-based Virtual Machine)</a></li>
+<li>2011: <a href="https://www.arm.com/files/downloads/ARMv8_white_paper_v5.pdf" target="_blank" rel="noopener">ARMv8</a> virtualization support</li>
+<li>2013: [QEMU 1.5] ARM Cortex-A9 &amp; Cortex-A15</li>
+<li>2014: <a href="https://dl.acm.org/citation.cfm?id=2541946" target="_blank" rel="noopener">KVM/ARM</a> &amp; <a href="https://wiki.xenproject.org/wiki/Xen_Project_4.4_Feature_List" target="_blank" rel="noopener">Xen 4.4</a></li>
+<li>2017: <a href="https://lwn.net/Articles/650524/" target="_blank" rel="noopener">ARMv8.4: VHE(Virtualization Host Extension)</a></li>
+</ul>
+<hr>
+<h2 id="Why-Virtualization"><a href="#Why-Virtualization" class="headerlink" title="Why Virtualization"></a>Why Virtualization</h2><h4 id="Consolidation"><a href="#Consolidation" class="headerlink" title="Consolidation"></a>Consolidation</h4><ul>
+<li>Run several different OS on a single machine</li>
+</ul>
+<h4 id="Isolation"><a href="#Isolation" class="headerlink" title="Isolation"></a>Isolation</h4><ul>
+<li>Keep the VMs separated as error container</li>
+<li>Fault tolerant</li>
+</ul>
+<h4 id="Maintenance"><a href="#Maintenance" class="headerlink" title="Maintenance"></a>Maintenance</h4><ul>
+<li>Easy to deploy, backup, clone, (live) migrate</li>
+</ul>
+<h4 id="Security"><a href="#Security" class="headerlink" title="Security"></a>Security</h4><ul>
+<li>VM introspection (VMI)</li>
+<li>Antivirus out of the OS</li>
+</ul>
+<hr>
+<h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><blockquote>
+<p>The act of creating a <strong>virtual (rather than actual) version of something</strong>, including virtual computer hardware platforms, storage devices, and computer network resources. (wiki)</p>
+<p><strong>A layer mapping</strong> its visible interface and resources onto the interface and resources of the underlying layer or system on which it is implemented (CMU)</p>
+<p>An enfficient, isolated <strong>duplicate of the real machine</strong> (<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.141.4815&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">Formal Requirements for Virtualizable Third Generation Architectures</a>)</p>
+<ul>
+<li>Efficiency<ul>
+<li>Innocuous instructions should execute directly on hardware</li>
+</ul>
+</li>
+<li>Resource control<ul>
+<li>Executed programs may not affect the system resources</li>
+</ul>
+</li>
+<li>Equivalence<ul>
+<li>The behavior of a program executing under the VMM should be the same as if the program were executed directly on the hardware (except possibly for timing and resource availability)</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="Basic-Concepts"><a href="#Basic-Concepts" class="headerlink" title="Basic Concepts"></a>Basic Concepts</h2><p><img src="/images/2018/20180613virtualization00.png" alt></p>
+<ul>
+<li><p>Domain/VM (Virtual Machine)</p>
+</li>
+<li><p>Guest VM / Guest OS / Guest App</p>
+</li>
+<li><p>Hypervisor / VMM (VM Monitor) / host</p>
+</li>
+</ul>
+<hr>
+<h2 id="Type-of-Hypervisor"><a href="#Type-of-Hypervisor" class="headerlink" title="Type of Hypervisor"></a>Type of Hypervisor</h2><p><img src="/images/2018/20180613virtualization01.png" alt></p>
+<p>Who manages hardware? (Type-1: Hypervisor, Type-2: Host Kernel)</p>
+<ul>
+<li>Type-1: Xen<ul>
+<li>Own scheduler, I/O Driver…</li>
+</ul>
+</li>
+<li>Type-2: Kvm<ul>
+<li>Multiplex scheduler and drivers in Linux</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="Classification-and-Spectrum"><a href="#Classification-and-Spectrum" class="headerlink" title="Classification and Spectrum"></a>Classification and Spectrum</h1><h2 id="Classfication"><a href="#Classfication" class="headerlink" title="Classfication"></a>Classfication</h2><ul>
+<li>CPU Virtualization (privilege level &amp; privileged instructions)</li>
+<li>Memory Virtualization (GVA -&gt; GPA -&gt; HPA/MPA)</li>
+<li>I/O Virtualization</li>
+</ul>
+<h2 id="Spectrum"><a href="#Spectrum" class="headerlink" title="Spectrum"></a>Spectrum</h2><ul>
+<li>Traditional Full Virtualization</li>
+<li>Para-Virtualization</li>
+<li>Hardware-Assistant Virtualization</li>
+</ul>
+<hr>
+<h2 id="Approach-of-Virtualization"><a href="#Approach-of-Virtualization" class="headerlink" title="Approach of Virtualization"></a>Approach of Virtualization</h2><table>
+<thead>
+<tr>
+<th style="text-align:left">Approach</th>
+<th style="text-align:left">Traditional Full Virtualization</th>
+<th style="text-align:left">Para-Virtualization</th>
+<th style="text-align:left">Hardware-assistant Virtualization<hr></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">CPU</td>
+<td style="text-align:left">Binary Rewriting</td>
+<td style="text-align:left">Using hypercall</td>
+<td style="text-align:left">Root/Non-root (VT-x)<br> host mode &amp; guest mode (AMD-v)<br> EL2 (ARM)<hr></td>
+</tr>
+<tr>
+<td style="text-align:left">Memory</td>
+<td style="text-align:left">Software Emluation</td>
+<td style="text-align:left">Shadow Page Table</td>
+<td style="text-align:left">Extended PT (VT-x)<br> Nested PT(AMD-v)<br> EL2 translation table (ARM)<hr></td>
+</tr>
+<tr>
+<td style="text-align:left">I/O</td>
+<td style="text-align:left">Software Emluation</td>
+<td style="text-align:left">Para / virt I/O (Front &amp; Back-end)</td>
+<td style="text-align:left">Singe Root I/O Virtualization</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="Approach-of-Virtualization-cont’d"><a href="#Approach-of-Virtualization-cont’d" class="headerlink" title="Approach of Virtualization cont’d"></a>Approach of Virtualization cont’d</h2><h4 id="Software-Emulation"><a href="#Software-Emulation" class="headerlink" title="Software Emulation"></a>Software Emulation</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Complete Machine Simulation */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> REG_EAX 1;</span></span><br><span class="line"><span class="keyword">int32_t</span> eip;</span><br><span class="line"><span class="keyword">int32_t</span> regs[<span class="number">8</span>];</span><br><span class="line"><span class="keyword">int32_t</span> segregs[<span class="number">4</span>];</span><br><span class="line">...</span><br><span class="line"><span class="keyword">for</span> (;;) &#123;</span><br><span class="line">   read_instruction();</span><br><span class="line">   <span class="keyword">switch</span> (decode_instruction_opcode()) &#123;</span><br><span class="line">   <span class="keyword">case</span> OPCODE_ADD:</span><br><span class="line">      <span class="keyword">int</span> src = decode_src_reg();</span><br><span class="line">      <span class="keyword">int</span> dst = decode_dst_reg();</span><br><span class="line">      regs[dst] = regs[dst] + regs[src];</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> ..</span><br><span class="line">  &#125;</span><br><span class="line">  eip += instruction_length;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="Type-2-Virtualization-on-ARMv8"><a href="#Type-2-Virtualization-on-ARMv8" class="headerlink" title="Type-2 Virtualization on ARMv8"></a>Type-2 Virtualization on ARMv8</h1><table>
+<thead>
+<tr>
+<th style="text-align:left">Approach</th>
+<th style="text-align:left">Traditional Full Virtualization</th>
+<th style="text-align:left">Para-Virtualization</th>
+<th style="text-align:left">Hardware-assistant Virtualization<hr></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">CPU</td>
+<td style="text-align:left">Binary Rewriting</td>
+<td style="text-align:left">Using hypercall</td>
+<td style="text-align:left">Root/Non-root (VT-x)<br> host mode &amp; guest mode (AMD-v)<br> <strong>EL2 (ARM)</strong> <hr></td>
+</tr>
+<tr>
+<td style="text-align:left">Memory</td>
+<td style="text-align:left">Software Emluation</td>
+<td style="text-align:left">Shadow Page Table</td>
+<td style="text-align:left">Extended PT (VT-x)<br> Nested PT(AMD-v)<br> <strong>EL2 translation table (ARM)</strong> <hr></td>
+</tr>
+<tr>
+<td style="text-align:left">I/O</td>
+<td style="text-align:left">Software Emluation</td>
+<td style="text-align:left">Para / <strong>virt I/O (Front &amp; Back-end)</strong></td>
+<td style="text-align:left">Singe Root I/O Virtualization</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="Run-Application"><a href="#Run-Application" class="headerlink" title="Run Application"></a>Run Application</h2><p><img src="/images/2018/20180613virtualization02.png" alt></p>
+<ol>
+<li>Load application from image to memory;</li>
+<li>Give control to app;</li>
+<li>App trap on privileged instructions during execution;</li>
+<li>Kernel handle exception and return control;</li>
+</ol>
+<hr>
+<h2 id="Run-Guest-VM"><a href="#Run-Guest-VM" class="headerlink" title="Run Guest VM"></a>Run Guest VM</h2><p><img src="/images/2018/20180613virtualization03.png" alt></p>
+<ol>
+<li>Load guest image into memory;</li>
+<li>Give control to guest OS;</li>
+<li>Control return to hypervisor when VMExit happen;</li>
+<li>Hypervisor handle VMExit and return control using VMRun(AMD-V)/VMEnter(VT-x)/IRET(ARM);</li>
+</ol>
+<hr>
+<h2 id="Challenges"><a href="#Challenges" class="headerlink" title="Challenges"></a>Challenges</h2><ol>
+<li><p>Privilege instructions in guest APP traps into which level?</p>
+</li>
+<li><p>Privilege level of Guest OS? (Hypervisor has highest privilege)</p>
+</li>
+<li><p>Guest OS need physical memory.</p>
+</li>
+<li><p>I/O devices need to be shared by different VMs.</p>
+</li>
+</ol>
+<hr>
+<h3 id="CPU-Virtualization-ARMv8-Virtualization-Support"><a href="#CPU-Virtualization-ARMv8-Virtualization-Support" class="headerlink" title="CPU Virtualization - ARMv8 Virtualization Support"></a>CPU Virtualization - ARMv8 Virtualization Support</h3><p><img src="/images/2018/20180613virtualization04.png" alt></p>
+<ul>
+<li>EL2: New Exception Level for Hypervisor<ul>
+<li>Separate CPU mode designed to run hypervisor</li>
+<li><strong>Not</strong> designed to run full operating system</li>
+<li>Reduced virtual memory support compared to EL1</li>
+<li>Limited support for interracting with EL0</li>
+</ul>
+</li>
+</ul>
+<h4 id="Hypervisor-Configuration-Register-HCR-EL2"><a href="#Hypervisor-Configuration-Register-HCR-EL2" class="headerlink" title="Hypervisor Configuration Register (HCR_EL2)"></a>Hypervisor Configuration Register (HCR_EL2)</h4><p><strong>Purpose</strong>: Provides configuration control for virtualization, including whether various Non- secure operations are trapped to EL2.<br>HCR_EL2 is part of the Hypervisor and virtualization registers functional group.</p>
+<hr>
+<h3 id="CPU-Virtualization-cont’d"><a href="#CPU-Virtualization-cont’d" class="headerlink" title="CPU Virtualization cont’d"></a>CPU Virtualization cont’d</h3><p>$LINUX/arch/arm64/kvm/hyp/entry.S
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">ENTRY(__guest_enter)</span><br><span class="line">	// x0: vcpu</span><br><span class="line">	// x1: host context</span><br><span class="line">	// x2-x17: clobbered by macros</span><br><span class="line">	// x18: guest context</span><br><span class="line"></span><br><span class="line">	// Store the host regs</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">	// Restore guest regs x0-x17</span><br><span class="line">	ldp	x0, x1,   [x18, #CPU_XREG_OFFSET(0)]</span><br><span class="line">    ...</span><br><span class="line">	</span><br><span class="line">	// Restore guest regs x19-x29, lr</span><br><span class="line">	restore_callee_saved_regs x18</span><br><span class="line"></span><br><span class="line">	// Restore guest reg x18</span><br><span class="line">	ldr	x18,      [x18, #CPU_XREG_OFFSET(18)]</span><br><span class="line"></span><br><span class="line">	// Do not touch any register after this!</span><br><span class="line">	eret</span><br><span class="line">ENDPROC(__guest_enter)</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="CPU-Virtualization-cont’d-1"><a href="#CPU-Virtualization-cont’d-1" class="headerlink" title="CPU Virtualization cont’d"></a>CPU Virtualization cont’d</h3><p>$LINUX/arch/arm64/kvm/hyp/entry.S
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">ENTRY(__guest_exit)</span><br><span class="line">	// x0: return code</span><br><span class="line">	// x1: vcpu</span><br><span class="line">	// x2-x29,lr: vcpu regs</span><br><span class="line">	// vcpu x0-x1 on the stack</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">	// Store the guest regs x2 and x3</span><br><span class="line">	// Retrieve the guest regs x0-x1 from the stack</span><br><span class="line">	// Store the guest regs x0-x1 and x4-x18</span><br><span class="line">	// Store the guest regs x19-x29, lr</span><br><span class="line"></span><br><span class="line">	get_host_ctxt	x2, x3</span><br><span class="line"></span><br><span class="line">	// Now restore the host regs</span><br><span class="line">	restore_callee_saved_regs x2</span><br><span class="line"></span><br><span class="line">	// If the exception took place, restore the EL1 exception</span><br><span class="line">	// context so that we can report some information.</span><br><span class="line">	msr	elr_el2, x2</span><br><span class="line">	msr	esr_el2, x3</span><br><span class="line">	msr	spsr_el2, x4</span><br><span class="line">	orr	x0, x0, x5</span><br><span class="line">1:	ret</span><br><span class="line">ENDPROC(__guest_exit)</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="Memory-Virtualization-EL2-Translation-Table"><a href="#Memory-Virtualization-EL2-Translation-Table" class="headerlink" title="Memory Virtualization - EL2 Translation Table"></a>Memory Virtualization - EL2 Translation Table</h3><p><img src="/images/2018/20180613virtualization05.png" alt></p>
+<ul>
+<li>An independant translation table in EL2</li>
+<li>GVA -&gt; GPA -&gt; HPA<ul>
+<li>VA -&gt; IPA (Intermediate Physical Address) -&gt; PA</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="I-O-Virtualization-virtio-in-QEMU"><a href="#I-O-Virtualization-virtio-in-QEMU" class="headerlink" title="I/O Virtualization - virtio in QEMU"></a>I/O Virtualization - virtio in QEMU</h3><p><img src="/images/2018/20180613virtualization06.png" alt></p>
+<ul>
+<li>Front-driver in guest kernel;</li>
+<li>Back-driver in QEMU;</li>
+<li>Transfer data via Shared-memory (Vring);</li>
+<li>Qemu rw data using real driver;</li>
+</ul>
+<hr>
+<h1 id="Thanks"><a href="#Thanks" class="headerlink" title="Thanks"></a>Thanks</h1>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tutorial/" rel="tag"># tutorial</a>
+          
+            <a href="/tags/virtualization/" rel="tag"># virtualization</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/04/30/graduation-from-sjtu/" rel="next" title="硕士三年">
+                <i class="fa fa-chevron-left"></i> 硕士三年
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/06/19/arm-device-tree-0/" rel="prev" title="ARM Device Tree 0">
+                ARM Device Tree 0 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction-to-Virtualization-0"><span class="nav-text">Introduction to Virtualization 0</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Story-Line"><span class="nav-text">Story Line</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Virtualization"><span class="nav-text">What is Virtualization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Dose-It-Come"><span class="nav-text">How Dose It Come ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Why-Virtualization"><span class="nav-text">Why Virtualization</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Consolidation"><span class="nav-text">Consolidation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Isolation"><span class="nav-text">Isolation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Maintenance"><span class="nav-text">Maintenance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Security"><span class="nav-text">Security</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Definition"><span class="nav-text">Definition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Basic-Concepts"><span class="nav-text">Basic Concepts</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Type-of-Hypervisor"><span class="nav-text">Type of Hypervisor</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Classification-and-Spectrum"><span class="nav-text">Classification and Spectrum</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Classfication"><span class="nav-text">Classfication</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spectrum"><span class="nav-text">Spectrum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-of-Virtualization"><span class="nav-text">Approach of Virtualization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approach-of-Virtualization-cont’d"><span class="nav-text">Approach of Virtualization cont’d</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Software-Emulation"><span class="nav-text">Software Emulation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Type-2-Virtualization-on-ARMv8"><span class="nav-text">Type-2 Virtualization on ARMv8</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Run-Application"><span class="nav-text">Run Application</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Run-Guest-VM"><span class="nav-text">Run Guest VM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Challenges"><span class="nav-text">Challenges</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU-Virtualization-ARMv8-Virtualization-Support"><span class="nav-text">CPU Virtualization - ARMv8 Virtualization Support</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hypervisor-Configuration-Register-HCR-EL2"><span class="nav-text">Hypervisor Configuration Register (HCR_EL2)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU-Virtualization-cont’d"><span class="nav-text">CPU Virtualization cont’d</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU-Virtualization-cont’d-1"><span class="nav-text">CPU Virtualization cont’d</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Memory-Virtualization-EL2-Translation-Table"><span class="nav-text">Memory Virtualization - EL2 Translation Table</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-Virtualization-virtio-in-QEMU"><span class="nav-text">I/O Virtualization - virtio in QEMU</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Thanks"><span class="nav-text">Thanks</span></a></li>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2018/06/13/virtualization-intro-0/';
+          this.page.identifier = 'blog/2018/06/13/virtualization-intro-0/';
+          this.page.title = 'Virtualization Intro 0';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

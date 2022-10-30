@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ARM, dtb, device tree, linux, tutorial, silentming">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="工作原因接触到了ARM上常用的Device Tree, 本篇简单介绍一下Device Tree的由来和使用。">
+<meta name="keywords" content="ARM, dtb, device tree, linux, tutorial, silentming">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ARM Device Tree 0">
+<meta property="og:url" content="http://silentming.net/blog/2018/06/19/arm-device-tree-0/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="工作原因接触到了ARM上常用的Device Tree, 本篇简单介绍一下Device Tree的由来和使用。">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ARM Device Tree 0">
+<meta name="twitter:description" content="工作原因接触到了ARM上常用的Device Tree, 本篇简单介绍一下Device Tree的由来和使用。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2018/06/19/arm-device-tree-0/">
+
+
+
+
+
+  <title>ARM Device Tree 0 | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2018/06/19/arm-device-tree-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ARM Device Tree 0</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-19T15:03:07+08:00">2018-06-19</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2018/06/19/arm-device-tree-0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2018/06/19/arm-device-tree-0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>工作原因接触到了ARM上常用的Device Tree, 本篇简单介绍一下Device Tree的由来和使用。</p>
+<a id="more"></a>
+<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>Device tree的诞生是源于Linux要求启动时有所有可使用硬件的说明和描述，
+不然Kernel是不知道怎么配置的。
+X86的PC这部分工作是由BIOS来完成的，但是ARM没有BIOS，
+因此才需要Device-tree这样一个东西来告诉kernel设备的信息。</p>
+<p>在kernel的 <code>/proc/device-tree/</code>可以看到kernel识别出的所有device:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ ls /proc/device-tree</span><br><span class="line"><span class="comment">#address-cells  interrupt-controller@e82b0000   pmic@fff34000</span></span><br><span class="line"><span class="comment">#size-cells     interrupt-parent                pmu</span></span><br><span class="line">aliases         keys                            psci</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="History"><a href="#History" class="headerlink" title="History"></a>History</h2><p>在Device tree出现之前，会有一个专门的文件来记录ARM上的设备信息，
+command-line, 内存大小等参数则是作为ARM Tags (ATAGs),
+让bootloader作为入口参数,
+通过寄存器R2(ARM)传给kernel.
+而极其类型就通过R1传给kernel,
+所以每个kernel就只为特定的板子进行编译。</p>
+<p>其解决方案就是<strong>Device Tree</strong> 或者叫做<strong>Open Platform (OF)</strong> or
+<strong>Flattened Device Tree (FDT)</strong>,
+其本质是一种byte code类型的树状数据结构来描述设备信息。</p>
+<p>当今的bootloader会使用两个文件: kernel image 和 device tree blob (DTB)来启动OS.
+DTB的地址通过R2传给kernel, R1则不再使用。</p>
+<p><strong>A device tree is a tree data structure with nodes that describe the physical devices in a system.</strong></p>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>ARM的device tree都在 <em>/arch/arm/boot/dts/</em> (device tree source)
+用Linux的脚本来编译dtb:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scripts/dtc/dtc -I dts -O dtb -o /path/my_tree.dtb /arch/arm/boot/dts/my_tree.dts</span><br></pre></td></tr></table></figure>
+<p>或者反过来从dtb获取dts:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scripts/dtc/dtc -I dtb -O dts -o /path/my_tree.dts /path/my_tree.dtb</span><br></pre></td></tr></table></figure>
+<p>foundation-v8.dtsi
+dtb只不过是dts信息的二进制压缩版而已。</p>
+<h2 id="Syntax"><a href="#Syntax" class="headerlink" title="Syntax"></a>Syntax</h2><h3 id="Structure"><a href="#Structure" class="headerlink" title="Structure"></a>Structure</h3><ol>
+<li>每个Module在Device Tree中都是一个Node, 根据driver的实现，可以有父节点或者子节点;</li>
+<li>Root是所有module最终的父节点；</li>
+</ol>
+<p>常见的Top-level module:</p>
+<ul>
+<li><strong>cpus</strong>: its each sub-nodes describing each CPU in the system.</li>
+<li><strong>memory</strong> : defines location and size of the RAM.</li>
+<li><strong>chosen</strong> : defines parameters chosen or defined by the system firmware at boot time. In practice, one of its usage is to pass the kernel command line.</li>
+<li><strong>aliases</strong> : shortcuts to certain nodes.</li>
+<li>One or more nodes defining the buses in the SoC</li>
+<li>One or mode nodes defining on-board devices</li>
+</ul>
+<p>以ARM的foundation v8 作为例子: <a href="https://developer.arm.com/products/system-design/fixed-virtual-platforms" target="_blank" rel="noopener">Foundation Platform</a>是ARM提供的满足其Specification的虚拟板子，
+有最基本的硬件功能)</p>
+<figure class="highlight sh"><figcaption><span>foundation-v8.dtsi</span><a href="https://github.com/96boards-hikey/linux/blob/hikey960-v4.9/arch/arm64/boot/dts/arm/foundation-v8.dtsi" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">/* * ARM Ltd.</span><br><span class="line"> * ARMv8 Foundation model DTS */</span><br><span class="line"></span><br><span class="line">/dts-v1/;</span><br><span class="line">/memreserve/ 0x80000000 0x00010000;</span><br><span class="line">/ &#123;</span><br><span class="line">    model = <span class="string">"Foundation-v8A"</span>;</span><br><span class="line">    compatible = <span class="string">"arm,foundation-aarch64"</span>, <span class="string">"arm,vexpress"</span>;</span><br><span class="line">    interrupt-parent = &lt;&amp;gic&gt;;</span><br><span class="line">    <span class="comment">#address-cells = &lt;2&gt;;</span></span><br><span class="line">    <span class="comment">#size-cells = &lt;2&gt;;</span></span><br><span class="line"></span><br><span class="line">    chosen &#123; &#125;;</span><br><span class="line">    aliases &#123;</span><br><span class="line">    	serial0 = &amp;v2m_serial0;</span><br><span class="line">        ...</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    cpus &#123;</span><br><span class="line">    	<span class="comment">#address-cells = &lt;2&gt;;</span></span><br><span class="line">    	<span class="comment">#size-cells = &lt;0&gt;;</span></span><br><span class="line"></span><br><span class="line">    	cpu@0 &#123; ... &#125;;</span><br><span class="line">    	cpu@1 &#123; ... &#125;;</span><br><span class="line">    	cpu@2 &#123; ... &#125;;</span><br><span class="line">    	cpu@3 &#123; ... &#125;;</span><br><span class="line">    	L2_0: l2-cache0 &#123;</span><br><span class="line">    		compatible = <span class="string">"cache"</span>;</span><br><span class="line">    	&#125;;</span><br><span class="line">    &#125;;</span><br><span class="line">	memory@80000000 &#123; ...  &#125;;</span><br><span class="line">	gic: interrupt-controller@2c001000 &#123; ... &#125;;</span><br><span class="line">    timer: &#123; ... &#125;;</span><br><span class="line">    pmu: &#123; ... &#125;;</span><br><span class="line">    smb: &#123; ... &#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><figcaption><span>foundation-v8.dts</span><a href="https://github.com/96boards-hikey/linux/blob/hikey960-v4.9/arch/arm64/boot/dts/arm/foundation-v8.dts" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#include "foundation-v8.dtsi"</span></span><br><span class="line">/ &#123; gic: interrupt-controller@2c001000 &#123; ...  &#125;; &#125;;</span><br></pre></td></tr></table></figure>
+<p>Foundation的device tree信息非常清晰，</p>
+<ul>
+<li><code>include</code>: 跟C一样，可以include其他文件，这里<code>foundation-v8.dts</code>就include了<code>foundation-v8.dtsi</code></li>
+<li><code>*.dtsi</code>: 扩展的dts文件，但是其本身不能include其他的dts文件。</li>
+<li><code>/</code>: root node, Device tree从该节点开始。</li>
+</ul>
+<p>chose是空的，如果想看实例可以参考hikey960的devicetree:</p>
+<figure class="highlight sh"><figcaption><span>hi3660-hikey960.dts</span><a href="https://github.com/96boards-hikey/linux/blob/hikey960-v4.9/arch/arm64/boot/dts/hisilicon/hi3660-hikey960.dts" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chosen &#123; stdout-path = <span class="string">"serial6:115200n8"</span>; &#125;;</span><br></pre></td></tr></table></figure>
+<p>hikey960在device tree中设定了输出的串口为uart6,
+这也是我们在使用Hikey960默认使用UART6的原因。</p>
+<h3 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a>Properties</h3><p>上面每个Node里面都有许多关键词，称为<strong>Property</strong>, 每个property是一个Key-value键值对，</p>
+<p><strong>Key</strong></p>
+<ul>
+<li><code>Compatible</code>: 这是连接硬件与Driver最为重要的一段信息，
+告诉Driver应该与哪个Node相匹配。
+其优先级与字符串里的顺序一致，
+在Linux中用来与<code>DT_MACHINE</code>结构中的<code>dt_compat</code>进行匹配。
+top-level的compatible一般是适配的板子的信息:<code>&lt;manufacture&gt;,&lt;model&gt;</code>。
+我们的Tree中，是ARM foundation，但是实现了vexpress的接口，
+所以描述时的值为:<code>&quot;arm,foundation-aarch64&quot;, &quot;arm,vexpress&quot;</code></li>
+<li>Node name: must as <code>&lt;name&gt;[@&lt;unit-address]</code>, 描述node的类型而非具体型号，最大31个char</li>
+<li>Addressing<ul>
+<li><code>reg</code>: Node/device 的物理地址: <code>reg = &lt;address1 length1 [address2 length2] [address3 length3] ... &gt;</code>，
+由于address 和 length都是变长，所以需要parent-node指定下面两个Property来帮助确定reg中的值长度。</li>
+<li><code>#address-cells</code>: <code>reg</code>中base address 需要多少cell(32bits values)</li>
+<li><code>#size-cells</code>: <code>reg</code>中的size大小</li>
+</ul>
+</li>
+<li>Interrupt<ul>
+<li><code>interrupt-controller</code>: bool类型来表明当前的node是不是interrupt controller</li>
+<li><code>#interrupt-cells</code>: 表示interrupts属性中多少个cell是被选定的interrupt controller所管理</li>
+<li><code>interrupt-parrent</code>: 是不是有个一个<code>phandle</code>指向当前node</li>
+</ul>
+</li>
+</ul>
+<p><strong>value</strong>: value可以为空or任何字节流，由于数据类型信息是没有包含在数据结构中的，
+所以在device tree中有一些基本的通用类型表示方法:</p>
+<ul>
+<li><strong>text-string</strong>: 双引号, <code>&quot;string-property = &quot;a string&quot;;</code></li>
+<li><strong>cell</strong>: 32-bit无符号整型: <code>&lt; &gt;</code>, <code>cell-property = &lt;0xbeef 123 0xabcd1234&gt;;</code></li>
+<li><strong>binary-property</strong>: <code>[ ]</code>, <code>binary-property = [0x01 0x23 0x45 0x67];</code></li>
+<li><strong>mixed-property</strong>: 不同类型的可以放一起: <code>mixed-property = &quot;a string&quot;, [0x01 0x23 0x45 0x67], &lt;0x12345678&gt;;</code></li>
+<li><strong>string-list</strong>: 逗号也用来建立字符串列表: <code>string-list = &quot;red fish&quot;, &quot;blue fish&quot;;</code></li>
+</ul>
+<h2 id="Address-Examples"><a href="#Address-Examples" class="headerlink" title="Address Examples"></a>Address Examples</h2><h3 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h3><figure class="highlight sh"><figcaption><span>foundation-v8.dtsi</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">cpus &#123;</span><br><span class="line"><span class="comment">#address-cells = &lt;2&gt;;</span></span><br><span class="line"><span class="comment">#size-cells = &lt;0&gt;;</span></span><br><span class="line"></span><br><span class="line">    cpu@0 &#123;</span><br><span class="line">        device_type = <span class="string">"cpu"</span>;</span><br><span class="line">        compatible = <span class="string">"arm,armv8"</span>;</span><br><span class="line">        reg = &lt;0x0 0x0&gt;;</span><br><span class="line">        <span class="built_in">enable</span>-method = <span class="string">"spin-table"</span>;</span><br><span class="line">        cpu-release-addr = &lt;0x0 0x8000fff8&gt;;</span><br><span class="line">        next-level-cache = &lt;&amp;L2_0&gt;;</span><br><span class="line">    &#125;;</span><br><span class="line">    cpu@1 &#123; ... &#125;;</span><br><span class="line">    cpu@2 &#123; ... &#125;;</span><br><span class="line">    cpu@3 &#123; ... &#125;;</span><br><span class="line">L2_0: l2-cache0 &#123;</span><br><span class="line">          compatible = <span class="string">"cache"</span>;</span><br><span class="line">      &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以<code>cpus</code>为例，其拥有4个<code>cpu@n</code>子节点和一个<code>l2-cache0</code>子节点, 其中<code>L2_0</code>是<code>l2-cache0</code>的label。
+<code>#address-cells</code>为<code>&lt;2&gt;</code>说明子节点中reg的地址为两个cell(<code>uint64</code>), 没有size。
+其中cpu@0的地址为<code>0x0 0x0</code>, (两个cell)。
+根据习惯，如果一个Node含有<code>reg</code>，那么其名称中必须含有<code>unit-address</code>也即<code>reg</code>中的第一个值。
+所以CPU@0的0取自<code>0x0</code>，</p>
+<h3 id="Memory-Mapped-Device"><a href="#Memory-Mapped-Device" class="headerlink" title="Memory (Mapped Device)"></a>Memory (Mapped Device)</h3><figure class="highlight sh"><figcaption><span>foundation-v8.dtsi</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">memory@80000000 &#123;</span><br><span class="line">		device_type = <span class="string">"memory"</span>;</span><br><span class="line">		reg = &lt;0x00000000 0x80000000 0 0x80000000&gt;,</span><br><span class="line">		      &lt;0x00000008 0x80000000 0 0x80000000&gt;;</span><br><span class="line">	&#125;;</span><br></pre></td></tr></table></figure>
+<p>内存的话，上面的信息表示内存有两个range: 分别是从<code>0x8000_0000</code>-<code>0xFFFF_FFFF</code>(2GB)与<code>0x08_8000_0000</code>-<code>0x08_FFFF_FFFF</code>(2GB)一共4GB的空间。
+不过手册上的信息是，后面一段内存是从<code>0x08_8000_0000</code>-<code>0x09_FFFF_FFFF</code>(6GB)的内存, Linux只用了后半段的2GB。
+<strong>Memory-mapped Device</strong>的格式与内存类似,不过要含有<code>compatible</code>信息。</p>
+<h3 id="Device-Live-on-Bus"><a href="#Device-Live-on-Bus" class="headerlink" title="Device Live on Bus"></a>Device Live on Bus</h3><p>这种设备在Bus上的设备有不同的寻址模式，一般会有片选线来选出chip号。</p>
+<figure class="highlight sh"><figcaption><span>foundation-v8.dtsi</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">smb@08000000 &#123;</span><br><span class="line">		compatible = <span class="string">"arm,vexpress,v2m-p1"</span>, <span class="string">"simple-bus"</span>;</span><br><span class="line">		arm,v2m-memory-map = <span class="string">"rs1"</span>;</span><br><span class="line">		<span class="comment">#address-cells = &lt;2&gt;; /* SMB chipselect number and offset */</span></span><br><span class="line">		<span class="comment">#size-cells = &lt;1&gt;;</span></span><br><span class="line">        </span><br><span class="line">        ranges = &lt;0 0 0 0x08000000 0x04000000&gt;,</span><br><span class="line">                 &lt;1 0 0 0x14000000 0x04000000&gt;,</span><br><span class="line">                 &lt;2 0 0 0x18000000 0x04000000&gt;,</span><br><span class="line">                 &lt;3 0 0 0x1c000000 0x04000000&gt;,</span><br><span class="line">                 &lt;4 0 0 0x0c000000 0x04000000&gt;,</span><br><span class="line">                 &lt;5 0 0 0x10000000 0x04000000&gt;;</span><br><span class="line">        ...</span><br><span class="line">            ethernet@2,02000000 &#123;</span><br><span class="line">                compatible = <span class="string">"smsc,lan91c111"</span>;</span><br><span class="line">                reg = &lt;2 0x02000000 0x10000&gt;;</span><br><span class="line">                interrupts = &lt;15&gt;;</span><br><span class="line">            &#125;;</span><br><span class="line">        ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>比如System Management Bus(SMBus, SMB)上的Ethernet@2, 就首先使用片选线2来选出对应的chip,
+之后是在chip上的基地址<code>0x0200_0000</code>，size是<code>0x10000</code>。</p>
+<h3 id="Range-Address-Translation"><a href="#Range-Address-Translation" class="headerlink" title="Range (Address Translation)"></a>Range (Address Translation)</h3><p>在root下的设备地址是可以直接被CPU理解的，
+但是像SMBus上的设备，
+其地址由于是有片选地址的原因，
+需要映射为CPU可以理解的地址才能被CPU使用,
+这时就可以使用<strong>range</strong>。</p>
+<p>range中的每个entry都是由<strong>child address</strong>, <strong>parent address</strong>, <strong>child size</strong>组成，
+格式分别按child <code>#address-cells</code>, parent <code>#address-cells</code>, 和 child <code>#size-cells</code></p>
+<p>如上所示，smb中的基址<code>0x0</code>被翻译为root下的<code>0x0800_0000</code>, 大小为<code>0x0400_0000</code>，
+所以ethernet@2,02000000在内存中的基址是在<code>0x1800_0000</code> + <code>0x0200_0000</code> = <code>0x1A00_0000</code>，
+最终的内存范围是<code>0x1A00_0000</code> - <code>0x1A00_FFFF</code>。</p>
+<p>如果子节点和父节点的地址空间一样，可以加一个空的range property, 这表示子节点和父节点的内存一一映射。
+需要地址翻译的原因在于PCI设备地址空间复杂，需要将这些详细信息交给kernel来处理，
+而DMA设备又需要知道bus上的真实地址而非这些翻译后的地址，
+还有的时候设备可以被分为一组而使用同样的映射等等。</p>
+<p>有一些使用片选的外设我们会发现没有range, 这种外设说明不是memory-mapped的设备，CPU也只能通过其父节点间接对其访问。</p>
+<h2 id="Interrupts"><a href="#Interrupts" class="headerlink" title="Interrupts"></a>Interrupts</h2><p>Interrupt signal可能由任何设备发起，或结束于任何设备，所以不同于address树状的描述方式，
+中断一般是按照与Device Tree无关的节点间的Link来描述。</p>
+<ul>
+<li><code>interrupt-controller</code> 用于指明一个device是否接受中断信号。</li>
+<li><code>interrupt-cells</code> 中断控制器的Property之一，
+用来描述有多少cell在当前终端控制前的<strong>interrupt specifier</strong>中，
+作用与<code>#address-cells</code>和<code>#size-cells</code>类似。</li>
+<li><code>interrupt-parent</code> 含有<code>phandle</code>的结点的Property之一，不含有<code>phandle</code>的node可以从父节点继承这一property.
+注意我们的foundation-v8.dtsi的开头有一句<code>interrupt-parent = &lt;&amp;gic&gt;;</code>, 所以root下的所有子节点默认继承该属性。</li>
+<li><code>interrupts</code> Node所含有的<strong>interrupt specifier</strong>，每个中断输出信号对应一个。</li>
+</ul>
+<p><strong>interrupt specifier</strong>是一个或多个cell(<code>#interrupt-cells</code>指定)大小的数据，
+描述了某个设备中断对应于哪个中断接受者，
+一个设备可能含有多个中断信号输出，
+这时就有多个sepcifier来描述这些输出分别对应于哪个中断接受端。
+至于specifier中的数据表示什么意思则要根据interrupt controller的手册来了。</p>
+<figure class="highlight sh"><figcaption><span>foundation-v8.dts</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/ &#123;</span><br><span class="line">	gic: interrupt-controller@2c001000 &#123;</span><br><span class="line">		compatible = <span class="string">"arm,cortex-a15-gic"</span>, <span class="string">"arm,cortex-a9-gic"</span>;</span><br><span class="line">		<span class="comment">#interrupt-cells = &lt;3&gt;;</span></span><br><span class="line">		<span class="comment">#address-cells = &lt;2&gt;;</span></span><br><span class="line">		interrupt-controller;</span><br><span class="line">		reg = &lt;0x0 0x2c001000 0 0x1000&gt;,</span><br><span class="line">		      &lt;0x0 0x2c002000 0 0x2000&gt;,</span><br><span class="line">		      &lt;0x0 0x2c004000 0 0x2000&gt;,</span><br><span class="line">		      &lt;0x0 0x2c006000 0 0x2000&gt;;</span><br><span class="line">		interrupts = &lt;1 9 0xf04&gt;;</span><br><span class="line">	&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在foundation-v8的dts文件中，gic(v2)是从<code>0x2c00_1000</code> - <code>0x2c00_7FFF</code>的这段空间中，</p>
+<ul>
+<li><code>interrupt-controller</code>，所以他是一个中断控制器。</li>
+<li><code>#interrupt-cells = &lt;3&gt;</code>, 所有以它作为中断接受者的设备都要用3个cell来描述中断信息。</li>
+</ul>
+<figure class="highlight plain"><figcaption><span>gic.txt</span><a href="https://elixir.bootlin.com/linux/v4.2/source/Documentation/devicetree/bindings/arm/gic.txt" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">The 1st cell is the interrupt type; 0 for SPI interrupts, 1 for PPI</span><br><span class="line">interrupts.</span><br><span class="line"></span><br><span class="line">The 2nd cell contains the interrupt number for the interrupt type.</span><br><span class="line">SPI interrupts are in the range [0-987].  PPI interrupts are in the</span><br><span class="line">range [0-15].</span><br><span class="line"></span><br><span class="line">The 3rd cell is the flags, encoded as follows:</span><br><span class="line">        bits[3:0] trigger type and level flags.</span><br><span class="line">            1 = low-to-high edge triggered</span><br><span class="line">            2 = high-to-low edge triggered (invalid for SPIs)</span><br><span class="line">            4 = active high level-sensitive</span><br><span class="line">            8 = active low level-sensitive (invalid for SPIs).</span><br><span class="line">        bits[15:8] PPI interrupt cpu mask.  Each bit corresponds to each of</span><br><span class="line">        the 8 possible cpus attached to the GIC.  A bit set to &apos;1&apos; indicated</span><br><span class="line">        the interrupt is wired to that CPU.  Only valid for PPI interrupts.</span><br><span class="line">        Also note that the configurability of PPI interrupts is IMPLEMENTATION</span><br><span class="line">        DEFINED and as such not guaranteed to be present (most SoC available</span><br><span class="line">        in 2014 seem to ignore the setting of this flag and use the hardware</span><br><span class="line">        default value).</span><br></pre></td></tr></table></figure>
+<p>Linux源码arm gic的binding文档中对三个cell如何描述进行了说明，<br>
+第一个是指明Shared processor interrupts(SPI)还是Per processor interrupts(PPI);<br>
+第二个是中断号;<br>
+第三个是flag。</p>
+<figure class="highlight sh"><figcaption><span>foundation-v8.dtsi</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">timer &#123;</span><br><span class="line">		compatible = <span class="string">"arm,armv8-timer"</span>;</span><br><span class="line">		interrupts = &lt;1 13 0xf08&gt;,</span><br><span class="line">			     &lt;1 14 0xf08&gt;,</span><br><span class="line">			     &lt;1 11 0xf08&gt;,</span><br><span class="line">			     &lt;1 10 0xf08&gt;;</span><br><span class="line">		clock-frequency = &lt;100000000&gt;;</span><br><span class="line">	&#125;;</span><br></pre></td></tr></table></figure>
+<p>timer就是一个PPI, 分别对应中断号10, 11, 13, 14，
+并且对4个CPU与之相连, 且为adtive low level-sentitive(0xf08)</p>
+<p>到这里为止，一个device tree中的常见信息我们都可以理解了，
+不过我们还发现在smb中有interrupt-map这种东西，这个我们在下一篇继续分析。
+下一篇我们主要来看PCI设备、中断的映射和对Device的一些总结。</p>
+<p>Reference List:</p>
+<ul>
+<li><a href="https://saurabhsengarblog.wordpress.com/2015/11/28/device-tree-tutorial-arm/" target="_blank" rel="noopener">Linux Kernel For Newbies</a></li>
+<li><a href="http://wiki.dreamrunner.org/public_html/Embedded-System/Linux-Device-Tree.html" target="_blank" rel="noopener">Linux Device tree</a></li>
+<li><a href="https://elinux.org/Device_Tree_Mysteries" target="_blank" rel="noopener">Device Tree Mysteries</a></li>
+<li><a href="https://elinux.org/Device_Tree_Usage" target="_blank" rel="noopener">Device Tree Usage</a></li>
+<li><a href="https://elinux.org/Device_tree_future#Devicetree_Specification" target="_blank" rel="noopener">Devicetree Specification</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tutorial/" rel="tag"># tutorial</a>
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/06/13/virtualization-intro-0/" rel="next" title="Virtualization Intro 0">
+                <i class="fa fa-chevron-left"></i> Virtualization Intro 0
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/06/20/arm-device-tree-1/" rel="prev" title="ARM Device Tree 1 - PCIe">
+                ARM Device Tree 1 - PCIe <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Overview"><span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#History"><span class="nav-text">History</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Usage"><span class="nav-text">Usage</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Syntax"><span class="nav-text">Syntax</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Structure"><span class="nav-text">Structure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Properties"><span class="nav-text">Properties</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Address-Examples"><span class="nav-text">Address Examples</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU"><span class="nav-text">CPU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Memory-Mapped-Device"><span class="nav-text">Memory (Mapped Device)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Device-Live-on-Bus"><span class="nav-text">Device Live on Bus</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Range-Address-Translation"><span class="nav-text">Range (Address Translation)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interrupts"><span class="nav-text">Interrupts</span></a></li></ol>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2018/06/19/arm-device-tree-0/';
+          this.page.identifier = 'blog/2018/06/19/arm-device-tree-0/';
+          this.page.title = 'ARM Device Tree 0';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

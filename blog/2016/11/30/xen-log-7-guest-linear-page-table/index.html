@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Xen, Linear Page Table">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="When you see memory layout of Xen, you may found that there is a range named :Guest Linear Page Table. You can find this in $XEN_DIR/xen/include/include/asm-x86/config.h. So what is the purpose of thi">
+<meta name="keywords" content="Xen, Linear Page Table">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xen Log 7-Linear Page Table">
+<meta property="og:url" content="http://silentming.net/blog/2016/11/30/xen-log-7-guest-linear-page-table/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="When you see memory layout of Xen, you may found that there is a range named :Guest Linear Page Table. You can find this in $XEN_DIR/xen/include/include/asm-x86/config.h. So what is the purpose of thi">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://silentming.net/images/20161130pt.png">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xen Log 7-Linear Page Table">
+<meta name="twitter:description" content="When you see memory layout of Xen, you may found that there is a range named :Guest Linear Page Table. You can find this in $XEN_DIR/xen/include/include/asm-x86/config.h. So what is the purpose of thi">
+<meta name="twitter:image" content="http://silentming.net/images/20161130pt.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2016/11/30/xen-log-7-guest-linear-page-table/">
+
+
+
+
+
+  <title>Xen Log 7-Linear Page Table | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2016/11/30/xen-log-7-guest-linear-page-table/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Xen Log 7-Linear Page Table</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-30T19:19:03+08:00">2016-11-30</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2016/11/30/xen-log-7-guest-linear-page-table/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2016/11/30/xen-log-7-guest-linear-page-table/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>When you see memory layout of Xen, you may found that there is a range named :<strong>Guest Linear Page Table</strong>. You can find this in <code>$XEN_DIR/xen/include/include/asm-x86/config.h</code>.
+So what is the purpose of this range?</p>
+<p>Before we dig into the page table, you may need to read previous post [<a href="http://silentming.net/blog/2016/11/30/funny-page-table-terminology/">The Funny Page Table Terminology</a>] to learn about some page table terms used in Xen.</p>
+<p>This question may help you as well: <a href="http://old-list-archives.xenproject.org/archives/html/xen-devel/2008-03/msg01021.html" target="_blank" rel="noopener">What’s the purpose of linear page table (PML4 entry 258)</a>
+<a id="more"></a></p>
+<p>In config.h, we can find memory layout of Xen:</p>
+<figure class="highlight c"><figcaption><span>config.h</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"># HYPERVISOR_VIRT_START</span><br><span class="line"># RO_MPT_VIRT_START</span><br><span class="line"> *  <span class="number">0xffff800000000000</span> - <span class="number">0xffff803fffffffff</span> [<span class="number">256</span>GB, <span class="number">2</span>^<span class="number">38</span> bytes, PML4:<span class="number">256</span>]</span><br><span class="line"> *    Read-only machine-to-phys translation table (GUEST ACCESSIBLE).</span><br><span class="line"> </span><br><span class="line"># RO_MPT_VIRT_END</span><br><span class="line">*  <span class="number">0xffff804000000000</span> - <span class="number">0xffff807fffffffff</span> [<span class="number">256</span>GB, <span class="number">2</span>^<span class="number">38</span> bytes, PML4:<span class="number">256</span>]</span><br><span class="line"> *    Reserved for future shared info with the guest OS (GUEST ACCESSIBLE).</span><br><span class="line"></span><br><span class="line"> *  <span class="number">0xffff808000000000</span> - <span class="number">0xffff80ffffffffff</span> [<span class="number">512</span>GB, <span class="number">2</span>^<span class="number">39</span> bytes, PML4:<span class="number">257</span>]</span><br><span class="line"> *    ioremap <span class="keyword">for</span> PCI mmconfig space</span><br><span class="line"> </span><br><span class="line"> *  <span class="number">0xffff810000000000</span> - <span class="number">0xffff817fffffffff</span> [<span class="number">512</span>GB, <span class="number">2</span>^<span class="number">39</span> bytes, PML4:<span class="number">258</span>]</span><br><span class="line"> *    Guest linear page table.</span><br><span class="line"></span><br><span class="line"> *  <span class="number">0xffff818000000000</span> - <span class="number">0xffff81ffffffffff</span> [<span class="number">512</span>GB, <span class="number">2</span>^<span class="number">39</span> bytes, PML4:<span class="number">259</span>]</span><br><span class="line"> *    Shadow linear page table.</span><br><span class="line"></span><br><span class="line"> *  <span class="number">0xffff820000000000</span> - <span class="number">0xffff827fffffffff</span> [<span class="number">512</span>GB, <span class="number">2</span>^<span class="number">39</span> bytes, PML4:<span class="number">260</span>]</span><br><span class="line"> *    Per-domain mappings (e.g., GDT, LDT).</span><br><span class="line"> ...</span><br></pre></td></tr></table></figure>
+<p>The PML4[258] is used as Guest Linear Page Table. What the hell is it???</p>
+<p>After printing the PT of Xen after initialization:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">(XEN) |=========PT Info========|</span><br><span class="line">(XEN) |-------L4: 000000008ce4b000</span><br><span class="line">(XEN)   |------id: 0, L3: 000000008d40d000</span><br><span class="line">(XEN)     |-----id: 0, L2: 000000008d40c000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008ce4c000</span><br><span class="line">(XEN)   |------id: 256, L3: 00000002393b9000</span><br><span class="line">(XEN)     |-----id: 0, L2: 00000002393b7000</span><br><span class="line">(XEN)   |------id: 258, L3: 000000008ce4b000</span><br><span class="line">(XEN)     |-----id: 0, L2: 000000008d40d000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008d40c000</span><br><span class="line">(XEN)     |-----id: 256, L2: 00000002393b9000</span><br><span class="line">(XEN)       |----id: 0, L1: 00000002393b7000</span><br><span class="line">(XEN)     |-----id: 258, L2: 000000008ce4b000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008d40d000</span><br><span class="line">(XEN)       |----id: 256, L1: 00000002393b9000</span><br><span class="line">(XEN)       |----id: 258, L1: 000000008ce4b000</span><br><span class="line">(XEN)       |----id: 261, L1: 000000008ce4a000</span><br><span class="line">(XEN)       |----id: 262, L1: 000000008ce49000</span><br><span class="line">(XEN)     |-----id: 261, L2: 000000008ce4a000</span><br><span class="line">(XEN)       |----id: 0, L1: 00000002393b8000</span><br><span class="line">(XEN)       |----id: 256, L1: 00000002393bb000</span><br><span class="line">(XEN)       |----id: 319, L1: 000000008ce48000</span><br><span class="line">(XEN)       |----id: 320, L1: 00000002393b5000</span><br><span class="line">(XEN)       |----id: 321, L1: 00000002393b6000</span><br><span class="line">(XEN)       |----id: 322, L1: 000000008ce47000</span><br><span class="line">(XEN)       |----id: 384, L1: 000000023cd9e000</span><br><span class="line">(XEN)     |-----id: 262, L2: 000000008ce49000</span><br><span class="line">(XEN)       |----id: 0, L1: 000000008ce43000</span><br><span class="line">(XEN)       |----id: 2, L1: 000000008ce45000</span><br><span class="line">(XEN)       |----id: 3, L1: 000000008ce46000</span><br><span class="line">(XEN)       |----id: 4, L1: 000000008f7fd000</span><br><span class="line">(XEN)       |----id: 8, L1: 000000008f7fb000</span><br><span class="line">(XEN)   |------id: 261, L3: 000000008ce4a000</span><br><span class="line">(XEN)     |-----id: 0, L2: 00000002393b8000</span><br><span class="line">(XEN)     |-----id: 256, L2: 00000002393bb000</span><br><span class="line">(XEN)       |----id: 0, L1: 00000002393ba000</span><br><span class="line">(XEN)     |-----id: 319, L2: 000000008ce48000</span><br><span class="line">(XEN)       |----id: 510, L1: 000000008f7fe000</span><br><span class="line">(XEN)       |----id: 511, L1: 000000008d408000</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>Wait, see what we found. The contents of PML4[258] has the same physical address of PML4 itself! (See line: 2, 8, 13, 16) They all have same physical address: 8ce4b000. So when we walk this page table, we will always find PML4 and if we use a recursive function withoud limitation, this will cause stack overflow.</p>
+<p>From the question, it seems that this can faciliate the locating of a PTE from VA but how and why? (In this post I will use l4pt-l1pt instead of pgd, pud, pmd and pt)</p>
+<h3 id="Page-Table-Walking"><a href="#Page-Table-Walking" class="headerlink" title="Page Table Walking"></a>Page Table Walking</h3><p>In development, we may want to change a data page to be readonly. Traditionally, you will get a 48-bit VA (The high 16-bit will always be 1 or 0 according to AMD specification).
+We will devide 48-bit VA in this way:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">|---------------------- <span class="number">48</span>-bit Virtual Address ------------------------|</span><br><span class="line">|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">12</span> bit ---|</span><br><span class="line">|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset--|--- offset ---|</span><br><span class="line"></span><br><span class="line">|------------ offset is used in corresponding PT/Data Page ------------|</span><br><span class="line"></span><br><span class="line">|--- L4 PT ---|--- L3 PT ---|--- L2 PT ---|--- L1 PT ---|- Data Page --|</span><br><span class="line">|<span class="number">64</span>-bit * <span class="number">512</span> |<span class="number">64</span>-bit * <span class="number">512</span> |<span class="number">64</span>-bit * <span class="number">512</span> |<span class="number">64</span>-bit * <span class="number">512</span> |-- <span class="number">4</span>KB Page --|</span><br></pre></td></tr></table></figure>
+<img src="/images/20161130pt.png" width="500" height="300" title="Page Table Walking">
+<p>After walking 4 levels page table, using each 9-bit seg as offset in corresponding level of PT and plusing its 12-bit offset in VA, we can finally locate accurate physical address of this virtual address. The translation is done.</p>
+<p>Each level PT is a 4K page saving 64-bit info * 512 entries. </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Info stored in each level PTE */</span></span><br><span class="line">|------------ <span class="number">64</span>-bit info stored in PTE -----------|</span><br><span class="line">|--- <span class="number">16</span> bit ---|------ <span class="number">40</span> bit ------|--- <span class="number">12</span> bit ---|</span><br><span class="line">|-- reserved --|- PA of next level -|---- flag ----|</span><br></pre></td></tr></table></figure>
+<p>While current OS supporting max 52-bit physical address, the higher/most 16 bits of 64-bit info is reserved for future hardware/software using (63-bit is used as NX, non-executable on some hardware). And lower 52-bit will store the physical address of next level PT. As physical memory is also devided into 4K page, the least 12 bits will always be zero for one page. That’s why we can use least 12bits to store flags.</p>
+<h3 id="Linear-Page-Table"><a href="#Linear-Page-Table" class="headerlink" title="Linear Page Table"></a>Linear Page Table</h3><p>Now we want to set one <strong>data page</strong> as readonly (We can only control them in page granularity), meaning that we need to change R/W flag of L1PTE that pointing to this data page. Then, the address of this L1PT is needed.</p>
+<p>The intuitive way is using VA of data page to walk PT and stop at L1PTE. And change the flag of L1PTE. So, you need to:</p>
+<ul>
+<li>L4PT->L3PT<ul>
+<li>Read PA of L4PT from CR3 (noted as PA<sub>4</sub>), </li>
+<li>Add L4 offset(note as offset<sub>4</sub>) to this PA and make it into a VA<sub>4</sub></li>
+<li>Using VA<sub>4</sub> to walk 4-level PT and get its 64-bit info which means you get PA of L3PT (noted as PA<sub>3</sub>).</li>
+</ul>
+</li>
+<li>L3PT->L2PT<ul>
+<li>Add offset<sub>3</sub> to PA<sub>3</sub> and make this into a VA<sub>3</sub> </li>
+<li>Using VA<sub>3</sub> to walk 4-level PT and get its 64-bit info. Get PA<sub>2</sub></li>
+</ul>
+</li>
+<li>L2PT->L1PT<ul>
+<li>Add offset<sub>2</sub> to PA<sub>2</sub> and make this into a VA<sub>2</sub> </li>
+<li>Using VA<sub>2</sub> to walk 4-level PT and get its 64-bit info. Get PA<sub>1</sub></li>
+</ul>
+</li>
+<li>Change flag of L1PT<ul>
+<li>Add offset<sub>1</sub> to PA<sub>1</sub> and make this into a VA<sub>1</sub> so that you can derefer it.</li>
+<li><code>*VA1 &amp;= ~R/W flag</code>. (*VA<sub>1</sub> will aslo using VA<sub>1</sub> to walk 4-level PT)</li>
+</ul>
+</li>
+</ul>
+<p>We can find that, to change the flag of this data page, we need to walk 4-level PT 4 times! It’s inefficient. And make every PA to VA, we have to prepare a <strong>Direct Mapping</strong> of all physical memory. Now it is the job of Linear Page Table.</p>
+<p>Linear Page Table is actually one L4PTE, and its 64-bit info saves the PA<sub>4</sub>. (Not PA<sub>3</sub>! but PA<sub>4</sub> which is exactly same with PA stored in CR3).<br>
+So walk this PTE will give you infinite loop of it self. Take the example in Xen (<code>PML[258]</code>). If we have a VA that offset<sub>4</sub> is 258, you will find this:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">|---------------------- <span class="number">48</span>-bit Virtual Address ------------------------|</span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> -|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">9</span> bit ---|--- <span class="number">12</span> bit ---|</span><br><span class="line">|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset--|--- offset ---|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* L4 offset (PML4[258]) will give you L4PT! ===&gt;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">|---------------------- 48-bit Virtual Address ------------------------|</span></span><br><span class="line"><span class="comment">|- 258/0x102 -|--- 9 bit ---|--- 9 bit ---|--- 9 bit ---|--- 12 bit ---|</span></span><br><span class="line"><span class="comment">|--L4 offset--|--L4 offset--|--L3 offset--|--L2 offset--|--L1 offset:000--|</span></span><br></pre></td></tr></table></figure>
+<p>Because offset<sub>4</sub> 258 will bring you into L4PT again instead of L3PT, <strong>you will use next 9-bit seg as L4 offset to walk L4PT again</strong>. <br>
+Eventually, you will have no extra 9-bit to walk L1PT and stop at L2PTE which saves PA of L1PT(PA<sub>1</sub>).</p>
+<p>!!! The PA<sub>1</sub> is gotten ?! We made so much effort and walk the 4-level so many times…</p>
+<p>And, you get a bonus. Don’t forget the least 12-bit, the 12-bit is final offset, we can use this to locate the L1PTE we want! And this strange new VA is just the VA of this L1PTE (VA<sub>1</sub>). Just with a special L4PTE, we have saved us from 3-times 4-level PT walking and don’t need to prepare the <strong>Direct Mapping</strong> as well.</p>
+<p>So, let’s constuct the new VA: I will use 49-19 to note each 9-bit seg in VA.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Original VA: */</span></span><br><span class="line">|------------------------ <span class="number">48</span>-bit Virtual Address --------------------------|</span><br><span class="line">|--  <span class="number">9</span> bits ---|--- <span class="number">9</span> bits ---|--- <span class="number">9</span> bits ---|--- <span class="number">9</span> bits ---|--- <span class="number">12</span> bits --|</span><br><span class="line">|--- <span class="number">47</span>:<span class="number">39</span>  ---|--- <span class="number">38</span>:<span class="number">30</span>  ---|--- <span class="number">29</span>:<span class="number">21</span>  ---|--- <span class="number">20</span>: <span class="number">12</span> ---|---- <span class="number">11</span>:<span class="number">0</span> ----|</span><br><span class="line">|-- L4 offset--|-- L3 offset--|-- L2 offset--|-- L1 offset--|-- PA offset--|</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constructed new VA of L1PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|--L4 offset --|--L3 offset --|--L2 offset --|L1 offset <span class="number">000</span> |</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Similarly, VA of L2PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|--L4 offset --|--L3 offset --|L2 offset <span class="number">000</span> |</span><br><span class="line"></span><br><span class="line"><span class="comment">/* VA of L3PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|--L4 offset --|L3 offset <span class="number">000</span> |</span><br><span class="line"></span><br><span class="line"><span class="comment">/* VA of L4PTE: */</span></span><br><span class="line">|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|- <span class="number">258</span>/<span class="number">0x102</span> --|L4 offset <span class="number">000</span> |</span><br></pre></td></tr></table></figure>
+<p>The least 12-bit, we can append 9-bit three zero. Because each 64-bit info entry is 8 bytes (so we need 3 zero) and with such sugar, we can locate each level of PTE and any VA as we want.</p>
+<figure class="highlight c"><figcaption><span>An Implementation</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LINEAR_PT_OFFSET 258</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> L4_PAGETABLE_SHIFT 39             <span class="comment">/* 12 + 9 * 3 */</span></span></span><br><span class="line"><span class="meta">#typedef unsigned long vaddr_t</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">pte_t</span> * fun(<span class="keyword">vaddr_t</span> vaddr, <span class="keyword">unsigned</span> lv)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">vaddr_t</span> ret = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">uintptr_t</span> offset = LINEAR_PT_OFFSET &lt;&lt; L4_PAGETABLE_SHIFT; </span><br><span class="line">    <span class="keyword">uintptr_t</span> vmask = (<span class="number">1U</span>L &lt;&lt; <span class="number">48</span>) - <span class="number">1</span>;    <span class="comment">/* Most 16 bits are reserved */</span></span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( lv &lt; <span class="number">1</span> || lv &gt; <span class="number">4</span> )</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    ret |= vaddr &amp; (~vmask);              <span class="comment">/* Clear VA, put reserved 16 bits */</span></span><br><span class="line">    vaddr &amp;= vmask;                       <span class="comment">/* Just keep VA */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> ( i = <span class="number">0</span>; i &lt; lv; i++ )</span><br><span class="line">        ret |= offset &gt;&gt; (i * <span class="number">9</span>);         <span class="comment">/* Construct our new vaddr as above */</span></span><br><span class="line">    ret |= (vaddr &gt;&gt; (<span class="number">9</span> * lv) &gt;&gt; <span class="number">3</span> &lt;&lt; <span class="number">3</span>); <span class="comment">/* Append 3 zero */</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">pte_t</span> *)ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="End"><a href="#End" class="headerlink" title="End"></a>End</h3><p>This is better to be used in full 4-level page walking. Be careful when use this trick for PSE page (which will not go througn full 4-level page walking). </p>
+<h3 id="ChangeLog"><a href="#ChangeLog" class="headerlink" title="ChangeLog"></a>ChangeLog</h3><ul>
+<li>2018-06-27: Refine the desciption of constructed virtual address</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/virtualization/" rel="tag"># virtualization</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/11/29/relocation-truncated-to-fit/" rel="next" title="[Forward]Relocation Truncated to Fit">
+                <i class="fa fa-chevron-left"></i> [Forward]Relocation Truncated to Fit
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/11/30/funny-page-table-terminology/" rel="prev" title="The funny page table terminology">
+                The funny page table terminology <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Page-Table-Walking"><span class="nav-text">Page Table Walking</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linear-Page-Table"><span class="nav-text">Linear Page Table</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChangeLog"><span class="nav-text">ChangeLog</span></a></li></ol>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2016/11/30/xen-log-7-guest-linear-page-table/';
+          this.page.identifier = 'blog/2016/11/30/xen-log-7-guest-linear-page-table/';
+          this.page.title = 'Xen Log 7-Linear Page Table';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

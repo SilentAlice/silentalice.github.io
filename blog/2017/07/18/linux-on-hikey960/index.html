@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hikey960, linux, arm64, uefi">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="Hikey960目前来说是个比较新的板子，网上大部分教程都是针对Hikey，而Hikey960和Hikey的 差别比较大，现有的教程也比较杂，所以这里记录一下自己踩过的小坑。 Curently, Hikey960 is not fully supported by debian9. Tutorials and docs are all about hikey (620). This post re">
+<meta name="keywords" content="hikey960, linux, arm64, uefi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Run Debian9 Linux on Hikey960">
+<meta property="og:url" content="http://silentming.net/blog/2017/07/18/linux-on-hikey960/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="Hikey960目前来说是个比较新的板子，网上大部分教程都是针对Hikey，而Hikey960和Hikey的 差别比较大，现有的教程也比较杂，所以这里记录一下自己踩过的小坑。 Curently, Hikey960 is not fully supported by debian9. Tutorials and docs are all about hikey (620). This post re">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Run Debian9 Linux on Hikey960">
+<meta name="twitter:description" content="Hikey960目前来说是个比较新的板子，网上大部分教程都是针对Hikey，而Hikey960和Hikey的 差别比较大，现有的教程也比较杂，所以这里记录一下自己踩过的小坑。 Curently, Hikey960 is not fully supported by debian9. Tutorials and docs are all about hikey (620). This post re">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2017/07/18/linux-on-hikey960/">
+
+
+
+
+
+  <title>Run Debian9 Linux on Hikey960 | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2017/07/18/linux-on-hikey960/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Run Debian9 Linux on Hikey960</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-18T20:05:08+08:00">2017-07-18</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2017/07/18/linux-on-hikey960/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2017/07/18/linux-on-hikey960/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Hikey960目前来说是个比较新的板子，网上大部分教程都是针对Hikey，而Hikey960和Hikey的
+差别比较大，现有的教程也比较杂，所以这里记录一下自己踩过的小坑。</p>
+<p>Curently, Hikey960 is not fully supported by debian9. Tutorials and docs are all about hikey (620).
+This post records the process about running Debian 9 on Hikey960.</p>
+<a id="more"></a>
+<p>(Reference)本文参考了: <a href="https://github.com/96boards/documentation/wiki/HiKeyUEFI" target="_blank" rel="noopener">HikeyUEFI</a>, <a href="https://github.com/96boards-hikey/tools-images-hikey960/blob/master/build-from-source/README-ATF-UEFI-build-from-source.md" target="_blank" rel="noopener">ATF-UEFI-build-from-source</a></p>
+<h1 id="Cross-Compilation-Environment"><a href="#Cross-Compilation-Environment" class="headerlink" title="Cross Compilation Environment"></a>Cross Compilation Environment</h1><p>先给下载链接: <a href="http://releases.linaro.org/components/toolchain/binaries/5.3-2016.05/aarch64-linux-gnu/" target="_blank" rel="noopener">aarch64-linux-gnu-5.3</a> <br>
+Download link: <a href="http://releases.linaro.org/components/toolchain/binaries/5.3-2016.05/aarch64-linux-gnu/" target="_blank" rel="noopener">aarch64-linux-gnu-5.3</a></p>
+<p>注意请用5.3, 5.0以下的一会我们编译的时候会有一些参数5.0以下还不支持，我用5.4的时候会遇到一个<a href="https://github.com/ARM-software/tf-issues/issues/401" target="_blank" rel="noopener">bug</a>, 有兴趣的可以看看，一个宏展开的时候较新的gcc会报错。5.3是可以的..<br>
+Note that only gcc 5.0 is usable while there are some bugs (See <a href="https://github.com/ARM-software/tf-issues/issues/401" target="_blank" rel="noopener">this</a> for details) in 5.4. What I used is gcc 5.3.</p>
+<p>下载解压后把bin目录加入到自己的path中就可以了。<br>
+Add <code>bin</code> to your $PATH variable to use these cross-compilation tools.</p>
+<h1 id="Hikey960-Introduction"><a href="#Hikey960-Introduction" class="headerlink" title="Hikey960 Introduction"></a>Hikey960 Introduction</h1><p><a href="https://www.96boards.org/documentation/ConsumerEdition/HiKey960/GettingStarted/" target="_blank" rel="noopener">这里</a>能够看到板子的简单介绍，我们需要注意的只有不同模式如何调:<br>
+<a href="https://www.96boards.org/documentation/ConsumerEdition/HiKey960/GettingStarted/" target="_blank" rel="noopener">This page</a> shows some introduction about hikey960. What we need to know is how to config it into different mode:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">——–Mode——–</th>
+<th style="text-align:left">—Link Switch—</th>
+<th style="text-align:left">—Auto Power—</th>
+<th style="text-align:left">—Fastboot—</th>
+<th style="text-align:left">—Recovery—</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Auto Power up</td>
+<td style="text-align:left">link 1-2/Switch 1</td>
+<td style="text-align:left">closed/ON</td>
+<td style="text-align:left">closed/ON</td>
+<td style="text-align:left">closed/ON</td>
+</tr>
+<tr>
+<td style="text-align:left">Recovery</td>
+<td style="text-align:left">link 3-4/Switch 2</td>
+<td style="text-align:left">open/OFF</td>
+<td style="text-align:left">open/OFF</td>
+<td style="text-align:left">closed/ON</td>
+</tr>
+<tr>
+<td style="text-align:left">Fastboot</td>
+<td style="text-align:left">link 5-6/Switch 3</td>
+<td style="text-align:left">open/OFF</td>
+<td style="text-align:left">closed/ON</td>
+<td style="text-align:left">open/OFF</td>
+</tr>
+</tbody>
+</table>
+<p>还有需要注意的是 如果是跳线来连的属于Ver1, 如果是直接用板子背面开关调的属于Ver2
+<br>The Ver2 correspons to switches and jumper is Ver1.</p>
+<p>这里可以看到每个signal在板子上的意义和位置: <a href="https://github.com/96boards/documentation/blob/master/ConsumerEdition/HiKey960/HardwareDocs/HardwareUserManual.md" target="_blank" rel="noopener">Manual</a>
+<br>This <a href="https://github.com/96boards/documentation/blob/master/ConsumerEdition/HiKey960/HardwareDocs/HardwareUserManual.md" target="_blank" rel="noopener">Hardware User Manual</a> shows the meaning of different pins and components of this board.</p>
+<p>可以连接<code>UART_TXD</code>, <code>UART_RXD</code>, <code>GND</code> 用TLL to RS232，再转个USB就能通过串口来调试了, 板子的信息输出可以通过这个来看，本身烧板子用的是type-c的口。
+UART的接线可以看<a href="http://www.egr.msu.edu/classes/ece480/capstone/fall14/group04/assets/application-paper-of-august.pdf" target="_blank" rel="noopener">Understanding and Connecting UART Devices</a>
+<br>You can use a TTL to RS232 convertor and connect to corresponding pins to get serial (UART) output. (Or buy an integrated one)
+The connecting methods are shown on <a href="http://www.egr.msu.edu/classes/ece480/capstone/fall14/group04/assets/application-paper-of-august.pdf" target="_blank" rel="noopener">Understanding and Connecting UART Devices</a></p>
+<p>而关于如何观察串口输出和调试，可以参考之前的这篇:<a href="http://silentming.net/blog/2016/09/18/xen-log-5-debug-xen/">Debug Xen on Physical Machine</a>
+<br>Using minicom or screen on your host machine to read the output</p>
+<h1 id="Build-UEFI-loader"><a href="#Build-UEFI-loader" class="headerlink" title="Build UEFI loader"></a>Build UEFI loader</h1><p>我们的loader直接从源码编译，(现有的bin很多都是针对Hikey其他板子的，960没法直接拿来用)
+<br> Compile loader from source. (Currently, it may be a little difficult to find one)</p>
+<p>Download links:</p>
+<ul>
+<li><a href="https://github.com/ARM-software/arm-trusted-firmware/tree/integration" target="_blank" rel="noopener">ARM Trusted Firmware</a></li>
+<li><a href="https://github.com/96boards-hikey/edk2/tree/testing/hikey960_v2.5" target="_blank" rel="noopener">EDK2</a></li>
+<li><a href="https://github.com/96boards-hikey/OpenPlatformPkg/tree/testing/hikey960_v1.3.4" target="_blank" rel="noopener">OpenPlatformPkg</a></li>
+<li><a href="https://github.com/96boards-hikey/l-loader/tree/testing/hikey960_v1.2" target="_blank" rel="noopener">l-loader</a></li>
+<li><a href="https://git.linaro.org/uefi/uefi-tools.git" target="_blank" rel="noopener">uefi-tools</a></li>
+<li><a href="https://github.com/96boards-hikey/atf-fastboot/tree/master" target="_blank" rel="noopener">atf-fastboot</a></li>
+</ul>
+<p>下载到同一个目录，记为<code>BUILD_PATH</code>
+<br> Move them to one dir. The <code>path/to/this/dir</code> is remembered as <code>BUILD_PATH</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> <span class="variable">$&#123;BUILD_PATH&#125;</span>/edk2</span><br><span class="line">ln -s ../OpenPlatformPkg <span class="comment"># Link file must be named as this, will be used when compile edk2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 前面提到过的，如果板子是Ver1, 需要在uefi-tools/platform.config中去掉下面这句:</span></span><br><span class="line"><span class="comment"># Ir your board is Ver1, remove following one in your uefi-tools/platform.config</span></span><br><span class="line">BUILDFLAGS=-DSERIAL_BASE=0xFDF05000</span><br><span class="line"></span><br><span class="line">BUILD_OPTION=DEBUG</span><br><span class="line"><span class="built_in">export</span> AARCH64_TOOLCHAIN=GCC5</span><br><span class="line"><span class="built_in">export</span> UEFI_TOOLS_DIR=<span class="variable">$&#123;BUILD_PATH&#125;</span>/uefi-tools</span><br><span class="line"><span class="built_in">export</span> EDK2_DIR=<span class="variable">$&#123;BUILD_PATH&#125;</span>/edk2</span><br><span class="line">EDK2_OUTPUT_DIR=<span class="variable">$&#123;EDK2_DIR&#125;</span>/Build/HiKey960/<span class="variable">$&#123;BUILD_OPTION&#125;</span>_<span class="variable">$&#123;AARCH64_TOOLCHAIN&#125;</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$&#123;EDK2_DIR&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Build UEFI &amp; ARM Trust Firmware</span></span><br><span class="line"><span class="comment"># Again, please use gcc-5.3 to build</span></span><br><span class="line"><span class="variable">$&#123;UEFI_TOOLS_DIR&#125;</span>/uefi-build.sh -b <span class="variable">$&#123;BUILD_OPTION&#125;</span> -a ../arm-trusted-firmware hikey960</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate l-loader.bin</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$&#123;BUILD_PATH&#125;</span>/l-loader</span><br><span class="line">ln -sf <span class="variable">$&#123;EDK2_OUTPUT_DIR&#125;</span>/FV/bl1.bin</span><br><span class="line">ln -sf <span class="variable">$&#123;EDK2_OUTPUT_DIR&#125;</span>/FV/fip.bin</span><br><span class="line">ln -sf <span class="variable">$&#123;EDK2_OUTPUT_DIR&#125;</span>/FV/BL33_AP_UEFI.fd</span><br><span class="line">python gen_loader_hikey960.py -o l-loader.bin --img_bl1=bl1.bin --img_ns_bl1u=BL33_AP_UEFI.fd</span><br><span class="line"></span><br><span class="line"><span class="comment"># Generate partition table (You can download from net directly)</span></span><br><span class="line"><span class="comment"># See generate_ptable.sh to config your own ptable</span></span><br><span class="line">PTABLE=linux-32g SECTOR_SIZE=4096 SGDISK=./sgdisk bash -x generate_ptable.sh</span><br></pre></td></tr></table></figure>
+<p>PTABLE这一步可以根据自己需要修改<code>generate_ptable.sh</code>中的分区，比如如果使用的Debian的镜像的话4G的system
+分区是不够的，如果板子的Flash足够大也可以自己把分区分的更大一些方便之后的使用。
+<br> Generate your own partition table via <code>generate_ptable.sh</code>(in l-loader dir). For example, 4G flash storage is not
+enough for debian 9. My system partition is 20G.</p>
+<h1 id="Flash-Loader"><a href="#Flash-Loader" class="headerlink" title="Flash Loader"></a>Flash Loader</h1><p>将板子调成recovery mode, (1, 3 ON, 2 OFF), 下载<a href="https://github.com/96boards-hikey/tools-images-hikey960" target="_blank" rel="noopener">tools-images-hikey960</a>
+<br> Config board to recovery mode (1, 3 ON, 2 OFF), Download <a href="https://github.com/96boards-hikey/tools-images-hikey960" target="_blank" rel="noopener">tools-images-hikey960</a></p>
+<p>修改config: 把我们自己的l-loader替换原来的
+<br> In tools-images-hikey960 dir, modify config and using our compiled l-loader.bin to replace original one:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./sec_usb_xloader.img 0x00020000</span><br><span class="line">./sec_uce_boot.img 0x6A908000</span><br><span class="line">./l-loader.bin 0x1AC00000</span><br></pre></td></tr></table></figure>
+<p>Linux的话要移除modemmanger: <code>sudo apt-get purge modemmanger</code>
+<br> If you are using a linux host, please remove <code>modemmanger</code> otherwise there may be one bug.</p>
+<p>利用tools的工具来刷我们的l-loader: <code>sudo ./hikey_idt -c config -p /dev/ttyUSB1</code>, (这个ttyUSB是type-c所连的那个)
+这个刷成功后，设备就会开始跑fastboot程序，我们就可以开始刷其他的东东了:
+<br> Using tools in this dir to flash our new loader: <code>sudo ./hikey_idt -c config -p /dev/ttyUSB1</code>, (ttyUSB1 is the one your type-c is connecting).
+After this step, the board will run a fastboot program which means we can flash other files.</p>
+<p>l-loader, fip这两个和板子关系比较密切，不同板子版一样，ptable则根据我们flash的容量来自己设置,
+boot分区我们会刷uefi的程序， system分区则会刷我们的linux所在的文件系统。
+<br> l-loader, fip is board associated. Usually, different boards has different loader and fip. ptable is generated by ourselves.
+boot partition will be flashed with uefi loader and system partition will contain our Debian 9.</p>
+<p>目前支持的Linux只有<a href="http://builds.96boards.org/snapshots/reference-platform/openembedded/morty/hikey960/rpb/latest/" target="_blank" rel="noopener">rpb</a>, 下载我们需要的dtb (device tree blob), uefi.img, 和 rootfs.img
+<br> As currently only <a href="http://builds.96boards.org/snapshots/reference-platform/openembedded/morty/hikey960/rpb/latest/" target="_blank" rel="noopener">rpb</a> linux supports hikey960, first, we will flash its dtb (device tree blob), uefi.img and rootfs.img</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Using our own ptable</span></span><br><span class="line"><span class="variable">$sudo</span> fastboot flash ptable ptable.img</span><br><span class="line"><span class="variable">$sudo</span> fastboot flash xloader sec_xloader.img</span><br><span class="line"></span><br><span class="line"><span class="comment"># Using compiled l-loader</span></span><br><span class="line"><span class="variable">$sudo</span> fastboot flash fastboot l-loader.bin</span><br><span class="line"></span><br><span class="line"><span class="comment"># Using Compiled fip.bin</span></span><br><span class="line"><span class="variable">$sudo</span> fastboot flash fip fip.bin</span><br><span class="line"><span class="variable">$sudo</span> fastboot flash boot uefi.img</span><br><span class="line"><span class="variable">$sudo</span> fastboot flash system rootfs.img</span><br><span class="line"></span><br><span class="line"><span class="comment"># Only Android will use</span></span><br><span class="line"><span class="variable">$sudo</span> fastboot flash cache cache.img</span><br><span class="line"><span class="variable">$sudo</span> fastboot flash userdata userdata.img</span><br></pre></td></tr></table></figure>
+<p>Reboot</p>
+<p>Now you can login into this rpb linux using default accout <code>linaro</code></p>
+<h1 id="Run-Debian-9-on-hikey960"><a href="#Run-Debian-9-on-hikey960" class="headerlink" title="Run Debian 9 on hikey960"></a>Run Debian 9 on hikey960</h1><p>To run a debian 9, we will replace <code>boot</code> and <code>kernel image</code> of <em>debian 9 for hikey</em>. </p>
+<p>Download Debian 9 rootfs: <a href="http://builds.96boards.org/releases/hikey/linaro/debian/latest/" target="_blank" rel="noopener">Debian 9 for hikey</a> (<code>hikey-jessie_developer_20151130-387-8g.emmc.img.gz</code> as an example)</p>
+<p>The images are all <strong>sparse image</strong>, which means you need <a href="https://github.com/anestisb/android-simg2img" target="_blank" rel="noopener">simg2img</a> to convert them.</p>
+<h3 id="Replace-boot-and-kernel-image"><a href="#Replace-boot-and-kernel-image" class="headerlink" title="Replace boot and kernel image"></a>Replace boot and kernel image</h3><p>You may found that <code>uefi.img</code> from rpb linux will read configuration from <code>system partition/boot/grub/grub.cfg</code>. 
+So, just mount this debian image and replace <code>boot</code> dir with the one from <code>rpb</code>.</p>
+<p>Then you need new linux kernel image and dtb. Compile it from <a href="https://github.com/96boards-hikey/linux/tree/hikey960-v4.9" target="_blank" rel="noopener">source</a>. (The hieky960-v4.9 branch in this tree)</p>
+<p>Get dtb from <code>arch/arm64/boot/dts/hisilicon/hi3660-hikey960.dtb</code> You can get this when you cross-compile this linux.</p>
+<p>Put your new kernel image (in <code>arch/arm64/boot/Image</code>) in your debian image and modify grub.cfg to boot this new kernel.</p>
+<p>Reboot!</p>
+<h3 id="Some-issues"><a href="#Some-issues" class="headerlink" title="Some issues"></a>Some issues</h3><ol>
+<li>Now you can boot into your debian linux. As this debian rootfs is 8G, you may use <code>checkfs</code> to repair the filesystem to 20G.</li>
+<li>For connecting to network, you can flash wifi module or <a href="http://silentming.net/blog/2017/07/31/usb-device-networking/">virtualize type-c usb to netcard</a>.</li>
+<li>Now just modify your <code>source.list</code> and <code>apt-get</code> your needed pacakages.</li>
+</ol>
+<h1 id="ChangeLog"><a href="#ChangeLog" class="headerlink" title="ChangeLog"></a>ChangeLog</h1><ul>
+<li><p>2017-09-10</p>
+<p>  添加Debian 9支持</p>
+</li>
+<li><p>2017-07-31</p>
+<p>  添加prm_table.sh的说明，删除无用的ToDo.</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tutorial/" rel="tag"># tutorial</a>
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/record/" rel="tag"># record</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/05/31/parsec-and-spec/" rel="next" title="PARSEC & SPEC CPU Benchmark Deployment">
+                <i class="fa fa-chevron-left"></i> PARSEC & SPEC CPU Benchmark Deployment
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/07/30/cntlm-proxy-on-linux/" rel="prev" title="Using cntlm Proxy on Linux">
+                Using cntlm Proxy on Linux <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Cross-Compilation-Environment"><span class="nav-text">Cross Compilation Environment</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hikey960-Introduction"><span class="nav-text">Hikey960 Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Build-UEFI-loader"><span class="nav-text">Build UEFI loader</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Flash-Loader"><span class="nav-text">Flash Loader</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Run-Debian-9-on-hikey960"><span class="nav-text">Run Debian 9 on hikey960</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Replace-boot-and-kernel-image"><span class="nav-text">Replace boot and kernel image</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Some-issues"><span class="nav-text">Some issues</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#ChangeLog"><span class="nav-text">ChangeLog</span></a></li>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2017/07/18/linux-on-hikey960/';
+          this.page.identifier = 'blog/2017/07/18/linux-on-hikey960/';
+          this.page.title = 'Run Debian9 Linux on Hikey960';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

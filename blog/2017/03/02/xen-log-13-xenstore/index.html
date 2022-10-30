@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="xen, xenstore">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="XenStore是由Dom0维护的分层的存储系统(像一个小文件系统目录一样), 用于在Guest之间共享信息，通过Shared Memory来进行 数据共享。利用XenStore, Guest之间可以交流外设信息、Dom0可以读取到其他Guest的配置信息。 Hypervisor自身不会意识到XenStore的存在，XenStore的地址也是通过Shared_info page在Guest启动时进">
+<meta name="keywords" content="xen, xenstore">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xen Log 13-Xenstore Usage">
+<meta property="og:url" content="http://silentming.net/blog/2017/03/02/xen-log-13-xenstore/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="XenStore是由Dom0维护的分层的存储系统(像一个小文件系统目录一样), 用于在Guest之间共享信息，通过Shared Memory来进行 数据共享。利用XenStore, Guest之间可以交流外设信息、Dom0可以读取到其他Guest的配置信息。 Hypervisor自身不会意识到XenStore的存在，XenStore的地址也是通过Shared_info page在Guest启动时进">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://farm1.staticflickr.com/686/33199326375_036c2e88aa_o_d.png">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xen Log 13-Xenstore Usage">
+<meta name="twitter:description" content="XenStore是由Dom0维护的分层的存储系统(像一个小文件系统目录一样), 用于在Guest之间共享信息，通过Shared Memory来进行 数据共享。利用XenStore, Guest之间可以交流外设信息、Dom0可以读取到其他Guest的配置信息。 Hypervisor自身不会意识到XenStore的存在，XenStore的地址也是通过Shared_info page在Guest启动时进">
+<meta name="twitter:image" content="https://farm1.staticflickr.com/686/33199326375_036c2e88aa_o_d.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2017/03/02/xen-log-13-xenstore/">
+
+
+
+
+
+  <title>Xen Log 13-Xenstore Usage | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2017/03/02/xen-log-13-xenstore/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Xen Log 13-Xenstore Usage</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-02T10:34:38+08:00">2017-03-02</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2017/03/02/xen-log-13-xenstore/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2017/03/02/xen-log-13-xenstore/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>XenStore是由Dom0维护的分层的存储系统(像一个小文件系统目录一样), 用于在Guest之间共享信息，通过Shared Memory来进行
+数据共享。利用XenStore, Guest之间可以交流外设信息、Dom0可以读取到其他Guest的配置信息。</p>
+<p>Hypervisor自身不会意识到XenStore的存在，XenStore的地址也是通过Shared_info page在Guest启动时进行map. 也因此Hypervisor中没有任何关于XenStore的Hypercall. 但是XenStore却是Xen中非常重要的一部分. 本篇将简单介绍XenStore和其使用。(用的是Linux 4.10.2)</p>
+<a id="more"></a>
+<ol>
+<li><a href="http://silentming.net/blog/2016/12/26/xen-log-8-grant-table/">Grant Table</a></li>
+<li><a href="http://silentming.net/blog/2016/12/28/xen-log-9-io-ring/">I/O Ring Structure</a></li>
+<li><a href="http://silentming.net/blog/2017/02/20/xen-log-10-event-channel/">Event Channel Implementation</a></li>
+<li><a href="http://silentming.net/blog/2017/03/01/xen-log-12-using-event-channel/">Event Channel Usage</a></li>
+<li><strong>XenStore Usage(本篇)</strong></li>
+<li><a href="http://silentming.net/blog/2017/03/20/xen-log-14-pv-driver/">Write a PV Driver</a></li>
+<li><a href="http://silentming.net/blog/2017/03/21/xen-log-15-xenbus/">Connect to XenBus</a></li>
+</ol>
+<h1 id="What-is-XenStore"><a href="#What-is-XenStore" class="headerlink" title="What is XenStore"></a>What is XenStore</h1><p>XenStore本质上是个软件实现的小数据库，使用<code>&lt;key, value&gt;</code>来存储信息，同时是个层级存储，Key之间可以类似目录一样拥有子Key. 一般习惯上一个Key只存value或children一种。</p>
+<p>XenStore储存在一个树状数据库(Tree Database), 保存在<code>/var/lib/xenstore/tdb</code>文件中，由Dom0上的一个Daemon来维护，Daemon则由xencommons service进行管理。
+Dom0会负责对数据库进行读写，并将<strong>接口</strong>通过Shared Page共享给所有的Domain. <strong>所以在Dom之间共享的只有接口，并不是XenStore本身</strong>. 所有的DomU最终都是通过dom0
+来对实际的XenStore进行操作的。↓</p>
+<img src="https://farm1.staticflickr.com/686/33199326375_036c2e88aa_o_d.png">
+<p>共享的接口↓</p>
+<figure class="highlight c"><figcaption><span>Shared Interface (xs_wire.h)</span><a href="http://lxr.free-electrons.com/source/include/xen/interface/io/xs_wire.h" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">84</span>: <span class="class"><span class="keyword">struct</span> <span class="title">xenstore_domain_interface</span> &#123;</span></span><br><span class="line">    <span class="keyword">char</span> req[XENSTORE_RING_SIZE]; <span class="comment">/* Requests to xenstore daemon. */</span></span><br><span class="line">    <span class="keyword">char</span> rsp[XENSTORE_RING_SIZE]; <span class="comment">/* Replies and async watch events. */</span></span><br><span class="line">    XENSTORE_RING_IDX req_cons, req_prod;</span><br><span class="line">    XENSTORE_RING_IDX rsp_cons, rsp_prod;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="Difference-between-XenBus"><a href="#Difference-between-XenBus" class="headerlink" title="Difference between XenBus"></a>Difference between XenBus</h3><p>这里需要注意下，在Linux中，XenBus是与XenStore进行交互的接口，因此关于Xenstore的代码在Linux源码中都是与Xenbus相关的部分，而在Xen中XenBus仅仅是一套交互协议，
+用于连接到XenStore的设备协商时使用。所以在Linux中XenBus已经融合了XenStore.</p>
+<h1 id="XenStore-XenBus-in-linux"><a href="#XenStore-XenBus-in-linux" class="headerlink" title="XenStore/XenBus in linux"></a>XenStore/XenBus in linux</h1><p>在Linux的XenBus初始化的时候会判断XenStore是不是在本地，如果是本地(dom0)就会对访问Xenstore的接口所占用的内存进行初始化。如果是DomU则会直接从<code>start_info</code>或<code>hvm_get_parameter</code>
+来找到接口的地址并进行映射。</p>
+<figure class="highlight c"><figcaption><span>xenbus_probe.c</span><a href="http://lxr.free-electrons.com/source/drivers/xen/xenbus/xenbus_probe.c" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">761</span>: <span class="keyword">static</span> <span class="keyword">int</span> __<span class="function">init <span class="title">xenbus_init</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">case</span> XS_LOCAL:</span><br><span class="line">  err = xenstored_local_init();</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="number">703</span>: <span class="keyword">static</span> <span class="keyword">int</span> __<span class="function">init <span class="title">xenstored_local_init</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">...</span><br><span class="line"><span class="comment">/* Allocate Xenstore page */</span></span><br><span class="line">	page = get_zeroed_page(GFP_KERNEL);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个Page里面存放的就是两个ring, 一个用于请求，一个用于回复，xenbus backend 收到请求后会将数据写入对应的文件。</p>
+<h1 id="Message-in-ring"><a href="#Message-in-ring" class="headerlink" title="Message in ring"></a>Message in ring</h1><p>通过前面接口的定义，可以发现与I/O使用ring传递gref不同，与XenStore的通信消息会直接放在ring中，而与Console还不同的是，XenStore的消息一次就要处理一个完整的请求，而非stream,
+因此传递消息使用的就类似网络包的形式，每次都会发一个个msg过去，如果需要处理的内容太多，就会把多个消息放在一个transaction中。消息包的声明如↓</p>
+<figure class="highlight c"><figcaption><span>xs_wire.h</span><a href="http://lxr.free-electrons.com/source/include/xen/interface/io/xs_wire.h" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">64</span>: <span class="class"><span class="keyword">struct</span> <span class="title">xsd_sockmsg</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span> type;  <span class="comment">/* XS_??? */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> req_id;<span class="comment">/* Request identifier, echoed in daemon's response.  */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> tx_id; <span class="comment">/* Transaction id (0 if not related to a transaction). */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> len;   <span class="comment">/* Length of data following this. */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Generally followed by nul-terminated string(s). */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>type</code>是request的类型，<code>req_id</code>是请求者自己维护的id号，用于判断response回复的是哪个request, <code>tx_id</code>用于多个消息放入一个transaction中时使用，len则是消息的长度。</p>
+<h1 id="Userspace-usage"><a href="#Userspace-usage" class="headerlink" title="Userspace usage"></a>Userspace usage</h1><p>在<code>$XENDIR/tools/xenstore/</code>目录下，实现了常用的用户态的工具，用法如下:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">alice@amd-a10 : ~/VMConfig</span><br><span class="line">[0] % sudo xenstore-write /alice <span class="string">""</span></span><br><span class="line"></span><br><span class="line">alice@amd-a10 : ~/VMConfig</span><br><span class="line">[0] % sudo xenstore-write /alice/foo bar</span><br><span class="line"></span><br><span class="line">alice@amd-a10 : ~/VMConfig</span><br><span class="line">[0] % sudo xenstore-list /alice</span><br><span class="line">foo</span><br><span class="line"></span><br><span class="line">alice@amd-a10 : ~/VMConfig</span><br><span class="line">[0] % sudo xenstore-read /alice/foo</span><br><span class="line">bar</span><br><span class="line"></span><br><span class="line">alice@amd-a10 : ~/VMConfig</span><br><span class="line">[0] % sudo xenstore-rm /alice/foo</span><br><span class="line"></span><br><span class="line">alice@amd-a10 : ~/VMConfig</span><br><span class="line">[0] % sudo xenstore-ls /alice</span><br></pre></td></tr></table></figure>
+<p>这些可以直接通过<code>xenstore_daemon</code>与xenstore进行交互, </p>
+<h1 id="Kernelspace-Usage"><a href="#Kernelspace-Usage" class="headerlink" title="Kernelspace Usage"></a>Kernelspace Usage</h1><p>但是对于DomU并没有这样的tool, 因此我们需要自己去找到xenstore inteface的位置并自己利用ring来进行通信。
+我是在PVDom中使用Kernel Module, 利用同步的方法来与XenStore交互的，即是说发起1个请求后就立即通知BackEnd, 然后再轮询response.</p>
+<figure class="highlight c"><figcaption><span>alice_pvdom.c</span><a href="https://github.com/SilentAlice/BlogExamples/blob/master/Xen_Log_13/pvdom/alice_pvdom.c" target="_blank" rel="noopener">link</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Click link↗  to see full source code */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">init_alice</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/* xen_start_info is exported by linux, and inited when pvdom start up */</span></span><br><span class="line">    xenstore_gfn = xen_start_info-&gt;store_mfn;</span><br><span class="line">    xenstore = gfn_to_virt(xenstore_gfn);</span><br><span class="line">    <span class="comment">/* get evtchn number, used to notify backend */</span></span><br><span class="line">    xenstore_evtchn = xen_start_info-&gt;store_evtchn;</span><br><span class="line"></span><br><span class="line">    pr_info(<span class="string">"Alice: Begin xenstore test\n"</span>);</span><br><span class="line"></span><br><span class="line">    alice_xs_read(<span class="string">"name"</span>, buffer, <span class="number">1023</span>);</span><br><span class="line">    pr_info(<span class="string">"Alice: Name: %s\n"</span>, buffer);</span><br><span class="line"></span><br><span class="line">    alice_xs_write(<span class="string">"alice"</span>, <span class="string">"test"</span>);</span><br><span class="line">    alice_xs_read(<span class="string">"alice"</span>, buffer, <span class="number">1023</span>);</span><br><span class="line">    pr_info(<span class="string">"Alice: read alice:%s\n"</span>, buffer);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Read is similar */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">alice_xs_write</span><span class="params">(<span class="keyword">char</span> *key, <span class="keyword">char</span> *value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> key_length = <span class="built_in">strlen</span>(key);</span><br><span class="line">    <span class="keyword">int</span> value_length = <span class="built_in">strlen</span>(value);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">xsd_sockmsg</span> <span class="title">msg</span>;</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">/* Fill Message */</span></span><br><span class="line">    msg.type = XS_WRITE;</span><br><span class="line">    msg.req_id = req_id;</span><br><span class="line">    msg.tx_id = <span class="number">0</span>; </span><br><span class="line">    msg.len = <span class="number">2</span> + key_length + value_length;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Write the message */</span></span><br><span class="line">    fill_request((<span class="keyword">char</span>*)&amp;msg, <span class="keyword">sizeof</span>(msg));</span><br><span class="line">    fill_request(key, key_length + <span class="number">1</span>);</span><br><span class="line">    fill_request(value, value_length + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Notify the back end */</span></span><br><span class="line">    NOTIFY();</span><br><span class="line">    ... </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Fill request: (read_response is similar) */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">fill_request</span><span class="params">(<span class="keyword">char</span> *msg, <span class="keyword">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> ring_index;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* Wait for back end to clear enough space in buffer */</span></span><br><span class="line">    <span class="comment">/* Message may be long, we will clean byte by byte */</span></span><br><span class="line">    <span class="keyword">for</span> ( i = xenstore-&gt;req_prod; len &gt; <span class="number">0</span>; i++, len-- ) &#123;</span><br><span class="line">        <span class="comment">/* Copy bytes */</span></span><br><span class="line">        ring_index = MASK_XENSTORE_IDX(i);</span><br><span class="line">        xenstore-&gt;req[ring_index] = *msg;</span><br><span class="line">        msg ++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Ensure data is into ring */</span></span><br><span class="line">    wmb();</span><br><span class="line">    xenstore-&gt;req_prod = i;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>fill_request</code>用于将请求拷贝到ring中, <code>alice_xs_write</code>则是构造一个消息包，(消息头、类型、req_id、长度为key和value的和), 字符串中间用’\0’进行分割。
+填写完后通过Evtchn通知dom0, 由Daemon完成response的填写，<code>read_response</code>(没有贴出来代码) 会一直polling response, 发现response则读出来并输出。</p>
+<p>我使用的是PV Domain上的Kernel module, 如果是HVM的话则要调用Hypercall来获取一开始的各种参数。</p>
+<h1 id="Running-Demo"><a href="#Running-Demo" class="headerlink" title="Running Demo"></a>Running Demo</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(ssh) alice@ryzen : ~/XenStore</span><br><span class="line">[0] % sudo insmod alice_pvdom.ko; dmesg | tail -n 3</span><br><span class="line">[140237.068340] Alice: Begin xenstore <span class="built_in">test</span></span><br><span class="line">[140237.068433] Alice: Name: Domain-0</span><br><span class="line">[140237.068544] Alice: <span class="built_in">read</span> alice:<span class="built_in">test</span></span><br><span class="line"></span><br><span class="line">(ssh) alice@ryzen : ~/XenStore</span><br><span class="line">[0] % sudo xenstore-ls | grep alice</span><br><span class="line">   alice = <span class="string">"test\000"</span></span><br></pre></td></tr></table></figure>
+<p>可见我们成功读出了写入的<code>&lt;alice, test&gt;</code>键值，通过<code>xenstore-ls</code>也可以查到。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference:"></a>Reference:</h1><ol>
+<li><a href="https://doc.opensuse.org/documentation/leap/virtualization/html/book.virt/cha.xen.xenstore.html" target="_blank" rel="noopener">XenStore: Configuration Database Shared between Domains</a></li>
+<li><a href="https://www.amazon.com/Definitive-Hypervisor-Prentice-Software-Development/dp/0133582493" target="_blank" rel="noopener">The Definitive Guide to the Xen Hypervisor</a>-Chapter8</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/virtualization/" rel="tag"># virtualization</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/03/01/xen-log-12-using-event-channel/" rel="next" title="Xen Log 12-Event Channel Usage">
+                <i class="fa fa-chevron-left"></i> Xen Log 12-Event Channel Usage
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/03/20/xen-log-14-pv-driver/" rel="prev" title="Xen Log 14-Write A PV Driver">
+                Xen Log 14-Write A PV Driver <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#What-is-XenStore"><span class="nav-text">What is XenStore</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Difference-between-XenBus"><span class="nav-text">Difference between XenBus</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#XenStore-XenBus-in-linux"><span class="nav-text">XenStore/XenBus in linux</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Message-in-ring"><span class="nav-text">Message in ring</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Userspace-usage"><span class="nav-text">Userspace usage</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kernelspace-Usage"><span class="nav-text">Kernelspace Usage</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Running-Demo"><span class="nav-text">Running Demo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-text">Reference:</span></a></li>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2017/03/02/xen-log-13-xenstore/';
+          this.page.identifier = 'blog/2017/03/02/xen-log-13-xenstore/';
+          this.page.title = 'Xen Log 13-Xenstore Usage';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

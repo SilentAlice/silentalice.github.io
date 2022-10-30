@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="AWS, cloud, VPN, VPS, Proxy">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="之前一直使用的搬瓦工: https://bandwagonhost.com/, 使用上感觉还不错，但是当vps IPf被封了之后， 需要等待180天才能更换一次IP。 而且其速度并没有非常的快(当然也是因为买的是最便宜的19$/year的套餐)。 听闻Amazon的云服务AWS(Amazon Web Service)可以试用，第一年免费，今天便拿来尝试了一把。 本篇记录了使用Amazon的服务建立">
+<meta name="keywords" content="AWS, cloud, VPN, VPS, Proxy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用免费的亚马逊云服务(AWS)">
+<meta property="og:url" content="http://silentming.net/blog/2019/03/03/aws/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="之前一直使用的搬瓦工: https://bandwagonhost.com/, 使用上感觉还不错，但是当vps IPf被封了之后， 需要等待180天才能更换一次IP。 而且其速度并没有非常的快(当然也是因为买的是最便宜的19$/year的套餐)。 听闻Amazon的云服务AWS(Amazon Web Service)可以试用，第一年免费，今天便拿来尝试了一把。 本篇记录了使用Amazon的服务建立">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://silentming.net/images/2019/20190303aws00.jpg">
+<meta property="og:image" content="http://silentming.net/images/2019/20190303aws01.jpg">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用免费的亚马逊云服务(AWS)">
+<meta name="twitter:description" content="之前一直使用的搬瓦工: https://bandwagonhost.com/, 使用上感觉还不错，但是当vps IPf被封了之后， 需要等待180天才能更换一次IP。 而且其速度并没有非常的快(当然也是因为买的是最便宜的19$/year的套餐)。 听闻Amazon的云服务AWS(Amazon Web Service)可以试用，第一年免费，今天便拿来尝试了一把。 本篇记录了使用Amazon的服务建立">
+<meta name="twitter:image" content="http://silentming.net/images/2019/20190303aws00.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2019/03/03/aws/">
+
+
+
+
+
+  <title>使用免费的亚马逊云服务(AWS) | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2019/03/03/aws/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用免费的亚马逊云服务(AWS)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-03T13:50:51+08:00">2019-03-03</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2019/03/03/aws/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2019/03/03/aws/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前一直使用的搬瓦工: <a href="https://bandwagonhost.com/" target="_blank" rel="noopener">https://bandwagonhost.com/</a>, 使用上感觉还不错，但是当vps IPf被封了之后，
+需要等待180天才能更换一次IP。 而且其速度并没有非常的快(当然也是因为买的是最便宜的19$/year的套餐)。</p>
+<p>听闻Amazon的云服务AWS(Amazon Web Service)可以试用，第一年免费，今天便拿来尝试了一把。
+本篇记录了使用Amazon的服务建立一个自用VPS的过程。</p>
+<a id="more"></a>
+<h2 id="Preparation"><a href="#Preparation" class="headerlink" title="Preparation"></a>Preparation</h2><ul>
+<li>信用卡一张(国内的银联就可以)</li>
+<li>一个可用的Email账户</li>
+</ul>
+<p>虽然是免费的，然是要求绑定一张信用卡，当我们使用量超出免费服务的限制后它会从信用卡上按月扣钱。</p>
+<h2 id="Apply-a-Instance-Virtual-Machine-VM"><a href="#Apply-a-Instance-Virtual-Machine-VM" class="headerlink" title="Apply a Instance/Virtual Machine (VM)"></a>Apply a Instance/Virtual Machine (VM)</h2><ul>
+<li>进入AWS官网: <a href="http://aws.amazon.com/" target="_blank" rel="noopener">http://aws.amazon.com/</a></li>
+<li>右上角-&gt; <code>Create an AWS Account</code></li>
+<li>Sign up注册一个新账号 (如果已有账号Sign In)，跳过注册<ul>
+<li>需要注意的是信用卡绑定国内的信用卡就可以了，我试着绑Visa还失败了..</li>
+<li>密码需要还有大写字母和数字/符号</li>
+</ul>
+</li>
+<li>登陆进去后进入的就是我们的控制台界面: <a href="https://console.aws.amazon.com/console/home" target="_blank" rel="noopener">https://console.aws.amazon.com/console/home</a></li>
+<li>右上角分别是通知、账户、区域、和支持(Support)，在区域里面选择自己服务器想要申请的区域。
+听说国内用<code>Tokyo</code>东京的比较快。</li>
+<li>在页面中<code>Build a solution</code>中选择<code>Launch a virtual machine</code></li>
+<li><p>在给出的选项里面，找一个带有<code>Free tier eligible</code>的就行,常见的几个:</p>
+<ul>
+<li>Amazon Linux 2 AMI(HVM): 属于Selinux, 使用Yum包管理器，只安装了最基本的工具</li>
+<li>Amazon Linux AMI: 还安装了常用工具: python, perl, Java, Ruby, Docker, MySQL等等</li>
+<li>Microsoft Windows Server 2019 Base: Windows的直接跳过不看</li>
+<li>Red Hat Enterprise Linux 7.6: Red Hat的企业Linux</li>
+<li>Ubuntu Server 18.04 LTS (HVM): Ubuntu, 使用apt包管理器</li>
+</ul>
+<p>如果是习惯了使用Ubuntu的，装Ubuntu Server这个就行；如果仅仅只是想弄个代理服务器什么的，
+考虑到我们的VM空间也不大，可以像我一样申个最简单的Amazon Linux 2 AMI。这几个VM类型除了Windows家的，
+都是HVM类型(全虚拟化), 所以使用上没什么差别。这里我们选第一个<code>Amazon Linux 2 AMI(HVM)</code></p>
+</li>
+<li><p>选择instance type</p>
+<p>在给出的免费选项里面，只有t2.micro, 1个vcpu, 1GB内存，Low to Moderate的网络能选了…</p>
+</li>
+<li><p>选择配置</p>
+<p>大部分用户可以直接选择右下角的<code>Review and Launch</code>，如果想修改详细配置，在最上方的选项卡里面可以选。
+需要注意的是，<code>Add Storage</code>里面，免费的磁盘最大可以选到30GB的SSD，默认是8GB。
+在<code>Configure Security Group</code>选项卡里，可以给我们的安全策略组起个容易理解的名字。</p>
+<img src="/images/2019/20190303aws00.jpg">
+</li>
+<li><p>Generate Key Pair</p>
+<p>之后就可以点Launch来启动我们的VM了。这个时候会弹出一个配置Key Pair的页面，这个页面只会出现一次。
+我们选择<code>Create a new key pair</code>来生成一组新的RSA密钥组。其中的公钥会被放到我们的VM里，
+私钥我们要<strong>下载</strong>下来保存起来之后用ssh连接VM的时候使用。Key Pair的名字随便起。</p>
+<p>点击<code>Download Key Pair</code>下载私钥文件，这个可别弄丢了哦。</p>
+</li>
+<li><p>Launch VM</p>
+<p>点击Launch (Instances/VM)后，我们的VM就会启动了。启动后我们可以选择最上面的菜单<code>Services-&gt;EC2</code>进入
+EC2 Dashboard:</p>
+<img src="/images/2019/20190303aws01.jpg">
+<p>当我们看到有一个Running Instances时，说明我们的VM启动成功了。</p>
+</li>
+<li><p>Configure VM</p>
+<p>这里我们看到右上角的Tokyo表明了当前的DashBoard显示的是哪个区域的VM, 如果我们继续Launch Instance的话，
+还会在相同的区域中起VM。如果我们在右上角切换了Region, 那么我们就可以在其他区域中起VM。</p>
+<p>常用的选项我已经用红框标记了出来:</p>
+<ul>
+<li><code>Instances</code>: 里面会显示我们启动的VM的状况</li>
+<li><code>Security Group</code>: 显示我们的安全策略组，这个会有一个默认的策略，我们在配置VM时设置的安全策略会作为一个新的Group。</li>
+<li><code>Elastic IP</code>: 这个允许我们的VM对外显示为另一个IP, 可以在我们的IP被封后换掉。</li>
+<li><code>Key Pairs</code>: 显示了我们目前设置的Key, 如果我们之后想换密钥了可以在这里操作。</li>
+</ul>
+</li>
+<li><p>Associate <code>Elastic IP</code></p>
+<p>这里我们选择<code>Elastic IP</code>选项卡，点击左上角的<code>Allocate new address</code>分配一个IP,
+分配好了后在旁边的<code>Actions</code>里面选择<code>Associate Address</code>。</p>
+<p>在新的页面里面选择我们的Instance, Private IP不要动(Private IP)是我们VM真正的IP。
+勾上<code>Allow Elastic IP to be reassociated if already attached</code>，然后点<code>Associate</code>。</p>
+<p>再回到<code>Elastic IP</code>选项卡，就能看到我们刚刚申请的IP已经和Instance关联了，
+之后就可以通过这个Elastic IP来访问我们的VM。</p>
+</li>
+<li><p>Configure Security Group</p>
+<p>选择<code>Security Groups</code>选项卡，点击我们自己的Security Group, 最下面会显示<code>Description</code>,
+<code>Inbound</code>, <code>Outbound</code>, <code>Tags</code>。我们需要修改<code>Inbound</code>的安全策略:</p>
+<p>Inbound默认只允许ssh协议的链接通过22号端口访问我们的VM，如果我们想用它作为代理服务器的话，
+还需要添加一个规则, 比如我想用shadowsocks, shadowsocks的链接用的TCP协议: Edit, 选择<code>Custom TCP Rule</code>,
+Port Range 我填一个22334, Source 选择Anywhere。
+这样我们的VM就允许来自任何地方，连接Port 22334的TCP协议包。</p>
+</li>
+</ul>
+<p>这些都弄完了后，我们的VM就可以开始使用了。</p>
+<h2 id="Setup-Proxy-Server"><a href="#Setup-Proxy-Server" class="headerlink" title="Setup Proxy Server"></a>Setup Proxy Server</h2><p>这里简单介绍一下如何搭代理服务(以Shadowsocks为例)。</p>
+<ul>
+<li><p>Connect to Instance</p>
+<p>选择<code>Instances</code>选项卡，在上方有<code>Launch Instance</code>, <code>Connect</code>, <code>Actions</code>。
+我们点击<code>Connect</code>，它会告诉我们如何访问我们的VM。最简单的方式就是用ssh，
+里面会直接给一个Example:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -i <span class="string">"keypair.pem"</span> ec2-user@xxxxxx.compute.amazonaws.com</span><br></pre></td></tr></table></figure>
+<p>找一个shell照着敲就OK.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$uname</span> -a</span><br><span class="line">Linux ip-xxx-xxx-xxx-xxx.ap-northeast-1.compute.internal 4.14.97-90.72.amzn2.x86_64 <span class="comment">#1 SMP Tue Feb 5 20:46:19 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$lscpu</span></span><br><span class="line">Architecture:        x86_64</span><br><span class="line">CPU op-mode(s):      32-bit, 64-bit</span><br><span class="line">Byte Order:          Little Endian</span><br><span class="line">CPU(s):              1</span><br><span class="line">On-line CPU(s) list: 0</span><br><span class="line">Thread(s) per core:  1</span><br><span class="line">Core(s) per socket:  1</span><br><span class="line">Socket(s):           1</span><br><span class="line">NUMA node(s):        1</span><br><span class="line">Vendor ID:           GenuineIntel</span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               63</span><br><span class="line">Model name:          Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz</span><br><span class="line">Stepping:            2</span><br><span class="line">CPU MHz:             2400.224</span><br><span class="line">BogoMIPS:            4800.04</span><br><span class="line">Hypervisor vendor:   Xen</span><br><span class="line">Virtualization <span class="built_in">type</span>: full</span><br><span class="line">L1d cache:           32K</span><br><span class="line">L1i cache:           32K</span><br><span class="line">L2 cache:            256K</span><br><span class="line">L3 cache:            30720K</span><br><span class="line">NUMA node0 CPU(s):   0</span><br><span class="line">Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp</span><br><span class="line">                     lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer</span><br><span class="line">                     aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti fsgsbase bmi1 avx2 smep bmi2 erms invpcid xsaveopt</span><br></pre></td></tr></table></figure>
+<p>可以看到亚马逊的AWS用的是基于Xen的虚拟机监控器，<code>Virtualization type:full</code>, 表明我们是全虚拟化。</p>
+</li>
+</ul>
+<h3 id="Install-ssserver"><a href="#Install-ssserver" class="headerlink" title="Install ssserver"></a>Install ssserver</h3><p>  简单瞄两眼后，我们就着手安装自己要的工具吧。</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install m2crypto python-setuptools</span><br><span class="line">$ sudo easy_install pip</span><br><span class="line">$ sudo pip install shadowsocks</span><br></pre></td></tr></table></figure>
+<p>  这里pip可能因为更新导致Amazon的pip版本过老出现错误，我们重新装一个就行~:</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install python37</span><br><span class="line">$ sudo pip3 install shadowsocks</span><br></pre></td></tr></table></figure>
+<p>  这样我们就安好了shadowsocks服务。建立一个配置文件:</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/shadowsocks.json</span><br><span class="line"></span><br><span class="line"><span class="comment"># Write following contents</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"><span class="string">"server"</span>:<span class="string">"0.0.0.0"</span>,</span><br><span class="line"><span class="string">"server_port"</span>:22334,</span><br><span class="line"><span class="string">"password"</span>:<span class="string">"your_passwd"</span>,</span><br><span class="line"><span class="string">"timeout"</span>:300,</span><br><span class="line"><span class="string">"method"</span>:<span class="string">"aes-256-cfb"</span>,</span><br><span class="line"><span class="string">"fast_open"</span>:<span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  里面<code>password</code>是连接代理服务时需要输入的密码。里面的<code>server_port</code>记得和
+  我们AWS上Security Group里面Inbound配置的内容一致，不然会被AWS拦截下来。</p>
+<p>  启动shadowsocks server</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo ssserver -c /etc/shadowsocks.json -d start</span><br><span class="line"><span class="comment"># Stop service: sudo ssserver -d stop</span></span><br><span class="line"><span class="comment"># Restart service: sudo ssserver -c /etc/shadowsocks.json -d restart</span></span><br><span class="line"><span class="comment"># View logs: less /var/log/shadowsocks.log</span></span><br></pre></td></tr></table></figure>
+<p>  设置我们的IP table, 不要屏蔽掉22334的包:</p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -I INPUT -p tcp --dport 22334 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<p>  大功造成，剩下的就是常规操作了(Client端的就省略了，相信看到这里的你不可能不会用的)</p>
+<h3 id="Install-V2ray"><a href="#Install-V2ray" class="headerlink" title="Install V2ray"></a>Install V2ray</h3><p>  ssserver 现在经常会被卡擦掉，V2ray使用的vmess协议似乎更好一些:</p>
+<p>  本地(PC)使用的V2rayN可以生成一个id, 也可以自己打一个，无所谓~
+  这里以 <code>81498305-0be0-4923-a270-df4e490a086b</code>为例</p>
+<p>  可以直接参考官方教程: <code>https://www.v2ray.com/en/welcome/install.html</code> or <code>https://github.com/v2fly/fhs-install-v2ray</code></p>
+<p>  在server端: </p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Install needed tools:</span><br><span class="line">$ sudo yum install -y bind-utils curl</span><br><span class="line"></span><br><span class="line"># Official</span><br><span class="line"># $ curl -Ls https://install.direct/go.sh | sudo bash</span><br><span class="line"></span><br><span class="line"># other methods</span><br><span class="line">$ sudo bash &lt;(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)</span><br></pre></td></tr></table></figure>
+<p>  配置比较简单: <code>https://www.v2ray.com/en/welcome/start.html</code></p>
+  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Modify /usr/local/etc/v2ray/config.json</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"inbounds"</span>: [&#123;</span><br><span class="line">    <span class="string">"port"</span>: 11223, // Server port, need to add TCP security policy <span class="keyword">in</span> AWS security group</span><br><span class="line">    <span class="string">"protocol"</span>: <span class="string">"vmess"</span>,</span><br><span class="line">    <span class="string">"settings"</span>: &#123;</span><br><span class="line">      <span class="string">"clients"</span>: [&#123; <span class="string">"id"</span>: <span class="string">"81498305-0be0-4923-a270-df4e490a086b"</span> &#125;] // Same as client</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;],</span><br><span class="line">  <span class="string">"outbounds"</span>: [&#123;</span><br><span class="line">    <span class="string">"protocol"</span>: <span class="string">"freedom"</span>,</span><br><span class="line">    <span class="string">"settings"</span>: &#123;&#125;</span><br><span class="line">  &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  运行！</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/bin/v2ray --config /usr/local/etc/v2ray/config.json &amp;</span><br></pre></td></tr></table></figure>
+<p>  Client端加密选Auto就ok</p>
+<h2 id="End"><a href="#End" class="headerlink" title="End"></a>End</h2><p>代理服务有很多种，比如我之前介绍过的<code>cntlm</code>也可以用，shadowsocks的好处是对包进行了加密,
+你可以用自己设计的协议= =。</p>
+<p>AWS的Free Tier一个月的上下行流量总和为15GB, 超了会扣钱钱，可以在左上方<code>Services-&gt;CloudWatch</code>
+里面看看Bill相关的统计，也可以研究下怎么设置Budgets, 在用超的时候发警告。</p>
+<p>使用使用上，感觉连接速度比搬瓦工的更快一些，但是流量上限就没有那么高了，
+而且一个月15GB的流量限制也确实不能干太多事情。
+不过能看出来AWS的易用性非常的高，无论是后续切换Region, 还是更换Key Pair、换IP等等，
+在EC2 Dashboard上面非常显眼的就列出了所有的常用功能。再一次深刻意识到Amazon作为公有云领域的老大，
+其技术能力的深厚与用户体验的优化都铸就了它现在巨大的成功。</p>
+<h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><ul>
+<li>20210405: Update V2ray configuration</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tutorial/" rel="tag"># tutorial</a>
+          
+            <a href="/tags/record/" rel="tag"># record</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/01/30/disney-land/" rel="next" title="上海迪士尼初探">
+                <i class="fa fa-chevron-left"></i> 上海迪士尼初探
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/08/04/phukey-trip/" rel="prev" title="泰国的明珠——普吉岛之行">
+                泰国的明珠——普吉岛之行 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preparation"><span class="nav-text">Preparation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apply-a-Instance-Virtual-Machine-VM"><span class="nav-text">Apply a Instance/Virtual Machine (VM)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup-Proxy-Server"><span class="nav-text">Setup Proxy Server</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-ssserver"><span class="nav-text">Install ssserver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-V2ray"><span class="nav-text">Install V2ray</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Note"><span class="nav-text">Note</span></a></li></ol>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2019/03/03/aws/';
+          this.page.identifier = 'blog/2019/03/03/aws/';
+          this.page.title = '使用免费的亚马逊云服务(AWS)';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

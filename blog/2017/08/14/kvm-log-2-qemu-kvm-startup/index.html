@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="QEMU, kvm, module">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="上一篇简单说明了QEMU Object Module的注册实现，本篇简单介绍Qemu的启动整个流程。QEMU版本是2.10-rc2 (2017-08-14的版本master分支), 函数的深入细节不涉及~">
+<meta name="keywords" content="QEMU, kvm, module">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KVM Log 2-QEMU-kvm Startup">
+<meta property="og:url" content="http://silentming.net/blog/2017/08/14/kvm-log-2-qemu-kvm-startup/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="上一篇简单说明了QEMU Object Module的注册实现，本篇简单介绍Qemu的启动整个流程。QEMU版本是2.10-rc2 (2017-08-14的版本master分支), 函数的深入细节不涉及~">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KVM Log 2-QEMU-kvm Startup">
+<meta name="twitter:description" content="上一篇简单说明了QEMU Object Module的注册实现，本篇简单介绍Qemu的启动整个流程。QEMU版本是2.10-rc2 (2017-08-14的版本master分支), 函数的深入细节不涉及~">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2017/08/14/kvm-log-2-qemu-kvm-startup/">
+
+
+
+
+
+  <title>KVM Log 2-QEMU-kvm Startup | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2017/08/14/kvm-log-2-qemu-kvm-startup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">KVM Log 2-QEMU-kvm Startup</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-14T16:20:36+08:00">2017-08-14</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2017/08/14/kvm-log-2-qemu-kvm-startup/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2017/08/14/kvm-log-2-qemu-kvm-startup/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://silentming.net/blog/2017/08/14/kvm-log-1-qemu-module-intro/">上一篇</a>简单说明了QEMU Object Module的注册实现，本篇简单介绍Qemu的启动整个流程。QEMU版本是2.10-rc2 (2017-08-14的版本master分支), 函数的深入细节不涉及~</p>
+<a id="more"></a>
+<h1 id="Startup"><a href="#Startup" class="headerlink" title="Startup"></a>Startup</h1><p>QEMU是从<code>vl.c</code>中的<code>main()</code>开始执行的↓:</p>
+<ul>
+<li><code>main()</code>:</li>
+</ul>
+<figure class="highlight c"><figcaption><span>vl.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2994</span> <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv, <span class="keyword">char</span> **envp)</span></span></span><br><span class="line"><span class="function">2995 </span>&#123;</span><br><span class="line"><span class="number">2996</span>     <span class="keyword">int</span> i;</span><br><span class="line">...</span><br><span class="line"><span class="number">3039</span>     module_call_init(MODULE_INIT_TRACE);</span><br><span class="line"></span><br><span class="line"><span class="number">3041</span>     qemu_init_cpu_list();</span><br><span class="line"><span class="number">3042</span>     qemu_init_cpu_loop();</span><br><span class="line"><span class="number">3043</span>     qemu_mutex_lock_iothread();</span><br><span class="line"><span class="number">3044</span></span><br><span class="line"><span class="number">3045</span>     atexit(qemu_run_exit_notifiers);</span><br><span class="line"><span class="number">3046</span>     error_set_progname(argv[<span class="number">0</span>]);</span><br><span class="line"><span class="number">3047</span>     qemu_init_exec_dir(argv[<span class="number">0</span>]);</span><br><span class="line"><span class="number">3048</span></span><br><span class="line"><span class="number">3049</span>     module_call_init(MODULE_INIT_QOM);</span><br><span class="line"><span class="number">3050</span>     monitor_init_qmp_commands();</span><br><span class="line"><span class="number">3051</span></span><br><span class="line"><span class="number">3052</span>     qemu_add_opts(&amp;qemu_drive_opts);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>module_call_init()</code> :实现如下↓</li>
+</ul>
+<figure class="highlight c"><figcaption><span>util/module.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">90</span> <span class="function"><span class="keyword">void</span> <span class="title">module_call_init</span><span class="params">(module_init_type type)</span></span></span><br><span class="line"><span class="function">91 </span>&#123;</span><br><span class="line"><span class="number">92</span>     ModuleTypeList *l;</span><br><span class="line"><span class="number">93</span>     ModuleEntry *e;</span><br><span class="line"><span class="number">94</span></span><br><span class="line"><span class="number">95</span>     l = find_type(type);</span><br><span class="line"><span class="number">96</span></span><br><span class="line"><span class="number">97</span>     QTAILQ_FOREACH(e, l, node) &#123;</span><br><span class="line"><span class="number">98</span>         e-&gt;init();</span><br><span class="line"><span class="number">99</span>     &#125;</span><br><span class="line"><span class="number">100</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>在<a href="http://silentming.net/blog/2017/08/14/kvm-log-1-qemu-module-intro/">前一篇</a>中已经说明了<code>ModuleTypeList</code>已经在<code>main()</code>执行前初始化过了，所以这里<code>QTAILQ_FOREACH</code>就是在遍历所有的entry并调用真正的init初始化函数。</p>
+<ul>
+<li><p><code>qemu_init_cpu_list()</code>, 初始化完Trace后，紧接着初始化<code>cpu_list</code>, 这个主要是初始化一些锁和同步机制的相关变量。</p>
+</li>
+<li><p><code>qemu_init_cpu_loop()</code>:</p>
+</li>
+</ul>
+<p>这个函数我们主要需要注意其中的<code>qemu_init_sigbus</code>, 其他就是初始化锁之类的</p>
+<figure class="highlight c"><figcaption><span>cpus.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> CONFIG_LINUX</span></span><br><span class="line"><span class="number">988</span> <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sigbus_handler</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">siginfo_t</span> *siginfo, <span class="keyword">void</span> *ctx)</span></span></span><br><span class="line"><span class="function">989 </span>&#123;</span><br><span class="line"><span class="number">990</span>     <span class="keyword">if</span> (siginfo-&gt;si_code != BUS_MCEERR_AO &amp;&amp; siginfo-&gt;si_code != BUS_MCEERR_AR) &#123;</span><br><span class="line"><span class="number">991</span>         sigbus_reraise();</span><br><span class="line"><span class="number">992</span>     &#125;</span><br><span class="line"><span class="number">993</span></span><br><span class="line"><span class="number">994</span>     <span class="keyword">if</span> (current_cpu) &#123;</span><br><span class="line"><span class="number">995</span>         <span class="comment">/* Called asynchronously in VCPU thread.  */</span></span><br><span class="line"><span class="number">996</span>         <span class="keyword">if</span> (kvm_on_sigbus_vcpu(current_cpu, siginfo-&gt;si_code, siginfo-&gt;si_addr)) &#123;</span><br><span class="line"><span class="number">997</span>             sigbus_reraise();</span><br><span class="line"><span class="number">998</span>         &#125;</span><br><span class="line"><span class="number">999</span>     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"><span class="number">1000</span>         <span class="comment">/* Called synchronously (via signalfd) in main thread.  */</span></span><br><span class="line"><span class="number">1001</span>         <span class="keyword">if</span> (kvm_on_sigbus(siginfo-&gt;si_code, siginfo-&gt;si_addr)) &#123;</span><br><span class="line"><span class="number">1002</span>             sigbus_reraise();</span><br><span class="line"><span class="number">1003</span>         &#125;</span><br><span class="line"><span class="number">1004</span>     &#125;</span><br><span class="line"><span class="number">1005</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="number">1007</span> <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">qemu_init_sigbus</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function">1008 </span>&#123;</span><br><span class="line"><span class="number">1009</span>     <span class="class"><span class="keyword">struct</span> <span class="title">sigaction</span> <span class="title">action</span>;</span></span><br><span class="line"><span class="number">1010</span></span><br><span class="line"><span class="number">1011</span>     <span class="built_in">memset</span>(&amp;action, <span class="number">0</span>, <span class="keyword">sizeof</span>(action));</span><br><span class="line"><span class="number">1012</span>     action.sa_flags = SA_SIGINFO;</span><br><span class="line"><span class="number">1013</span>     action.sa_sigaction = sigbus_handler;</span><br><span class="line"><span class="number">1014</span>     sigaction(SIGBUS, &amp;action, <span class="literal">NULL</span>);</span><br><span class="line"><span class="number">1015</span></span><br><span class="line"><span class="number">1016</span>     prctl(PR_MCE_KILL, PR_MCE_KILL_SET, PR_MCE_KILL_EARLY, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"><span class="number">1017</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>在函数里面初始化了sigbus, 这里sigbus会建立一个<code>sigaction</code>, <code>sigaction</code>是vcpu对signal的动作，当config为Linux时，<code>sigbus_handler</code>会调用kvm的相关函数.</p>
+<p>接下来都是些比较简单的初始化，初始化QOM和OPT类型的Module, </p>
+<p>之后就是冗长的参数解析和处理过程…</p>
+<figure class="highlight c"><figcaption><span>vl.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">3746</span>             <span class="keyword">case</span> QEMU_OPTION_enable_kvm:</span><br><span class="line"><span class="number">3747</span>                 olist = qemu_find_opts(<span class="string">"machine"</span>);</span><br><span class="line"><span class="number">3748</span>                 qemu_opts_parse_noisily(olist, <span class="string">"accel=kvm"</span>, <span class="literal">false</span>);</span><br><span class="line"><span class="number">3749</span>                 <span class="keyword">break</span>;</span><br><span class="line">...</span><br><span class="line"><span class="number">4121</span>     machine_class = select_machine();</span><br></pre></td></tr></table></figure>
+<p>其中有一项就是判断是否开启了kvm, 如果开启了kvm则将accelerator设置为KVM. </p>
+<p>当参数这些弄完后，就会开始选择target的machine类型, (机器支持的类型可以通过<code>qemu -machine help</code>查看到):</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># For example, arm64:</span></span><br><span class="line">% qemu-system-aarch64 -machine <span class="built_in">help</span></span><br><span class="line">Supported machines are:</span><br><span class="line">lm3s811evb           Stellaris LM3S811EVB</span><br><span class="line">canon-a1100          Canon PowerShot A1100 IS</span><br><span class="line">vexpress-a15         ARM Versatile Express <span class="keyword">for</span> Cortex-A15</span><br><span class="line">vexpress-a9          ARM Versatile Express <span class="keyword">for</span> Cortex-A9</span><br><span class="line">xilinx-zynq-a9       Xilinx Zynq Platform Baseboard <span class="keyword">for</span> Cortex-A9</span><br><span class="line">connex               Gumstix Connex (PXA255)</span><br><span class="line">n800                 Nokia N800 tablet aka. RX-34 (OMAP2420)</span><br><span class="line">lm3s6965evb          Stellaris LM3S6965EVB</span><br><span class="line">versatileab          ARM Versatile/AB (ARM926EJ-S)</span><br><span class="line">borzoi               Borzoi PDA (PXA270)</span><br><span class="line">tosa                 Tosa PDA (PXA255)</span><br><span class="line">cheetah              Palm Tungsten|E aka. Cheetah PDA (OMAP310)</span><br><span class="line">midway               Calxeda Midway (ECX-2000)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>继续就是设置虚拟机的内存大小。</p>
+<figure class="highlight c"><figcaption><span>vl.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">4123</span>     set_memory_options(&amp;ram_slots, &amp;maxram_size, machine_class);</span><br><span class="line">...</span><br><span class="line"><span class="number">4177</span>     cpu_exec_init_all();</span><br></pre></td></tr></table></figure>
+<p>再往下就是实际为虚拟机分配内存:</p>
+<ul>
+<li><code>cpu_exec_init_all()</code> ↓</li>
+</ul>
+<figure class="highlight c"><figcaption><span>exec.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2760</span> <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">memory_map_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function">2761 </span>&#123;</span><br><span class="line"><span class="number">2762</span>     system_memory = g_malloc(<span class="keyword">sizeof</span>(*system_memory));</span><br><span class="line"><span class="number">2763</span></span><br><span class="line"><span class="number">2764</span>     memory_region_init(system_memory, <span class="literal">NULL</span>, <span class="string">"system"</span>, UINT64_MAX);</span><br><span class="line"><span class="number">2765</span>     address_space_init(&amp;address_space_memory, system_memory, <span class="string">"memory"</span>);</span><br><span class="line"><span class="number">2766</span></span><br><span class="line"><span class="number">2767</span>     system_io = g_malloc(<span class="keyword">sizeof</span>(*system_io));</span><br><span class="line"><span class="number">2768</span>     memory_region_init_io(system_io, <span class="literal">NULL</span>, &amp;unassigned_io_ops, <span class="literal">NULL</span>, <span class="string">"io"</span>,</span><br><span class="line"><span class="number">2769</span>                           <span class="number">65536</span>);</span><br><span class="line"><span class="number">2770</span>     address_space_init(&amp;address_space_io, system_io, <span class="string">"I/O"</span>);</span><br><span class="line"><span class="number">2771</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="number">3215</span> <span class="function"><span class="keyword">void</span> <span class="title">cpu_exec_init_all</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function">3216 </span>&#123;</span><br><span class="line"><span class="number">3217</span>     qemu_mutex_init(&amp;ram_list.mutex);</span><br><span class="line"><span class="number">3225</span>     finalize_target_page_bits();</span><br><span class="line"><span class="number">3226</span>     io_mem_init();</span><br><span class="line"><span class="number">3227</span>     memory_map_init();</span><br><span class="line"><span class="number">3228</span>     qemu_mutex_init(&amp;map_client_list_lock);</span><br><span class="line"><span class="number">3229</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>往下就是初始化smp、默认的显示器、log、Page页大小、socket, 之后就是和kvm非常相关的配置accelerator了，
+与kvm的交互我们放下一篇细说，这里不深入了。</p>
+<figure class="highlight c"><figcaption><span>vl.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">4424</span>     configure_accelerator(current_machine);</span><br><span class="line"><span class="number">4425</span></span><br><span class="line"><span class="number">4430</span>     register_global_properties(current_machine);</span><br><span class="line">...</span><br><span class="line"><span class="number">4442</span>     machine_opts = qemu_get_machine_opts();</span><br><span class="line"><span class="number">4443</span>     kernel_filename = qemu_opt_get(machine_opts, <span class="string">"kernel"</span>);</span><br><span class="line"><span class="number">4444</span>     initrd_filename = qemu_opt_get(machine_opts, <span class="string">"initrd"</span>);</span><br><span class="line"><span class="number">4445</span>     kernel_cmdline = qemu_opt_get(machine_opts, <span class="string">"append"</span>);</span><br><span class="line"><span class="number">4446</span>     bios_name = qemu_opt_get(machine_opts, <span class="string">"firmware"</span>);</span><br><span class="line">...</span><br><span class="line"><span class="number">4577</span>     default_drive(default_cdrom, snapshot, machine_class-&gt;block_default_type, <span class="number">2</span>,</span><br><span class="line"><span class="number">4578</span>                   CDROM_OPTS);</span><br><span class="line">...</span><br><span class="line"><span class="number">4741</span>     qdev_machine_creation_done();</span><br><span class="line"><span class="number">4746</span>     qemu_run_machine_init_done_notifiers();</span><br></pre></td></tr></table></figure>
+<p>之后就是读取kernel镜像位置等和启动参数等，然后初始化console、设置默认的启动介质、设置watchdog、其他设备相关的初始化。</p>
+<p>最终qemu就会初始化完成虚拟机machine, </p>
+<figure class="highlight c"><figcaption><span>vl.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">4786</span>         vm_start();</span><br><span class="line"><span class="number">4787</span>     &#125;</span><br><span class="line"><span class="number">4788</span></span><br><span class="line"><span class="number">4789</span>     os_setup_post();</span><br><span class="line"><span class="number">4790</span></span><br><span class="line"><span class="number">4791</span>     main_loop();</span><br></pre></td></tr></table></figure>
+<p>之后QEMU会调用<code>vm_start()</code> 所有的vcpu开始被调度，QEMU自身进入<code>main_loop()</code>, 当我们停止虚拟机的时候，<code>main_loop()</code>会跳出并回收资源.</p>
+<figure class="highlight c"><figcaption><span>cpus.c</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1845</span> <span class="function"><span class="keyword">void</span> <span class="title">vm_start</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function">1846 </span>&#123;</span><br><span class="line"><span class="number">1847</span>     <span class="keyword">if</span> (!vm_prepare_start()) &#123;</span><br><span class="line"><span class="number">1848</span>         resume_all_vcpus();</span><br><span class="line"><span class="number">1849</span>     &#125;</span><br><span class="line"><span class="number">1850</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>这就是整个QEMU的执行过程。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/virtualization/" rel="tag"># virtualization</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/08/14/kvm-log-1-qemu-module-intro/" rel="next" title="KVM Log 1-QEMU Object Module (QOM)">
+                <i class="fa fa-chevron-left"></i> KVM Log 1-QEMU Object Module (QOM)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/08/15/kvm-log-3-kvm-workflow/" rel="prev" title="KVM Log 3-KVM Workflow (ARM64)">
+                KVM Log 3-KVM Workflow (ARM64) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Startup"><span class="nav-text">Startup</span></a></li></ol>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2017/08/14/kvm-log-2-qemu-kvm-startup/';
+          this.page.identifier = 'blog/2017/08/14/kvm-log-2-qemu-kvm-startup/';
+          this.page.title = 'KVM Log 2-QEMU-kvm Startup';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

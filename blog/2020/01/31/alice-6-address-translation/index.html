@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="arm, os, linux, alice os, pagetable, mmu">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="本篇主要解释一下为什么要使用页表系统， 构建页表系统需要注意什么， 然后再看一下ARMv5与ARMv7页表格式的区别, 看能不能尽可能把两者的代码统一起来。 已经熟悉地址翻译的小伙伴可以直接看下一篇， 不玩虚的直接上手！">
+<meta name="keywords" content="arm, os, linux, alice os, pagetable, mmu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Alice OS 6-Address Translation">
+<meta property="og:url" content="http://silentming.net/blog/2020/01/31/alice-6-address-translation/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="本篇主要解释一下为什么要使用页表系统， 构建页表系统需要注意什么， 然后再看一下ARMv5与ARMv7页表格式的区别, 看能不能尽可能把两者的代码统一起来。 已经熟悉地址翻译的小伙伴可以直接看下一篇， 不玩虚的直接上手！">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://silentming.net/images/2020/20200131alice0.png">
+<meta property="og:image" content="http://silentming.net/images/2020/20200131alice1.png">
+<meta property="og:image" content="http://silentming.net/images/2020/20200131alice2.png">
+<meta property="og:image" content="http://silentming.net/images/2020/20200131alice3.png">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Alice OS 6-Address Translation">
+<meta name="twitter:description" content="本篇主要解释一下为什么要使用页表系统， 构建页表系统需要注意什么， 然后再看一下ARMv5与ARMv7页表格式的区别, 看能不能尽可能把两者的代码统一起来。 已经熟悉地址翻译的小伙伴可以直接看下一篇， 不玩虚的直接上手！">
+<meta name="twitter:image" content="http://silentming.net/images/2020/20200131alice0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2020/01/31/alice-6-address-translation/">
+
+
+
+
+
+  <title>Alice OS 6-Address Translation | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2020/01/31/alice-6-address-translation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Alice OS 6-Address Translation</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-31T01:22:39+08:00">2020-01-31</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2020/01/31/alice-6-address-translation/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2020/01/31/alice-6-address-translation/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇主要解释一下为什么要使用页表系统，
+构建页表系统需要注意什么，
+然后再看一下ARMv5与ARMv7页表格式的区别,
+看能不能尽可能把两者的代码统一起来。</p>
+<p>已经熟悉地址翻译的小伙伴可以直接看下一篇，
+不玩虚的直接上手！</p>
+<a id="more"></a>
+<h2 id="页表系统"><a href="#页表系统" class="headerlink" title="页表系统"></a>页表系统</h2><p>我们学习操作系统原理的时候一定会讲页表，
+我们也都知道虚拟地址经过页表翻译会变成物理地址。
+那么页表是为了解决什么问题呢？</p>
+<p>设想一下，如果我们没有页表，就像我们之前的代码那样一行行直接跑，
+我们在linker script里面把起始地址改成和实际启动地址一样，
+好像也是OK的。只要链接脚本生成的地址和实际启动地址一致，
+我们的访存也不会出错，好像已经很完美了。</p>
+<p>在没有OS的时候，我们的CPU直接跑的裸程序(bare metal),
+那么如果想跑多个APP的话，就需要保证APP之间地址<strong>不能互相重叠</strong>。
+但这样一个APP也基本上只能跑在这个CPU上了，
+换个CPU可能别的APP就把这个给占了，
+总不能我们每次换一个CPU要么赌运气别的APP没用我们的地址，
+要么我们重新编、甚至重新写吧？</p>
+<p>所以我们一定需要一个地址翻译，
+每个APP都可以从同一个地址开始执行，
+只要我给他们映射到不同的物理地址上就行了。</p>
+<p>至于为何慢慢发展成2级或者如今64位系统的4级页表，
+则主要是为了满足硬件越来越大的物理地址以及减少内存外部碎片的原因。
+内存碎片和页表的发展有兴趣的小伙伴可以私下自己再看啦。</p>
+<h2 id="TTBR-amp-First-Level-Table"><a href="#TTBR-amp-First-Level-Table" class="headerlink" title="TTBR &amp; First Level Table"></a>TTBR &amp; First Level Table</h2><p>将输入的va(virtual address)翻译为pa(physical address)的过程叫做page walk,
+也叫address translation. ARMv5的页表非常简单，只要我们构建一个表装到这个TTBR里，
+SCTLR里的M-bit一使能，MMU就会开始地址翻译了。</p>
+<img src="/images/2020/20200131alice0.png">
+<p>那么页表翻译的规则是什么样的呢?
+这里我用ARMv7的页表翻译过程来说, ARMv5的类似，不过v7的图更简洁:</p>
+<img src="/images/2020/20200131alice1.png">
+<p>我们在ARMv7上会将图中的N设置为0，这样ARMv7上就只使用TTBR0且格式与ARMv5的TTBR保持兼容，
+可以看到，va的bit[31-20]会作为一级页表的index,
+通过这个index和TTBR里存放的base,
+就可以找到对应的页表项(Page Table Entry, PTE or Section Table Entry, STE)。</p>
+<p>如图中所示，我们1级页表有3种格式，分别是Section, Page Table和Supersection,
+Page Table更为细粒度，还需要2级页表，在2级页表里还有大页和小页等等。</p>
+<p>总的来说:</p>
+<ul>
+<li>使用section, 那么每个entry对应<strong>1M</strong>物理内存区域;</li>
+<li>使用Supersection, 每16个entry内容一模一样, entry指向<strong>16M</strong>物理内存区域;</li>
+<li>使用Page Table<ul>
+<li>大页和section类似, 一个指向<strong>1M</strong>物理内存,</li>
+<li>小页是常见的4K页，一个指向<strong>4K</strong>物理内存。</li>
+</ul>
+</li>
+</ul>
+<p>我们随后再解释为什么它们指向1M、16M或者4K物理内存，
+我们首先观察，由于一级页表的index范围是 bit[31-20]，
+所以可以存放2^12 = 4096个entry。每个entry是个32位长变量(4byte)，
+所以一级页表的大小就是 4byte * 4096 = 16KB.</p>
+<p>由于每个STE对应1M物理内存，所以这个页表最大能够映射 1M * 4096 = 4G的物理地址空间。
+而为什么是4G物理内存呢? 是因为我们虚拟地址长度32位 2^32 = 4G,
+所以虚拟地址空间的范围最大就是4G。物理地址也是32位，同样最大也就是4G物理地址空间了。</p>
+<p>(Long-descriptor format 支持更大的物理地址空间, 虚拟地址空间仍为4G)。</p>
+<p>现在再回头看看图1中TTBR的Format: 他的bit[13-0]是(Sould Be Zero/SBZ),
+其原因就是1级页表是16K大小，而TTBR又要求一级页表是16KB对齐的，
+因此页表地址的后14位一定为0.</p>
+<h2 id="Address-Translation"><a href="#Address-Translation" class="headerlink" title="Address Translation"></a>Address Translation</h2><p>由于Section最为简单，我们以一级页表是Section为例
+每个entry是一个STE, 对应1M物理内存。</p>
+<p>详细的查表过程如下:</p>
+<img src="/images/2020/20200131alice2.png">
+<p>32位的va, 取bit[31:20]作为index, 加到TTBR里的Base上,
+这样产生的<strong>物理地址</strong> <code>|Base[31:14] | va[31:20] | 00 |</code>
+指向的就是1级页表的某个entry (STE)。
+由于entry都是4byte (32bits), 又是对齐的，所以最后两个bit一定是0;</p>
+<p>再来看看输入的va, va只用了bit[31:20], 还有[19:0]呢，
+这后20位又是怎么使用的呢？这就要看我们上一步取出来的STE了。</p>
+<p>STE格式如下:</p>
+<img src="/images/2020/20200131alice3.png">
+<p>可以看到STE的bit[31:20]存放的是section base address,
+这个section base address就是我们刚刚说的这个STE对应的1M物理内存的基址！</p>
+<p>最后翻译得到的物理地址就是 | section base address | va[19:0] | 这样一个32位地址了。</p>
+<p>所以我们看到1级section table实际上只对<strong>va的前12位 bit[31:20]进行了翻译</strong>，
+翻译成了section base address, <strong>va的后20位直接拿来使用</strong>，组成了一个物理地址。</p>
+<p>所以我们如果想让这个翻译成立，就必须对物理内存进行切分，切分成<strong>1M</strong>大小的块，
+每一块的起始物理地址都要对齐到1M大小(即后20位为0),
+这些物理地址块就可以作为STE里面的section base address。</p>
+<p>所以这也是为什么我们开头说section对应1M物理内存区域，
+这1M的物理块是va通过地址翻译找到的，
+找到了这个物理块之后，后面的20位地址就可以直接拿来用了。</p>
+<p>假如: (答案在文末)</p>
+<ol>
+<li>section指向的是2M的物理内存, 那么Section Table的大小要如何改变？STE如何改变?</li>
+<li>虚拟地址我们最大只有2G, Section Table大小和STE如何改变?</li>
+<li>物理地址我们想支持8G, 又要改变什么呢？</li>
+<li>我们想支持16G的虚拟地址, 需要怎么办?</li>
+</ol>
+<h2 id="Page-Table"><a href="#Page-Table" class="headerlink" title="Page Table"></a>Page Table</h2><p>那么Page Table的格式也就类似了:</p>
+<p>va会被拆成3部分:</p>
+<ul>
+<li>va[31:22] : index of first level page table</li>
+<li>va[21:12] : index of second level page table</li>
+<li>va[11:0]  : offset of page</li>
+</ul>
+<p>其中1级页表的PTE (也叫PDE: Page Directory Entry) 存放2级页表的base;
+2级页表的PTE存放4K物理页的base,
+最后从2级页表的PTE中取出20位长的4K物理页base再加上va[11:0]组成真正的物理地址(如上图Fine page table)。</p>
+<p>所以使用页表，物理页就会被分成4K的小块，也就更为灵活了。</p>
+<h2 id="Bits-in-Table-Entry"><a href="#Bits-in-Table-Entry" class="headerlink" title="Bits in Table Entry"></a>Bits in Table Entry</h2><p>我们发现上图中，Table Entry不止存放有物理页的base,
+还有一些其它的东西: AP, Domain, C, B</p>
+<p>AP是Access Permission, 可以控制这块内存是否可以访问，是否可以被非特权的用户态访问,
+是否可写等等。</p>
+<p>Domain: ARM有个Domain Access Control Register DACR。
+32位的寄存器被分成了16个Domain, 每个Domain 2个bit:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Value</th>
+<th style="text-align:left">Meaning</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">00</td>
+<td style="text-align:left">No access</td>
+<td style="text-align:left">Any access generates a domain fault.</td>
+</tr>
+<tr>
+<td style="text-align:left">01</td>
+<td style="text-align:left">Client</td>
+<td style="text-align:left">Accesses are checked against the access permission bits in the section or page descriptor.</td>
+</tr>
+<tr>
+<td style="text-align:left">10</td>
+<td style="text-align:left">Reserved</td>
+<td style="text-align:left">Reserved. Currently behaves like the no access mode.</td>
+</tr>
+<tr>
+<td style="text-align:left">11</td>
+<td style="text-align:left">Manager</td>
+<td style="text-align:left">Accesses are not checked against the access permission bits so a permission fault cannot be generated.</td>
+</tr>
+</tbody>
+</table>
+<p>每个Domain可以设置是否可以访问或者是否启用安全检查，
+页表项指向的这个区域会对应于一个Domain，在访存时进行访问控制检查。
+我们当然还是希望应用检查的，所以会用0b01 Client;</p>
+<p>C, B就是Cache属性, 对应的内存区域是否是cachable, 是否为Write-Back等等;
+关于Cache我们暂时不会涉及，有兴趣的可以自己查一下。</p>
+<h2 id="ARMv5-vs-ARMv7"><a href="#ARMv5-vs-ARMv7" class="headerlink" title="ARMv5 vs ARMv7"></a>ARMv5 vs ARMv7</h2><p>ARMv7的页表可以用两个TTBR, 可以分别用于内核和用户态，
+等我们以后用到TTBR1的时候再解释这么做的好处。</p>
+<p>ARMv7里面的AP还有第3个: AP[2] 可以进行更细粒度的控制，
+或者通过配置SCTLR.AFE将AP[0]用做Access Flag,
+可以查看内存是否被硬件访问过，用于刷Cache等等。</p>
+<p>ARMv7还有Execution Not bit, 用来表明某个内存区域不可执行等等。</p>
+<p>总之ARMv7有更多有关安全、Cache的bits,
+目前我们为了方便演示，会将ARMv7配置为兼容ARMv5的形式,
+所以这些bit暂且不用理会, 有兴趣的自己可以研究一下。</p>
+<h2 id="Next"><a href="#Next" class="headerlink" title="Next"></a>Next</h2><p>现在我们已经知道了地址翻译的原理和过程，
+下面就来看看我们如何来构建启动的页表吧。</p>
+<h2 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h2><ol>
+<li><p>如果section指向2M物理内存, 就意味着4G的地址范围需要 2048个entry,
+每个entry 4B, Section Table大小就是 4B * 2048 = 8K, 对齐到8K 所以后13位要全为0。
+TTBR的格式就是 bit[31:13]是Base (19bits), bit[12:0]SBZ;<br>
+由于entry变少，用于index的va就只需要[31:21] 11个bit用来作为index了,
+和TTBR的19个bits拼起来就是STE的地址，依旧是最后两位为0。<br>
+STE由于对应2M区域，所以后21位可以都作为other bits,
+section base address就只需要32-21 = 11bits, 即 bit[31:21];</p>
+</li>
+<li><p>虚拟地址最大为2G, 我们要翻译的地址大小就少了一半，
+所以Section Table entry减半, 其他不变。</p>
+</li>
+<li><p>物理地址想支持8G, 那就是说最后的STE中填写的Base要多一个bit,
+这样才能索引到更大的物理地址，
+所以STE中的section base address要多一位来保证能索引到8G的物理地址范围。
+ARM本身支持物理地址扩大到16G, 可以自己参考一下ARM手册是怎么改Descriptor格式的吧~</p>
+</li>
+<li><p>如果我们想支持16G的虚拟地址(va 34位)，要么把Table番两番，entry加到 4096 * 4;
+要么就要再引入多级页表, 把va拆成多份,
+va[a|b|c|d|…], a作为1级页表的index, b是2级页表的index, c是3级页表的index…
+最后在最后一级页表中取出来physical address base, 拼上最后没用做index的va;</p>
+</li>
+</ol>
+<p>本质上，多级页表就是添加了更多的table entry, 又保持每张页表小一些，不至于16K 64K 256K…这样越来越大。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/os-dev/" rel="tag"># os-dev</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2020/01/30/alice-5-system-regs/" rel="next" title="Alice OS 5-System Regs">
+                <i class="fa fa-chevron-left"></i> Alice OS 5-System Regs
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/01/31/alice-7-startup-table/" rel="prev" title="Alice OS 7-Startup Table">
+                Alice OS 7-Startup Table <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#页表系统"><span class="nav-text">页表系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TTBR-amp-First-Level-Table"><span class="nav-text">TTBR &amp; First Level Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Address-Translation"><span class="nav-text">Address Translation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Page-Table"><span class="nav-text">Page Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bits-in-Table-Entry"><span class="nav-text">Bits in Table Entry</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ARMv5-vs-ARMv7"><span class="nav-text">ARMv5 vs ARMv7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Next"><span class="nav-text">Next</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Notes"><span class="nav-text">Notes</span></a></li></ol>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2020/01/31/alice-6-address-translation/';
+          this.page.identifier = 'blog/2020/01/31/alice-6-address-translation/';
+          this.page.title = 'Alice OS 6-Address Translation';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

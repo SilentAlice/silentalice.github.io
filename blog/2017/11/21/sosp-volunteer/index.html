@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SOSP, 2017, Volunteer">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="由于之前一阵忙+偷懒，今天终于想起来把志愿者期间的工作补上了。在9月底实习结束回到学校后，经过一轮十一的休假，还没开始怎么写毕设就投入到了SOSP‘17的各种志愿者工作中，一直忙到了11月2号。">
+<meta name="keywords" content="SOSP, 2017, Volunteer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2017 SOSP Volunteer">
+<meta property="og:url" content="http://silentming.net/blog/2017/11/21/sosp-volunteer/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="由于之前一阵忙+偷懒，今天终于想起来把志愿者期间的工作补上了。在9月底实习结束回到学校后，经过一轮十一的休假，还没开始怎么写毕设就投入到了SOSP‘17的各种志愿者工作中，一直忙到了11月2号。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://farm5.staticflickr.com/4585/38527953262_81ce35b172_b_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4571/37842158404_ea5eb87956_k_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4528/37842236354_1afcab45e7_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4534/37671171595_b288e4b855_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4538/37671234465_675cf59b44_b_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4571/24686840568_e2e5996a0e_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4517/38527953652_a8420006b6_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4545/37842826624_0df939e417_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4541/24686840308_8e43951d36_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4575/24686840508_bfc29f671b_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4582/38527953202_7e88e9e08e_k_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4560/37842824964_d551ba7298_m_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4583/38502716316_d548f62340_m_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4586/24686840648_98003bda35_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4563/38527954492_23a1b2322b_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4578/37842826104_d207e1e856_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4547/38527953362_a18b617dab_b_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4572/38527954072_66f9b3bcdd_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4541/38527954362_29a7617998_z_d.jpg">
+<meta property="og:image" content="https://farm5.staticflickr.com/4576/38527953892_a13ec3637d_z_d.jpg">
+<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2017 SOSP Volunteer">
+<meta name="twitter:description" content="由于之前一阵忙+偷懒，今天终于想起来把志愿者期间的工作补上了。在9月底实习结束回到学校后，经过一轮十一的休假，还没开始怎么写毕设就投入到了SOSP‘17的各种志愿者工作中，一直忙到了11月2号。">
+<meta name="twitter:image" content="https://farm5.staticflickr.com/4585/38527953262_81ce35b172_b_d.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://silentming.net/blog/2017/11/21/sosp-volunteer/">
+
+
+
+
+
+  <title>2017 SOSP Volunteer | SilentMing's Gensokyo</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SilentMing's Gensokyo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">初心忘れるべからず</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="http://silentalice.github.io/WebGL/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-gift"></i> <br>
+            
+
+            
+              
+                Home
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-blog">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+
+            
+              
+                Blog
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+
+            
+              
+                About
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+
+            
+              
+                Tags
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+
+            
+              
+                Archives
+              
+            
+
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-gallery">
+          <a href="http://silentalice.github.io/gallery/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-image"></i> <br>
+            
+
+            
+              
+                Gallery
+              
+            
+
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2017/11/21/sosp-volunteer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="SilentMing">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">2017 SOSP Volunteer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-21T17:35:42+08:00">2017-11-21</time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/blog/2017/11/21/sosp-volunteer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2017/11/21/sosp-volunteer/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <img src="https://farm5.staticflickr.com/4585/38527953262_81ce35b172_b_d.jpg">
+<p>由于之前一阵忙+偷懒，今天终于想起来把志愿者期间的工作补上了。在9月底实习结束回到学校后，经过一轮十一的休假，还没开始怎么写毕设就投入到了SOSP‘17的各种志愿者工作中，一直忙到了11月2号。</p>
+<a id="more"></a>
+<h1 id="Preparation"><a href="#Preparation" class="headerlink" title="Preparation"></a>Preparation</h1><h3 id="Website"><a href="#Website" class="headerlink" title="Website"></a>Website</h3><p>会议期间的网页其实就是用html写的静态网页，没有任何技术含量，当时可能正好我有空就让我负责管理了，前前后后一直不停更新，目前也还在不停往上放slides和videos。总的来说，下次还是准备用个静态框架，没有用框架造成的后果就是每次更新菜单都要我一个个页面挨着更新，还好vim有宏可以比较方便完成这些操作，但是还是不容易管理。会议的主页~：<a href="http://www.sigops.org/sosp/sosp17/" target="_blank" rel="noopener">http://www.sigops.org/sosp/sosp17/</a></p>
+<p>由于第一次在中国举办，所以临时花了几十分钟还弄了个丑陋的中文版，估计也没人看= =。配色也是参考了2013年SOSP网页的配色和布局。</p>
+<h3 id="Pamphlet"><a href="#Pamphlet" class="headerlink" title="Pamphlet"></a>Pamphlet</h3><img src="https://farm5.staticflickr.com/4571/37842158404_ea5eb87956_k_d.jpg">
+<p>十一回来后就被斌哥抓去做这个小册子了，参考了FAST’16的小册子自己第一次尝试用Adobe Illustrator来排字体，总体感觉就是个苦力活，各种调啊调，做到最后都快吐了(真正意义上快吐了)，本来打算十月写毕设，也是因为这个东西基本上泡汤。</p>
+<p>以及不得不吐槽，会场地图竟然没有英文版，上面的英文全是我自己YY翻译的，后来跟实际的一对照，发现好多楼的名字还是翻译的有问题。以及，为什么房间名叫“北京”，叫“上海”？？我在会场遇到好多问workshop为什么是在北京开的人了。。。</p>
+<h3 id="Rollup"><a href="#Rollup" class="headerlink" title="Rollup"></a>Rollup</h3><img src="https://farm5.staticflickr.com/4528/37842236354_1afcab45e7_z_d.jpg">
+<p>由于会场上每个房间外面要摆个易拉宝，所以做了小册子的我当然也没逃过做易拉宝的命运，当时时间过于紧张，所以用PPT赶做了一个模板，并让其他小伙伴帮忙做其他日期的。说真的，我到现在还想吐槽为什么斌哥不多找点人…累死本少了。</p>
+<h3 id="Certificate"><a href="#Certificate" class="headerlink" title="Certificate"></a>Certificate</h3><img src="https://farm5.staticflickr.com/4534/37671171595_b288e4b855_z_d.jpg">
+<p>对啊，你没看错，我们的志愿者证书竟然是自己做的！惊!而且又一次是我。因为模板是ai，正好我前段时间用了ai，这个是在会议期间赶做的，然而到今天都没发下来。本来想着证书发下来再写这篇日记，看来是没戏了。</p>
+<h3 id="Badge-amp-Package"><a href="#Badge-amp-Package" class="headerlink" title="Badge &amp; Package"></a>Badge &amp; Package</h3><img src="https://farm5.staticflickr.com/4538/37671234465_675cf59b44_b_d.jpg">
+<p>10月27号, 会议开始的前一天，我们一行人来到香格里拉大酒店开始装package，为了提高注册时的体验，提前准备工作当然是必不可少，晚上随便吃了点后就进行分装名牌的工作。</p>
+<p>名牌由于是提前打好的，在决定我们打算按Last Name分组进行注册时，前一天晚上我们在香格里拉大酒店的礼宾房里分装名牌，由于早上6点多就起床，当时真的是又困又累。</p>
+<h1 id="Conference"><a href="#Conference" class="headerlink" title="Conference"></a>Conference</h1><h3 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h3><img src="https://farm5.staticflickr.com/4571/24686840568_e2e5996a0e_z_d.jpg" title="会场地址">
+<img src="https://farm5.staticflickr.com/4517/38527953652_a8420006b6_z_d.jpg" title="提前30min准备">
+<p>第一天也是最为忙碌的一天，缺少经验的我们想要做好却问题频出。加上我们也不熟悉宾馆的路线，被参会人员一问三不知，我们准备的invoice也由于失误造成第一批全部印错。对于On-site注册的人士，我们没有记号笔，只能尴尬地让人家在白纸上写上自己的名字。说真的，热锅上的蚂蚁…</p>
+<h3 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h3><img src="https://farm5.staticflickr.com/4545/37842826624_0df939e417_z_d.jpg" title="欢迎致辞">
+<p>第二天才是正式会议的开始，而第一天遇到的问题也相应得到解决。从借助胶带现场印名牌到直接用打印机打印名牌，记号笔和更正后的invoice… 第二天虽然忙碌不过也都井井有条。可能因为第一次在中国开，所以谨慎的外国友人们注册的都比较早，因而他们的注册都很顺利, 主要是一些现场注册和较晚注册的由于我们没有提前备好名牌造成的耽误。</p>
+<img src="https://farm5.staticflickr.com/4541/24686840308_8e43951d36_z_d.jpg" title="夜景">
+<p>到了晚上，我们已经像流水线里的熟练工一样能够快速完成注册、应对各种突发状况了。我也有空来到Grand Ballroom外的露天花园眺望浦西。</p>
+<h3 id="Day-3"><a href="#Day-3" class="headerlink" title="Day 3"></a>Day 3</h3><img src="https://farm5.staticflickr.com/4575/24686840508_bfc29f671b_z_d.jpg" title="自行车比赛">
+<p>早上一起来发现上海有自行车赛，道路各种被封，出租车过不去我们只能绕天桥。也有机会拍一张~</p>
+<img src="https://farm5.staticflickr.com/4582/38527953202_7e88e9e08e_k_d.jpg" title="会场">
+<p>也有机会进去听跟我相关的talk, 会场还是比较大的~</p>
+<img src="https://farm5.staticflickr.com/4560/37842824964_d551ba7298_m_d.jpg" title="Nickolai">
+<img src="https://farm5.staticflickr.com/4583/38502716316_d548f62340_m_d.jpg" title="甜点">
+<p>比较气的是各种合影我都完美错过，无论是我们自己的合影还是和大佬们的合影，我都恰好因为各种事情当时不在场，这里盗用一张小伙伴拍到的野生Nickolai大佬的照片。(一个人出现在4篇里面…)</p>
+<p>我们也是有空出来吃一些好吃的~ </p>
+<h3 id="Day-4"><a href="#Day-4" class="headerlink" title="Day 4"></a>Day 4</h3><p>最后一天主要是在解决一些国际友人的旅游问题..有不能翻墙让帮忙下地图的，有问火车票信息对不对的，有办电话卡的，以及各种旅游相关的问题。不过有接机的同学帮忙所以我们这边其实没太多事情。遇到的问题是名牌不够，挂绳不够等…</p>
+<img src="https://farm5.staticflickr.com/4586/24686840648_98003bda35_z_d.jpg" title="浦江游">
+<p>最后下午是和报名的人一起游玩，我是跟浦江游的队伍。(和图灵奖得主一起游船的机会可不多吖)</p>
+<h3 id="End"><a href="#End" class="headerlink" title="End"></a>End</h3><img src="https://farm5.staticflickr.com/4563/38527954492_23a1b2322b_z_d.jpg">
+<img src="https://farm5.staticflickr.com/4578/37842826104_d207e1e856_z_d.jpg">
+<p>首先还是要感谢海波导师，没有他SOSP也不会在50周年第一次来到亚洲、来到中国！虽然平日不拘言笑，牛人还是牛啊。</p>
+<p>作为Local Arrangement的斌哥可以说辛苦至极，虽然我们跟着也没多好受，不过拼过累过最后才更能品出圆满完成时的喜悦。</p>
+<img src="https://farm5.staticflickr.com/4547/38527953362_a18b617dab_b_d.jpg" title="IPADSer">
+<p>IPADS的部分大佬们，大爷带着不用赶Paper也没参加志愿者的博士们过来围观← ←</p>
+<img src="https://farm5.staticflickr.com/4572/38527954072_66f9b3bcdd_z_d.jpg" title="云昊">
+<p>云昊同学的出色工作，在本科期间就能够在此等会议上发论文，未来的大牛已然抛下了我等渣渣。是时，云昊同学已经在Cornell了，还专门回来开会😂 <a href="https://dl.acm.org/authorize?N47271" target="_blank" rel="noopener">Sub-millisecond Stateful Stream Querying over Fast-evolving Linked Data</a></p>
+<img src="https://farm5.staticflickr.com/4541/38527954362_29a7617998_z_d.jpg" title="乃正">
+<p>曾经的IPADSer乃正, 现在在NYU，虽然对我这个后来才加入的人来说不熟悉，不过看着学长们的实绩，自己也是怕的不敢说话。Best Paper之一<a href="https://dl.acm.org/authorize?N47277" target="_blank" rel="noopener">The Efficient Server Audit Problem, Deduplicated Re-execution, and the Web</a></p>
+<img src="https://farm5.staticflickr.com/4576/38527953892_a13ec3637d_z_d.jpg">
+<p>楼畅和思源同学的Poster~ 也是实验室分布式组RDF相关工作的又一延续，我这个虚拟化与安全方向的就凑凑热闹哈哈~</p>
+<p>我的第一次国际会议参会，也是一次特殊的参会，作为志愿者，从现场外的工作到现场内的接待，到会议完成的现在还在邮件来邮件去，也是深刻体会到办一个会议的艰辛，更不用说要操心各种事情的导师们。</p>
+<p>最后还是恭喜SOSP17的圆满成功！(P.S. 上面的照片都没我，不用找了)</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/essay/" rel="tag"># essay</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/08/29/kvm-log-5-create-guest-on-arm64/" rel="next" title="Kvm Log 5-Create QEMU-kvm Guest on Hikey960 (ARM64)">
+                <i class="fa fa-chevron-left"></i> Kvm Log 5-Create QEMU-kvm Guest on Hikey960 (ARM64)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/12/10/hongkong-trip/" rel="prev" title="香港之行">
+                香港之行 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2070458" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="SilentMing">
+            
+
+              <p class="site-author-name" itemprop="name">SilentMing</p>
+              <p class="site-description motion-element" itemprop="description">SilentMing / SilentAlice's blog</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/SilentAlice" target="_blank" title="Git">
+                      
+                        <i class="fa fa-fw fa-github"></i>Git</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:yumingwu233@gmail.com" target="_blank" title="Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>Mail</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.linkedin.com/in/silentalice/" target="_blank" title="LinkedIn">
+                      
+                        <i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://pixiv.me/wym981230" target="_blank" title="Pixiv">
+                      
+                        <i class="fa fa-fw fa-link"></i>Pixiv</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Friends' Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ytliu.info" title="Mctrain's Blog" target="_blank">Mctrain's Blog</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://kiorisyshen.github.io" title="Kio's Spot" target="_blank">Kio's Spot</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://unlimitedcodeworks.xyz" title="Unlimited Code Works" target="_blank">Unlimited Code Works</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://mytrix.me/" title="MatheMatrix's The 4th. Place" target="_blank">MatheMatrix's The 4th. Place</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://xmm4ok69.com/" title="XMM's Blog" target="_blank">XMM's Blog</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content">
+                <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Preparation"><span class="nav-text">Preparation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Website"><span class="nav-text">Website</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pamphlet"><span class="nav-text">Pamphlet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rollup"><span class="nav-text">Rollup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Certificate"><span class="nav-text">Certificate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Badge-amp-Package"><span class="nav-text">Badge &amp; Package</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Conference"><span class="nav-text">Conference</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Day-1"><span class="nav-text">Day 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Day-2"><span class="nav-text">Day 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Day-3"><span class="nav-text">Day 3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Day-4"><span class="nav-text">Day 4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li></ol></li>
+            
+          </div>
+        </div></section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SilentMing</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Mist</a> v6.0.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://silentmingsblog.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://silentming.net/blog/2017/11/21/sosp-volunteer/';
+          this.page.identifier = 'blog/2017/11/21/sosp-volunteer/';
+          this.page.title = '2017 SOSP Volunteer';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://silentmingsblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
