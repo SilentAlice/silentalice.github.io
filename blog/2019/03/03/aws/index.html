@@ -87,7 +87,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://silentming.net/images/2019/20190303aws00.jpg">
 <meta property="og:image" content="http://silentming.net/images/2019/20190303aws01.jpg">
-<meta property="og:updated_time" content="2022-10-30T12:09:54.917Z">
+<meta property="og:updated_time" content="2023-03-25T16:04:35.579Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用免费的亚马逊云服务(AWS)">
 <meta name="twitter:description" content="之前一直使用的搬瓦工: https://bandwagonhost.com/, 使用上感觉还不错，但是当vps IPf被封了之后， 需要等待180天才能更换一次IP。 而且其速度并没有非常的快(当然也是因为买的是最便宜的19$/year的套餐)。 听闻Amazon的云服务AWS(Amazon Web Service)可以试用，第一年免费，今天便拿来尝试了一把。 本篇记录了使用Amazon的服务建立">
@@ -462,8 +462,8 @@
 <li>Ubuntu Server 18.04 LTS (HVM): Ubuntu, 使用apt包管理器</li>
 </ul>
 <p>如果是习惯了使用Ubuntu的，装Ubuntu Server这个就行；如果仅仅只是想弄个代理服务器什么的，
-考虑到我们的VM空间也不大，可以像我一样申个最简单的Amazon Linux 2 AMI。这几个VM类型除了Windows家的，
-都是HVM类型(全虚拟化), 所以使用上没什么差别。这里我们选第一个<code>Amazon Linux 2 AMI(HVM)</code></p>
+考虑到我们的VM空间也不大，可以像我一样申个最简单的Amazon Linux 2 AMI。(2023年Amazon出了新的AMI, 可以用新的) 
+这几个VM类型除了Windows家的, 都是HVM类型(全虚拟化), 所以使用上没什么差别。这里我们选第一个<code>Amazon Linux 2 AMI(HVM)</code></p>
 </li>
 <li><p>选择instance type</p>
 <p>在给出的免费选项里面，只有t2.micro, 1个vcpu, 1GB内存，Low to Moderate的网络能选了…</p>
@@ -475,10 +475,14 @@
 <img src="/images/2019/20190303aws00.jpg">
 </li>
 <li><p>Generate Key Pair</p>
+<blockquote>
+<p>熟悉ssh Key使用的也可以跳过这一步，如果跳过这一步那在服务器端没配置好<code>authorized_keys</code>之前就不能通过ssh访问了</p>
+</blockquote>
 <p>之后就可以点Launch来启动我们的VM了。这个时候会弹出一个配置Key Pair的页面，这个页面只会出现一次。
 我们选择<code>Create a new key pair</code>来生成一组新的RSA密钥组。其中的公钥会被放到我们的VM里，
 私钥我们要<strong>下载</strong>下来保存起来之后用ssh连接VM的时候使用。Key Pair的名字随便起。</p>
-<p>点击<code>Download Key Pair</code>下载私钥文件，这个可别弄丢了哦。</p>
+<p>点击<code>Download Key Pair</code>下载私钥文件，这个可别弄丢了哦, 在<code>.ssh/config</code>里面指定为这个密钥就可以了,
+具体的可以在Aws Instances 那边点Connect，照着ssh的方式配置就可以。</p>
 </li>
 <li><p>Launch VM</p>
 <p>点击Launch (Instances/VM)后，我们的VM就会启动了。启动后我们可以选择最上面的菜单<code>Services-&gt;EC2</code>进入
@@ -540,17 +544,8 @@ Port Range 我填一个22334, Source 选择Anywhere。
 <p>  设置我们的IP table, 不要屏蔽掉22334的包:</p>
   <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -I INPUT -p tcp --dport 22334 -j ACCEPT</span><br></pre></td></tr></table></figure>
 <p>  大功造成，剩下的就是常规操作了(Client端的就省略了，相信看到这里的你不可能不会用的)</p>
-<h3 id="Install-V2ray"><a href="#Install-V2ray" class="headerlink" title="Install V2ray"></a>Install V2ray</h3><p>  ssserver 现在经常会被卡擦掉，V2ray使用的vmess协议似乎更好一些:</p>
-<p>  本地(PC)使用的V2rayN可以生成一个id, 也可以自己打一个，无所谓~
-  这里以 <code>81498305-0be0-4923-a270-df4e490a086b</code>为例</p>
-<p>  可以直接参考官方教程: <code>https://www.v2ray.com/en/welcome/install.html</code> or <code>https://github.com/v2fly/fhs-install-v2ray</code></p>
-<p>  在server端: </p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Install needed tools:</span><br><span class="line">$ sudo yum install -y bind-utils curl</span><br><span class="line"></span><br><span class="line"># Official</span><br><span class="line"># $ curl -Ls https://install.direct/go.sh | sudo bash</span><br><span class="line"></span><br><span class="line"># other methods</span><br><span class="line">$ sudo bash &lt;(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)</span><br></pre></td></tr></table></figure>
-<p>  配置比较简单: <code>https://www.v2ray.com/en/welcome/start.html</code></p>
-  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Modify /usr/local/etc/v2ray/config.json</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"inbounds"</span>: [&#123;</span><br><span class="line">    <span class="string">"port"</span>: 11223, // Server port, need to add TCP security policy <span class="keyword">in</span> AWS security group</span><br><span class="line">    <span class="string">"protocol"</span>: <span class="string">"vmess"</span>,</span><br><span class="line">    <span class="string">"settings"</span>: &#123;</span><br><span class="line">      <span class="string">"clients"</span>: [&#123; <span class="string">"id"</span>: <span class="string">"81498305-0be0-4923-a270-df4e490a086b"</span> &#125;] // Same as client</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;],</span><br><span class="line">  <span class="string">"outbounds"</span>: [&#123;</span><br><span class="line">    <span class="string">"protocol"</span>: <span class="string">"freedom"</span>,</span><br><span class="line">    <span class="string">"settings"</span>: &#123;&#125;</span><br><span class="line">  &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  运行！</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/bin/v2ray --config /usr/local/etc/v2ray/config.json &amp;</span><br></pre></td></tr></table></figure>
-<p>  Client端加密选Auto就ok</p>
+<h3 id="Install-V2ray"><a href="#Install-V2ray" class="headerlink" title="Install V2ray"></a>Install V2ray</h3><p>V2ray的使用参考: <a href="http://silentming.net/blog/2023/03/25/v2ray">http://silentming.net/blog/2023/03/25/v2ray</a></p>
+<h2 id="Delete-Instance"><a href="#Delete-Instance" class="headerlink" title="Delete Instance"></a>Delete Instance</h2><p>如果需要删掉Instane, 需要Terminate Instance, 并解除与释放Elastic IP，处于<code>Terminated</code>状态的Instance经过一段时间就会被Amazon回收</p>
 <h2 id="End"><a href="#End" class="headerlink" title="End"></a>End</h2><p>代理服务有很多种，比如我之前介绍过的<code>cntlm</code>也可以用，shadowsocks的好处是对包进行了加密,
 你可以用自己设计的协议= =。</p>
 <p>AWS的Free Tier一个月的上下行流量总和为15GB, 超了会扣钱钱，可以在左上方<code>Services-&gt;CloudWatch</code>
@@ -561,6 +556,7 @@ Port Range 我填一个22334, Source 选择Anywhere。
 在EC2 Dashboard上面非常显眼的就列出了所有的常用功能。再一次深刻意识到Amazon作为公有云领域的老大，
 其技术能力的深厚与用户体验的优化都铸就了它现在巨大的成功。</p>
 <h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><ul>
+<li>20230325: Update Delete Instance</li>
 <li>20210405: Update V2ray configuration</li>
 </ul>
 
@@ -752,7 +748,7 @@ var jiathis_config={
                 
                   <a href="/archives">
                 
-                    <span class="site-state-item-count">86</span>
+                    <span class="site-state-item-count">87</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -862,7 +858,7 @@ var jiathis_config={
             
             
               <div class="post-toc-content">
-                <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preparation"><span class="nav-text">Preparation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apply-a-Instance-Virtual-Machine-VM"><span class="nav-text">Apply a Instance/Virtual Machine (VM)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup-Proxy-Server"><span class="nav-text">Setup Proxy Server</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-ssserver"><span class="nav-text">Install ssserver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-V2ray"><span class="nav-text">Install V2ray</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Note"><span class="nav-text">Note</span></a></li></ol>
+                <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preparation"><span class="nav-text">Preparation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apply-a-Instance-Virtual-Machine-VM"><span class="nav-text">Apply a Instance/Virtual Machine (VM)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup-Proxy-Server"><span class="nav-text">Setup Proxy Server</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-ssserver"><span class="nav-text">Install ssserver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-V2ray"><span class="nav-text">Install V2ray</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Delete-Instance"><span class="nav-text">Delete Instance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#End"><span class="nav-text">End</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Note"><span class="nav-text">Note</span></a></li></ol>
             
           </div>
         </div></section>
@@ -881,7 +877,7 @@ var jiathis_config={
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
