@@ -117,19 +117,21 @@ darkmode: false
 # When running the site in a subdirectory (e.g. yoursite.com/blog), remove the leading slash from link value (/archives -> archives).
 # External url should start with http:// or https://
 menu:
-  home: / || home
-  #about: /about/ || user
-  #tags: /tags/ || tags
+  Home: http://silentalice.github.io/WebGL/ || gift
+  Blog: / || home
+  About: about/ || user
+  Tags: tags/ || tags
   #categories: /categories/ || th
-  archives: /archives/ || archive
-  #schedule: /schedule/ || calendar
+  Archives: archives/ || archive
+  #schedule: schedule || calendar
+  Gallery: http://silentalice.github.io/gallery/ || image
   #sitemap: /sitemap.xml || sitemap
   #commonweal: /404/ || heartbeat
 
 # Enable / Disable menu icons / item badges.
 menu_settings:
   icons: true
-  badges: false
+  badges: true
 
 
 # ---------------------------------------------------------------
@@ -178,8 +180,10 @@ site_state: true
 # Key is the link label showing to end users.
 # Value before `||` delimiter is the target permalink, value after `||` delimiter is the name of Font Awesome icon.
 social:
-  #GitHub: https://github.com/yourname || github
-  #E-Mail: mailto:yourname@gmail.com || envelope
+  Git: https://github.com/SilentAlice || github
+  Mail: mailto:yumingwu233@gmail.com || envelope
+  LinkedIn: https://www.linkedin.com/in/silentalice/ || linkedin
+  Pixiv: https://pixiv.me/wym981230 || link
   #Weibo: https://weibo.com/yourname || weibo
   #Google: https://plus.google.com/yourname || google
   #Twitter: https://twitter.com/yourname || twitter
@@ -197,12 +201,14 @@ social_icons:
 # Blog rolls
 links_settings:
   icon: link
-  title: Links
+  title: Friends' Links
   # Available values: block | inline
-  layout: block
+  layout: inline
 
 links:
   #Title: http://yoursite.com
+  Kio's Spot: http://kiorisyshen.github.io
+  XMM's Blog: http://xmm4ok69.com/
 
 # Table of Contents in the Sidebar
 # Front-matter variable (unsupport wrap expand_all).
