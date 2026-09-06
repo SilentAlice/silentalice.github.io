@@ -15,8 +15,9 @@ timezone: Asia/Shanghai
 url: http://silentming.net
 root: /
 permalink: blog/:year/:month/:day/:title/
-permalink_defaults: blog/:year/:month/:day/:title/
-
+pretty_urls:
+  trailing_index: true
+  trailing_html: true
 
 # Directory
 source_dir: source
@@ -32,18 +33,28 @@ skip_render:
 new_post_name: :year-:month-:day-:title.md # File name of new posts
 default_layout: post
 titlecase: false # Transform title into titlecase
-external_link: true # Open external links in new tab
+external_link:
+  enable: true # Open external links in new tab
+  field: site
+  exclude: ''
 filename_case: 1
 render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
+syntax_highlighter: highlight.js
 highlight:
-  enable: true
-  line_number: true
   auto_detect: false
-  tab_replace:
-  
+  line_number: true
+  tab_replace: ''
+  wrap: true
+  exclude_languages: []
+  language_attr: false
+  hljs: false
+  line_threshold: 0
+  first_line_number: 'always1'
+  strip_indent: true
+
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
 # per_page: Posts displayed per page. (0 = disable pagination)
@@ -52,7 +63,7 @@ index_generator:
   path: ''
   per_page: 10
   order_by: -date
-  
+
 # Category & Tag
 default_category: uncategorized
 category_map:
@@ -73,11 +84,11 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: hexo-theme-next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
-deploy: 
+deploy:
   type: git
   repo: git@github.com:SilentAlice/silentalice.github.io.git
   branch: master
@@ -94,13 +105,8 @@ marked:
   modifyAnchors: ''
   autolink: true
 
-## Plugins: http://hexo.io/plugins/
-#RSS订阅
-plugin:
-- hexo-generator-feed
-#Feed Atom
+# Feed Atom (hexo-generator-feed)
 feed:
-type: atom
-path: atom.xml
-limit: 20
-
+  type: atom
+  path: atom.xml
+  limit: 20

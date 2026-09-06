@@ -1,0 +1,91 @@
+# ===============================================================
+# NexT 8 Alternate Theme Config
+# See: https://theme-next.js.org/docs/getting-started/configuration
+# ===============================================================
+
+# Allow to cache content generation.
+cache:
+  enable: true
+
+# ---------------------------------------------------------------
+# Scheme Settings
+# ---------------------------------------------------------------
+scheme: Mist
+#scheme: Muse
+#scheme: Pisces
+#scheme: Gemini
+
+# ---------------------------------------------------------------
+# Menu Settings
+# ---------------------------------------------------------------
+menu:
+  home: / || fa fa-home
+  about: /about/ || fa fa-user
+  tags: /tags/ || fa fa-tags
+  archives: /archives/ || fa fa-archive
+  Gallery: http://silentalice.github.io/gallery/ || fa fa-image
+  WebGL: http://silentalice.github.io/WebGL/ || fa fa-gift
+
+# Enable / Disable menu icons / item badges.
+menu_settings:
+  icons: true
+  badges: false
+
+# ---------------------------------------------------------------
+# Site Information Settings
+# ---------------------------------------------------------------
+favicon:
+  small: /images/favicon-16x16-next.png
+  medium: /images/favicon-32x32-next.png
+  apple_touch_icon: /images/apple-touch-icon-next.png
+  safari_pinned_tab: /images/logo.svg
+
+# Set default keywords (Use a comma to separate)
+keywords: "SilentMing, SilentAlice"
+
+# Set rss to false to disable feed link.
+# Leave rss as empty to use site's feed link.
+rss: /atom.xml
+
+# Footer
+footer:
+  # Specify the date when the site was setup.
+  # If not defined, current year will be used.
+  since: 2015
+  # Icon between year and copyright info.
+  icon: user
+  # Copyright info, if not defined, will be used `author` from Hexo main config.
+  copyright:
+  powered: true
+  theme:
+    enable: true
+    version: true
+
+# ---------------------------------------------------------------
+# Avatar
+# ---------------------------------------------------------------
+avatar:
+  url: /images/avatar.jpg
+  rounded: false
+  rotated: false
+
+# ---------------------------------------------------------------
+# Social Links
+# ---------------------------------------------------------------
+social:
+  GitHub: https://github.com/SilentAlice || fab fa-github
+  E-Mail: mailto:yumingwu233@gmail.com || fa fa-envelope
+  LinkedIn: https://www.linkedin.com/in/silentalice/ || fab fa-linkedin
+  Pixiv: https://pixiv.me/wym981230 || fab fa-pixiv
+
+social_icons:
+  enable: true
+
+# ---------------------------------------------------------------
+# Creative Commons
+# ---------------------------------------------------------------
+creative_commons:
+  license: by-nc-sa
+  sidebar: false
+  post: false
+  language:
