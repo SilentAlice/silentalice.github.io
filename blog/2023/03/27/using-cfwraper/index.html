@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"silentming.net","root":"/","images":"/images","scheme":"Mist","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"right","width_expanded":320,"width_dual_column":240,"display":"always","padding":18,"offset":12,"onmobile":false},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null,"show_result":false},"fold":{"enable":false,"height":500},"language":false,"highlight_theme":"normal"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="最近互联网的宠儿想必非ChatGPT莫属，在人工智能大火以后的这么多年， 第一款让所有打工人都切实感受到或方便或恐惧的AI工具诞生了， 但是在火热的当前更多的小白还无法接触这一最新的技术革命， 直接访问openai得到的是对中国大陆的拒绝， 好不容易使用vps搭了VPN的也惨遭Block封锁…… 本篇记录通过CloudFlare Warp套壳获得ChatGPT访问权限的过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Using CloudFlare Warp to Access ChatGPT">
+<meta property="og:url" content="http://silentming.net/blog/2023/03/27/using-cfwraper/index.html">
+<meta property="og:site_name" content="SilentMing&#39;s Gensokyo">
+<meta property="og:description" content="最近互联网的宠儿想必非ChatGPT莫属，在人工智能大火以后的这么多年， 第一款让所有打工人都切实感受到或方便或恐惧的AI工具诞生了， 但是在火热的当前更多的小白还无法接触这一最新的技术革命， 直接访问openai得到的是对中国大陆的拒绝， 好不容易使用vps搭了VPN的也惨遭Block封锁…… 本篇记录通过CloudFlare Warp套壳获得ChatGPT访问权限的过程。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://live.staticflickr.com/65535/52772012626_8a411e9450_w_d.jpg">
+<meta property="og:image" content="https://live.staticflickr.com/65535/52772537304_2c3117ec0e_c_d.jpg">
+<meta property="article:published_time" content="2023-03-27T11:39:51.000Z">
+<meta property="article:modified_time" content="2026-09-07T00:30:14.770Z">
+<meta property="article:author" content="SilentMing">
+<meta property="article:tag" content="record">
+<meta property="article:tag" content="tutorial">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://live.staticflickr.com/65535/52772012626_8a411e9450_w_d.jpg">
+
+
+<link rel="canonical" href="http://silentming.net/blog/2023/03/27/using-cfwraper/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://silentming.net/blog/2023/03/27/using-cfwraper/","path":"blog/2023/03/27/using-cfwraper/","title":"Using CloudFlare Warp to Access ChatGPT"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Using CloudFlare Warp to Access ChatGPT | SilentMing's Gensokyo</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?2830251be0f3ab7be6bbd750f9133e29"></script>
+
+
+
+
+
+
+
+  
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="SilentMing's Gensokyo" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">SilentMing's Gensokyo</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">初心忘れるべからず</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="http://silentalice.github.io/WebGL/" rel="section" target="_blank"><i class="gift fa-fw"></i>Home</a></li><li class="menu-item menu-item-blog"><a href="/" rel="section"><i class="home fa-fw"></i>Blog</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-gallery"><a href="http://silentalice.github.io/gallery/" rel="section" target="_blank"><i class="image fa-fw"></i>Gallery</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Preparation"><span class="nav-text">Preparation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CloudFlare-Warp"><span class="nav-text">CloudFlare Warp</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#What%E2%80%99s-Warp"><span class="nav-text">What’s Warp?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Warp-vs-VPN"><span class="nav-text">Warp vs VPN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Why-Warp"><span class="nav-text">Why Warp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Installation"><span class="nav-text">Installation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85"><span class="nav-text">一键安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85"><span class="nav-text">手动安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEV2Ray"><span class="nav-text">配置V2Ray</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Note"><span class="nav-text">Note</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="SilentMing"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">SilentMing</p>
+  <div class="site-description" itemprop="description">SilentMing / SilentAlice's blog</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/SilentAlice" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;SilentAlice" rel="noopener me" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yumingwu233@gmail.com" title="Mail → mailto:yumingwu233@gmail.com" rel="noopener me" target="_blank"><i class="envelope fa-fw"></i>Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/silentalice/" title="LinkedIn → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;silentalice&#x2F;" rel="noopener me" target="_blank"><i class="linkedin fa-fw"></i>LinkedIn</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://pixiv.me/wym981230" title="Pixiv → https:&#x2F;&#x2F;pixiv.me&#x2F;wym981230" rel="noopener me" target="_blank"><i class="link fa-fw"></i>Pixiv</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://kiorisyshen.github.io/" title="http:&#x2F;&#x2F;kiorisyshen.github.io" rel="noopener" target="_blank">Kio's Spot</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://xmm4ok69.com/" title="http:&#x2F;&#x2F;xmm4ok69.com&#x2F;" rel="noopener" target="_blank">XMM's Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://silentming.net/blog/2023/03/27/using-cfwraper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="SilentMing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SilentMing's Gensokyo">
+      <meta itemprop="description" content="SilentMing / SilentAlice's blog">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Using CloudFlare Warp to Access ChatGPT | SilentMing's Gensokyo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Using CloudFlare Warp to Access ChatGPT
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-03-27 19:39:51" itemprop="dateCreated datePublished" datetime="2023-03-27T19:39:51+08:00">2023-03-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2026-09-07 08:30:14" itemprop="dateModified" datetime="2026-09-07T08:30:14+08:00">2026-09-07</time>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/blog/2023/03/27/using-cfwraper/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="blog/2023/03/27/using-cfwraper/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>最近互联网的宠儿想必非ChatGPT莫属，在人工智能大火以后的这么多年，
+第一款让所有打工人都切实感受到或方便或恐惧的AI工具诞生了，
+但是在火热的当前更多的小白还无法接触这一最新的技术革命，
+直接访问openai得到的是对中国大陆的拒绝，
+好不容易使用vps搭了VPN的也惨遭Block封锁……</p>
+<p>本篇记录通过CloudFlare Warp套壳获得ChatGPT访问权限的过程。</p>
+<span id="more"></span>
+
+<h2 id="Preparation"><a href="#Preparation" class="headerlink" title="Preparation"></a>Preparation</h2><ul>
+<li><p>VPN
+首先需要自己的VPN, 能够访问<code>openai.com</code>，这是一切的开始<br>
+可以参考: <a href="https://silentming.net/blog/2019/03/03/aws/">使用免费的亚马逊云服务(AWS)</a>获取免费的VPS(Virtual Personal Server)
+与<a href="https://silentming.net/blog/2023/03/26/v2ray/">使用V2Ray搭建个人VPN</a>来搭建个人VPN</p>
+</li>
+<li><p>OpenAI Account
+ OpenAI账号需要在官方自己注册，注册时需要国外的手机号，这里推荐一个比较便宜的平台:
+ <code>https://sms-activate.org/</code> 20min不限次短信的虚拟个人手机号。
+ 一个OpenAI的虚拟手机价格大约在3￥RMB左右</p>
+</li>
+</ul>
+<p>理论上来说，这个时候直接访问chatgpt: <code>https://chat.openai.com/</code>就可以使用了，
+然而大体量的云服务商如亚马逊、甲骨文、阿里云这些都被屏蔽了。
+OpenAI使用了CloudFlare的服务，我们也惨遭封禁……</p>
+<img src="https://live.staticflickr.com/65535/52772012626_8a411e9450_w_d.jpg" class="">
+
+<p>上面的IP是我AWS服务器日本地区的IP, 通过<code>ip138.com</code>也可以查询到结果:</p>
+<blockquote>
+<p>您的iP地址是：[18.181.68.227 ] 来自：日本东京 亚马逊云</p>
+</blockquote>
+<p>如果你和我有一样的问题，那么就可以开始我们本篇的正文了:</p>
+<h2 id="CloudFlare-Warp"><a href="#CloudFlare-Warp" class="headerlink" title="CloudFlare Warp"></a>CloudFlare Warp</h2><h4 id="What’s-Warp"><a href="#What’s-Warp" class="headerlink" title="What’s Warp?"></a>What’s Warp?</h4><p>根据<a target="_blank" rel="noopener" href="https://1.1.1.1/">CloudFlare官方</a>的介绍:</p>
+<blockquote>
+<p>1.1.1.1 with WARP replaces the connection between your device and
+the Internet with a modern, optimized, protocol.</p>
+</blockquote>
+<p><code>1.1.1.1</code>是CloudFlare提供的DNS解析，经过它家的DNS，结合Warp可以给我们的流量套一层安全壳。</p>
+<h4 id="Warp-vs-VPN"><a href="#Warp-vs-VPN" class="headerlink" title="Warp vs VPN"></a>Warp vs VPN</h4><p>根据<a target="_blank" rel="noopener" href="https://www.purevpn.com/blog/warp-vs-vpn/">purevpn官网</a>的介绍:</p>
+<p>Warp的作用是: DNS查询将受到Cloudflare的1.1.1.1 DNS服务的保护，
+WARP会添加一层加密以确保的流量不会被窥探者获取。
+但是WARP不会掩盖IP地址，这也意味着我们无法直接使用它进行翻墙。</p>
+<p>所以Warp的作为主要是作为对隐私和安全的保护，达不到翻墙的作用。</p>
+<h4 id="Why-Warp"><a href="#Why-Warp" class="headerlink" title="Why Warp"></a>Why Warp</h4><p>Warp虽然无法帮助我们翻墙，但是可以帮助我们穿过它们自家的墙:D,
+现在想要绕过CloudFlare的墙，要么换真国外机房、要么隐藏我们的IP。
+使用Tor也可以达到一样的效果，不过这个听说比较慢，
+所以我们使用简单且免费的Warp</p>
+<h2 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h2><h3 id="一键安装"><a href="#一键安装" class="headerlink" title="一键安装"></a>一键安装</h3><p>一键安装脚本: <a target="_blank" rel="noopener" href="https://gitlab.com/rwkgyg/CFwarp">https://gitlab.com/rwkgyg/CFwarp</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -N https://gitlab.com/rwkgyg/CFwarp/raw/main/CFwarp.sh &amp;&amp; bash CFwarp.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="手动安装"><a href="#手动安装" class="headerlink" title="手动安装"></a>手动安装</h3><p>官方安装指导: <code>https://pkg.cloudflareclient.com/install</code></p>
+<p>按照官方教程添加对应的源，并安装: (以ubuntu为例)</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Install</span></span><br><span class="line">apt install cloudflare-warp</span><br><span class="line"></span><br><span class="line"><span class="comment"># Register device</span></span><br><span class="line">warp-cli register</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开代理模式</span></span><br><span class="line">warp-cli set-mode proxy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接Warp</span></span><br><span class="line">warp-cli connect</span><br></pre></td></tr></table></figure>
+
+<p>验证效果:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Check current IP (return proxy ip)</span></span><br><span class="line">curl ifconfig.me --proxy socks5://127.0.0.1:40000</span><br></pre></td></tr></table></figure>
+<p>上面会显示现在经过warp后的IP</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Check ChatGPT</span></span><br><span class="line">curl chat.openai.com</span><br><span class="line">curl chat.openai.com --proxy socks5://127.0.0.1:40000</span><br></pre></td></tr></table></figure>
+<p>如果配置正确的话，前者会返回1020的错误，后者则没有返回</p>
+<h2 id="配置V2Ray"><a href="#配置V2Ray" class="headerlink" title="配置V2Ray"></a>配置V2Ray</h2><p>如果有桌面，那么直接设置socks5的代理就可以了，对于使用V2ray (xray)的用户，可以设置一层转发:</p>
+<p>在outbounds里添加新的<code>outbounds</code>:</p>
+<figure class="highlight json"><figcaption><span>/usr/local/etc/v2ray/config.json</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">&quot;outbounds&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span> ... <span class="punctuation">&#125;</span><span class="punctuation">,</span> <span class="comment">// Original outbounds</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;tag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;chatgpt_proxy&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;protocol&quot;</span><span class="punctuation">:</span> <span class="string">&quot;socks&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;settings&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;servers&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="punctuation">&#123;</span></span><br><span class="line">                    <span class="attr">&quot;address&quot;</span><span class="punctuation">:</span> <span class="string">&quot;127.0.0.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">                    <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">40000</span></span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">]</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<p>在routing里面添加路由规则:</p>
+<figure class="highlight json"><figcaption><span>/usr/local/etc/v2ray/config.json</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">&quot;routing&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;rules&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span> ... <span class="punctuation">&#125;</span><span class="punctuation">,</span> <span class="comment">// Original rules</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;field&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;outboundTag&quot;</span><span class="punctuation">:</span> <span class="string">&quot;chatgpt_proxy&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;domain&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="string">&quot;openai.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;ip138.com&quot;</span></span><br><span class="line">            <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的 <code>ip138.com</code>是为了后面进行测试加入的，
+路由规则把所有<code>openai.com</code>都转发到了<code>chatgpt_proxy</code>的出口上</p>
+<p>同样也可以通过<code>ip138.com</code>来进行测试:</p>
+<blockquote>
+<p>您的iP地址是：[104.28.196.81 ] 来自：澳大利亚新南威尔士悉尼 Cloudflare</p>
+</blockquote>
+<p>至此我们大功造成，可以在Client端访问了！</p>
+<img src="https://live.staticflickr.com/65535/52772537304_2c3117ec0e_c_d.jpg" class="">
+
+<h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><p>目前Android使用V2rayNG的话还是无法访问，即使VPS已经设置了转发, 
+Android上的V2rayNG还是无法走Warp从而被拦下,
+目前还没有特别好的方法。</p>
+<p>不过MacOS(使用v2ray)与Windows(使用V2rayN)均可以访问。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="SilentMing WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="SilentMing Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>SilentMing
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="http://silentming.net/blog/2023/03/27/using-cfwraper/" title="Using CloudFlare Warp to Access ChatGPT">http://silentming.net/blog/2023/03/27/using-cfwraper/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/tutorial/" rel="tag"># tutorial</a>
+              <a href="/tags/record/" rel="tag"># record</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2023/03/26/v2ray/" rel="prev" title="使用V2Ray搭建个人VPN">
+                  <i class="fa fa-angle-left"></i> 使用V2Ray搭建个人VPN
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2015 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">SilentMing</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"silentmingsblog","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js" defer></script>
+
+</body>
+</html>
